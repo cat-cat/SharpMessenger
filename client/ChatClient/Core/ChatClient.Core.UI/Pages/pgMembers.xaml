@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:abstractions="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
+             x:Class="ChatClient.Core.UI.Pages.pgMembers"
+              Title="{Binding Title}"
+             >
+  <ListView x:Name="lsvMembers" ItemsSource="{Binding Collection}" HasUnevenRows="True" IsPullToRefreshEnabled="True" RefreshCommand="{Binding UploadCommand}"   IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+
+    <ListView.ItemTemplate>
+      <DataTemplate>
+        <ViewCell >
+            <StackLayout  Padding="10" Spacing="0" Orientation="Horizontal" VerticalOptions="FillAndExpand" HorizontalOptions="Start"  >
+              <abstractions:CircleImage Source="{Binding Photo}"  Aspect ="AspectFill" HeightRequest="50"  HorizontalOptions="StartAndExpand"  FillColor="Transparent"  WidthRequest="50"    />
+            <StackLayout   VerticalOptions="Start" Margin="5,5,5,5"  HorizontalOptions="FillAndExpand" Orientation="Vertical">
+             <Label Text="{Binding Nickname}" Style="{StaticResource LabelHeaderStyle}" HorizontalTextAlignment="Start" HorizontalOptions="StartAndExpand"/>
+              <Label Text="{Binding TransactionsSum,StringFormat='{0}$'}" Style="{StaticResource LableCenterNameStyle}" HorizontalTextAlignment="Start" HorizontalOptions="StartAndExpand"/>
+            </StackLayout>
+            </StackLayout>
+          <!--</Grid>-->
+        </ViewCell>
+      </DataTemplate>
+    </ListView.ItemTemplate>
+  </ListView>
+</ContentPage>

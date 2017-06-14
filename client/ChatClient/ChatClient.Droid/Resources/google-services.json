@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "463517930852",
+    "firebase_url": "https://chatclient-13fef.firebaseio.com",
+    "project_id": "chatclient-13fef",
+    "storage_bucket": "chatclient-13fef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:463517930852:android:6148b3c0d1ddebf3",
+        "android_client_info": {
+          "package_name": "com.chat.board"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "463517930852-km5fdafmuq21sr3bcm2dtv5s2qso2k37.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzlwTNR281qqzvMFHwq6E5oHfY7jqj-d8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

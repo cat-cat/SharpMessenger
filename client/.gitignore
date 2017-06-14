@@ -1,0 +1,14 @@
+ChatClient.userprefs
+*.dll
+*.userprefs
+*.suo
+*.mdb
+*.apk
+*.pdb
+_ReSharper.Caches/
+*.bin
+packages/
+bin/
+obj/
+*.user
+.vs/

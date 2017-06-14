@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage  xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             x:Class="ChatClient.Core.UI.PopupPages.pgRestoreAccount" IsBusy="{Binding IsBusy}"
+			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common"
+	>
+  <ScrollView  >
+    <StackLayout Margin="15,30,15,30" Padding="15,30,15,30" BackgroundColor="White" VerticalOptions="CenterAndExpand">
+      <Label HorizontalOptions="FillAndExpand"  VerticalOptions="FillAndExpand"
+             Text="{i18n:Translate EmailCheck}"/>
+      <StackLayout Orientation="Horizontal" >
+        <Label Text="{i18n:Translate YourEmail}"></Label>
+        <Entry Keyboard="Email"  HorizontalOptions="FillAndExpand" Text="{Binding OldEmail}" VerticalOptions="CenterAndExpand" />
+      </StackLayout>
+
+      <StackLayout  Orientation="Horizontal">
+        <Button Text="{i18n:Translate Confirm}" FontSize="Large" HorizontalOptions="StartAndExpand"  Command="{Binding RestoreAccountCommand}" />
+        <Button Text="{i18n:Translate Cancel}" HorizontalOptions="EndAndExpand" Command="{Binding CancelVerificationCommand}" FontSize="Large"/>
+      </StackLayout>
+    </StackLayout>
+    <!--</Grid>-->
+  </ScrollView>
+</pages:PopupPage>

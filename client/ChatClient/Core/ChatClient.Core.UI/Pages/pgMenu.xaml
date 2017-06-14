@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:abstractions="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
+             Icon="menu_icon.png"
+             Title="{Binding PageTitle}"
+             x:Class="ChatClient.Core.UI.Pages.pgMenu"
+			xmlns:controls="clr-namespace:ChatClient.Core.UI.Controls;assembly=ChatClient.Core.UI"
+			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common">
+
+  <StackLayout Spacing="0"
+              VerticalOptions="FillAndExpand">
+
+    <!--<ContentView   HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">-->
+      <!--<Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>-->
+      <StackLayout Orientation="Horizontal" Padding="5,20,5,20" BackgroundColor="#388e3c" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+        <abstractions:CircleImage x:Name="imgUser" Aspect ="AspectFill" HeightRequest="50"  HorizontalOptions="StartAndExpand"  FillColor="Transparent"  WidthRequest="50"    />
+       
+        <Label x:Name="lblUserName" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"  VerticalTextAlignment="Center" FontSize="Medium"  FontFamily="Roboto" Text="{i18n:Translate NewMember}"  TextColor="#ffffff"/>
+        <Button Image="menu_arrow.png"  Style="{StaticResource ImageButton}" Clicked="ShowUserDetail_OnClicked" Margin="0,0,5,0"  VerticalOptions="Center" HorizontalOptions="EndAndExpand"/>
+      <!--</Grid>-->
+      </StackLayout>
+    <!--</ContentView>-->
+
+    <ListView x:Name="lstMenu"
+              VerticalOptions="FillAndExpand"
+              BackgroundColor="Transparent"
+      SeparatorVisibility="None"  >
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell  >
+            <StackLayout Margin="5" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" >
+              <Image Margin="5"  Source="{Binding IconSource}" />
+              <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+              <Label Margin="10,0,0,0"  VerticalTextAlignment="Center" VerticalOptions="FillAndExpand" LineBreakMode="CharacterWrap" HorizontalOptions="FillAndExpand" FontSize="Medium"  FontFamily="Roboto" TextColor="#212121" Text="{Binding Title}"/>
+            </StackLayout>
+            </StackLayout>
+          </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+
+  </StackLayout>
+</ContentPage>

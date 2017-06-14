@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ChatClient.Core.UI.App">
+  <Application.Resources>
+    <ResourceDictionary>
+      <Color x:Key="YellowColor">#fbc02d </Color>
+      <Color x:Key="GreenColor">#388e3c</Color>
+      <Color x:Key="BlackColor">Black</Color>
+      <Color x:Key="GreyBackColor">#c6c6c6</Color>
+      <Color x:Key="GreyLableColor">#9e9e9e</Color>
+      <Color x:Key="GreyButtonBackColor">#757575</Color>
+      <Color x:Key="PinkBackGround">#ffebee</Color>
+      <Color x:Key="RedColor">#f44336</Color>
+      <Font x:Key="FontFamily">Roboto</Font>
+      <Font x:Key="FontHeaderSize">Medium</Font>
+      <Font x:Key="FontLableSize">Small</Font>
+
+      <Style x:Key="LabelHeaderStyle" TargetType="Label">
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource BlackColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontHeaderSize}"/>
+      </Style>
+      <Style x:Key="LableNameStyle"  TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource GreenColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontLableSize}"/>
+      </Style>
+      <Style x:Key="LableEndGroupStyle"  TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource RedColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontLableSize}"/>
+        <Setter  Property="BackgroundColor" Value="{StaticResource PinkBackGround}"/>
+      </Style>
+      <Style x:Key="LableContentStyle"  TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource BlackColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontLableSize}"/>
+      </Style>
+      <Style x:Key="LableTimerStyle"  TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource BlackColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontLableSize}"/>
+        <Setter  Property="BackgroundColor" Value="{StaticResource YellowColor}"/>
+
+      </Style>
+      <Style x:Key="LableCenterNameStyle"  TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource GreyLableColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontLableSize}"/>
+      </Style>
+      <Style x:Key="GreenButton" TargetType="Button">
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="Medium"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource GreenColor}"/>
+      </Style>
+      <Style x:Key="GreyButton" TargetType="Button">
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="Medium"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource GreyButtonBackColor}"/>
+      </Style>
+      <Style x:Key="YellowButton" TargetType="Button">
+        <Setter Property="TextColor" Value="{StaticResource GreenColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource  FontFamily}"/>
+        <Setter Property="FontSize" Value="Medium"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource YellowColor}"/>
+      </Style>
+      <Style x:Key="ImageButton" TargetType="Button">
+       <Setter Property="BorderColor" Value="Transparent"/>
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+      <Setter Property="BorderWidth" Value="0"/>
+      </Style>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

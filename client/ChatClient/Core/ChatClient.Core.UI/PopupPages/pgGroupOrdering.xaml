@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             xmlns:controls="clr-namespace:ChatClient.Core.UI.Controls;assembly=ChatClient.Core.UI"
+			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common"	
+             x:Class="ChatClient.Core.UI.PopupPages.pgGroupOrdering">
+  <StackLayout Margin="0,100,0,150" Padding="15,30,15,30" BackgroundColor="White" HorizontalOptions="FillAndExpand" VerticalOptions="Center">
+  <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+    <Label x:Name="lblOrdering" Style="{StaticResource LabelHeaderStyle}" VerticalOptions="Center" Text="{i18n:Translate OrderGroups}" HorizontalOptions="StartAndExpand"/>
+    <Button x:Name="btnOrdering" Style="{StaticResource ImageButton}" Image="dropdown_arrow2.png" VerticalOptions="Center" Clicked="btnOrdering_OnClicked" HorizontalOptions="End"/>
+  </StackLayout>
+    <ListView x:Name="lstOrderItems" HasUnevenRows="True">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell >
+            <controls:FilterButton HorizontalOptions="Start" VerticalOptions="StartAndExpand"  Image="radio_button_normal.png" TextColor="Black" FontSize="Small" Style="{StaticResource ImageButton}" Text="{Binding Text}" Clicked="selectOrdering_OnClicked" />
+            </ViewCell>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+     
+    </ListView>
+  </StackLayout>
+</pages:PopupPage>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:ChatClient.Core.Common.Helpers;assembly=ChatClient.Core.Common"
+             xmlns:converters="clr-namespace:ChatClient.Core.Common.Converters;assembly=ChatClient.Core.Common"
+             xmlns:abstractions="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
+             x:Class="ChatClient.Core.UI.Pages.pgDialogs"
+  Title="{Binding PageTitle}">
+   <ContentPage.Resources>
+    <ResourceDictionary>
+      <helpers:DialogDateConverter  x:Key="DateConverter"></helpers:DialogDateConverter>
+     <converters:DialogMessageColorConverter  x:Key="MessageColorConverter"></converters:DialogMessageColorConverter>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+ <StackLayout>
+   <ListView x:Name="lstDialogs" ItemsSource="{Binding Collection}" HasUnevenRows="True" IsPullToRefreshEnabled="True" RefreshCommand="{Binding UploadCommand}"   IsRefreshing="{Binding IsBusy, Mode=OneWay}" VerticalOptions="FillAndExpand"  HorizontalOptions="FillAndExpand">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell >
+            <StackLayout  Padding="10" Spacing="0" Orientation="Horizontal" VerticalOptions="FillAndExpand" HorizontalOptions="Start"  >
+             <abstractions:CircleImage Source="{Binding Opponent.Photo}"  Aspect ="AspectFill" HeightRequest="50"  HorizontalOptions="StartAndExpand"  FillColor="Transparent"  WidthRequest="50"    />
+           <StackLayout Orientation="Vertical"  VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+               <Label HorizontalOptions="StartAndExpand"  VerticalOptions="Center" Text="{Binding Opponent.Nickname }" Style="{StaticResource LabelHeaderStyle}"/>
+            <Label  Style="{StaticResource LableContentStyle}" VerticalOptions="Center"  HorizontalOptions="EndAndExpand"   Text="{Binding Message.Timestamp,Converter={StaticResource DateConverter }}"/>
+             </StackLayout>
+            <Label VerticalOptions="FillAndExpand" Text="{Binding Message.Message}" TextColor="{Binding Color}" Style="{StaticResource LableContentStyle}"/>
+           </StackLayout>
+              </StackLayout>
+            </ViewCell>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+   </ListView>
+ </StackLayout>
+</ContentPage>

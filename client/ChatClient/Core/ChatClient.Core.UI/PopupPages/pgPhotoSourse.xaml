@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             x:Class="ChatClient.Core.UI.PopupPages.pgPhotoSourse"
+			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common"
+             Title="{Binding PageTitle}">
+  <StackLayout Orientation="Vertical" Margin="10,30,10,30" Padding="10,30,10,30" BackgroundColor="White" VerticalOptions="CenterAndExpand">
+    <Label Text="{i18n:Translate SelectPhotoLocation}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Style="{StaticResource LabelHeaderStyle}"></Label>
+    <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand">
+      <Button Text="{i18n:Translate TakePhoto}" Style="{StaticResource ImageButton}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Command="{Binding TakePhotoCommand}"/>
+      <Button Text="{i18n:Translate SelectPhoto}" Style="{StaticResource ImageButton}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Command="{Binding PickPhotoCommand}"/>
+      <Button Text="{i18n:Translate Cancel}" Style="{StaticResource ImageButton}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Command="{ Binding CancelCommand}"/>
+    </StackLayout>
+  </StackLayout>
+  
+</pages:PopupPage>

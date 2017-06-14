@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             x:Class="ChatClient.Core.UI.PopupPages.pgVerificationEmailCode" IsBusy="{Binding IsBusy}"
+			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common">
+	
+ <ScrollView   >
+    <StackLayout Margin="15,30,15,30" Padding="15,30,15,30" BackgroundColor="White"  VerticalOptions="CenterAndExpand">
+      <!--<Grid Margin="15,30,15,30" BackgroundColor="White">
+   <Grid.RowDefinitions>
+     <RowDefinition Height="7*"/>
+     <RowDefinition Height="2*"/>
+     <RowDefinition Height="1*"/>
+   </Grid.RowDefinitions>-->
+      <Label HorizontalOptions="FillAndExpand"  VerticalOptions="FillAndExpand"
+             Text="{i18n:Translate CodeCheck}"/>
+      <StackLayout Orientation="Horizontal" >
+        <Label Text="{i18n:Translate ConfirmCode}"></Label>
+        <Entry Keyboard="Email"  HorizontalOptions="FillAndExpand" Text="{Binding VerificationCode}" VerticalOptions="CenterAndExpand" />
+      </StackLayout>
+
+      <StackLayout  Orientation="Horizontal">
+        <Button Text="{i18n:Translate Confirm}" FontSize="Large" HorizontalOptions="StartAndExpand"  Command="{Binding VerificationCommand}" />
+        <Button Text="{i18n:Translate Cancel}" HorizontalOptions="EndAndExpand" Command="{Binding CancelVerificationCommand}" FontSize="Large"/>
+      </StackLayout>
+    </StackLayout>
+ <!--</Grid>-->
+  </ScrollView>
+</pages:PopupPage>

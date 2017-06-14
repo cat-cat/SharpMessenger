@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+          
+             xmlns:helpers="clr-namespace:ChatClient.Core.Common.Helpers;assembly=ChatClient.Core.Common"
+             xmlns:controls="clr-namespace:ChatClient.Core.UI.Controls;assembly=ChatClient.Core.UI"
+
+             x:Class="ChatClient.Core.UI.Pages.pgGroups"
+             Icon="list_of_the_groups_icon.png"
+             Title="{Binding Title}"
+        Appearing="PgGroups_OnAppearing"
+			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common"
+             >
+  <ContentPage.Resources>
+    <ResourceDictionary>
+     <helpers:FullTimeConverter x:Key="SubDateConverter"></helpers:FullTimeConverter>
+      <helpers:DateConverter x:Key="DateConverter"></helpers:DateConverter>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+  <StackLayout>
+    <StackLayout  Padding="5" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" >
+      <controls:CreateGroupButton Text="{i18n:Translate CreateNewGroup}" TextColor="{StaticResource GreenColor}" Style="{StaticResource ImageButton}" Command="{Binding CreateGroupCommand}"/>
+    </StackLayout>
+    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+    <Button  HorizontalOptions="Start" VerticalOptions="Center" TextColor="Black"  Style="{StaticResource ImageButton}" Text="{i18n:Translate OrderGroups}" Command="{Binding SetOrderingCommand}"/>
+      <Button  HorizontalOptions="End" VerticalOptions="Center" Style="{StaticResource ImageButton}" Image="dropdown_arrow.png" Command="{Binding SetOrderingCommand}"/>
+    </StackLayout>
+    <StackLayout Spacing="0">
+    <ListView x:Name="lsvGroups"  ItemsSource="{Binding Collection}" HasUnevenRows="True" IsPullToRefreshEnabled="True" RefreshCommand="{Binding UploadCommand}"   IsRefreshing="{Binding IsLoading, Mode=OneWay}">
+
+      <ListView.ItemTemplate>
+        <DataTemplate>
+    <ViewCell>
+           <Grid>
+             <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="3*" />
+               <ColumnDefinition Width="7*"/>
+             </Grid.ColumnDefinitions>
+            <!--<StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Orientation="Horizontal"  >-->
+              <StackLayout   Grid.Column="0" Padding="10" Spacing="0" HeightRequest="150"  >
+                <controls:GroupListImage   Source="{Binding Image}"  VerticalOptions="StartAndExpand"></controls:GroupListImage>
+                
+                <!--<Image  Source="{Binding Image}"  VerticalOptions="StartAndExpand"/>-->
+              </StackLayout>
+               
+             
+              <StackLayout  Grid.Column="1" VerticalOptions="Start" MinimumWidthRequest="125"  Orientation="Vertical" HeightRequest="150">
+                <StackLayout VerticalOptions="Start" HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                  <Label Text="{Binding Name}" Style="{StaticResource LabelHeaderStyle}">
+                    </Label>
+                </StackLayout>            
+              </StackLayout>
+          
+           
+           </Grid>
+
+    </ViewCell>
+            
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+    </StackLayout>
+  </StackLayout>
+
+</ContentPage>

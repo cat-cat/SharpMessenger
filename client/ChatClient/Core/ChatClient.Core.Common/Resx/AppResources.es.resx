@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="NotesLabel" xml:space="preserve">
+	    <value>Notas:</value>
+	    <comment>label for input field</comment>
+	</data>
+	<data name="NotesPlaceholder" xml:space="preserve">
+	    <value>por ejemplo . comprar leche</value>
+	    <comment>example input for notes field</comment>
+	</data>
+	<data name="AddFunds" xml:space="preserve">
+	    <value>Añadir fondos a la cuenta</value>
+	    <comment>this string appears on a button to add a new item to the list</comment>
+	</data>
+	<data name="PickerName" xml:space="preserve">
+	    <value>Elegir un número</value>
+	</data>
+	<data name="EnterCorrectFundSum" xml:space="preserve">
+		<value>Introduzca la suma de contribución correcta</value>
+	</data>
+	<data name="IncorrectSum" xml:space="preserve">
+		<value>Suma incorrecta</value>
+	</data>
+	<data name="RemoveWarning" xml:space="preserve">
+		<value>¿De verdad quiere interrumpir el juego? El juego será interrumpido dentro de 10 minutos, y a todos los depositantes se les enviará una notificación de la proximidad del final del juego.</value>
+	</data>
+	<data name="EnterGroupNominal" xml:space="preserve">
+		<value>Introduzca el valor nominal del juego</value>
+	</data>
+	<data name="NewGroup" xml:space="preserve">
+		<value>Nuevo juego</value>
+	</data> 
+	<data name="EnterGroupName" xml:space="preserve">
+		<value>Introduzca el nombre</value>
+	</data>
+	<data name="YouDidNotSelectImageForGroup" xml:space="preserve">
+		<value>No ha seleccionado la imagen del juego</value>
+	</data>
+
+
+
+
+	<data name="Continue" xml:space="preserve">
+		<value>Continuar</value>
+	</data>
+	<data name="Save" xml:space="preserve">
+		<value>Guardar</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Cancelar</value>
+	</data>
+	// Lista de juegos
+	<data name="ListOfGroups" xml:space="preserve">
+		<value>Lista de grupos</value>
+	</data>
+	// Momento de finalización del juego
+	<data name="ByEndingTime" xml:space="preserve">
+		<value>Momento de finalización del juego</value>
+	</data>	
+	// Aviso
+	<data name="Notification" xml:space="preserve">
+		<value>Aviso</value>
+	</data>	
+	// El juego llega a su fin, ¿ir a él?
+	<data name="EndingGroupQuestion" xml:space="preserve">
+		<value>El juego llega a su fin, ¿ir a él?</value>
+	</data>	
+	// Nuevo jugador
+	<data name="NewMember" xml:space="preserve">
+		<value>Nuevo jugador</value>
+	</data>	
+	<data name="Yes" xml:space="preserve">
+		<value>Sí</value>
+	</data>	
+	<data name="No" xml:space="preserve">
+		<value>No</value>
+	</data>	
+	<data name="MainPage" xml:space="preserve">
+		<value>Página principal</value>
+	</data>	
+	<data name="MyAccount" xml:space="preserve">
+		<value>Mi cuenta</value>
+	</data>	
+	<data name="Members" xml:space="preserve">
+		<value>Memberes del juego</value>
+	</data>	
+	<data name="MyGroups" xml:space="preserve">
+		<value>Mis grupos</value>
+	</data>
+	<data name="Dialogs" xml:space="preserve">
+		<value>Diálogos</value>
+	</data>
+	<data name="About" xml:space="preserve">
+		<value>Acerca de este programa</value>
+	</data>
+	<data name="HowToAddFunds" xml:space="preserve">
+		<value>Cómo recargar la cuenta del juego</value>
+	</data>
+	<data name="GroupWillEnd" xml:space="preserve">
+		<value>El juego termina el</value>
+	</data>	
+	<data name="EnterCorrectSum" xml:space="preserve">
+		<value>Introduzca la cantidad correcta</value>
+	</data>
+	<data name="MakeContribution" xml:space="preserve">
+		<value>Hacer una contribución</value>
+	</data>
+	<data name="DiscussInChat" xml:space="preserve">
+		<value>Hablar del juego en el chat</value>
+	</data>
+	<data name="GroupNominal" xml:space="preserve">
+		<value>Valor nominal del juego</value>
+	</data>
+	<data name="UntilGroupEnd" xml:space="preserve">
+		<value>Para la finalización del juego quedan</value>
+	</data>
+	<data name="CurrentFund" xml:space="preserve">
+		<value>Fondos actuals</value>
+	</data>
+	<data name="NumberOfMembers" xml:space="preserve">
+		<value>Número de members</value>
+	</data>
+	// Message
+	<data name="MessageToOwner" xml:space="preserve">
+		<value>Mensaje del propietario del juego</value>
+	</data>
+	// Crear un juego nuevo
+	<data name="CreateNewGroup" xml:space="preserve">
+		<value>Crear nuevo grupo</value>
+	</data>
+	// Ordenar juegos
+	<data name="OrderGroups" xml:space="preserve">
+		<value>Ordenar juegos</value>
+	</data>
+	<data name="TimeLeft" xml:space="preserve">
+		<value>Quedan</value>
+	</data>
+	<data name="Nominal" xml:space="preserve">
+		<value>Valor nominal</value>
+	</data>
+	<data name="Fund" xml:space="preserve">
+		<value>Fondos</value>
+	</data>
+	<data name="LastMember" xml:space="preserve">
+		<value>Última contribución</value>
+	</data>
+	<data name="BetInGroup" xml:space="preserve">
+		<value>Contribución al juego</value>
+	</data>
+	<data name="Sum" xml:space="preserve">
+		<value>Suma</value>
+	</data>
+	<data name="Contribution" xml:space="preserve">
+		<value>Contribución</value>
+	</data>
+	<data name="AmountOfWinnings" xml:space="preserve">
+		<value>Suma ganada</value>
+	</data>
+	<data name="WinningMember" xml:space="preserve">
+		<value>Memberes ganadores</value>
+	</data>
+	<data name="GroupOwner" xml:space="preserve">
+		<value>Propietario del juego</value>
+	</data>
+	// Сортировка: по времени последнего вклада, по времени завершения игры, по номиналу игры, по приближению фонда к номиналу. – Ordenar: por tiempo de la última contribución, por tiempo de finalización del juego, por valor nominal del juego, por aproximación del fondo al valor nominal.
+	<data name="ByLastMember" xml:space="preserve">
+		<value>por tiempo de la última contribución</value>
+	</data>
+	<data name="ByEndTime" xml:space="preserve">
+		<value>por tiempo de finalización del juego</value>
+	</data>
+	<data name="ByNominal" xml:space="preserve">
+		<value>por valor nominal del juego</value>
+	</data>
+	<data name="ByFundNominal" xml:space="preserve">
+		<value>por aproximación del fondo al valor nominal</value>
+	</data>
+	<data name="AccountAmount" xml:space="preserve">
+		<value>Monto de la cuenta</value>
+	</data>
+	<data name="AccountID" xml:space="preserve">
+		<value>ID cuenta</value>
+	</data>
+	<data name="RestoreAccount" xml:space="preserve">
+		<value>Recuperar la cuenta</value>
+	</data>
+	<data name="EnterEmail" xml:space="preserve">
+		<value>Introduzca email</value>
+	</data>
+	<data name="RemoveGroup" xml:space="preserve">
+		<value>Interrumpir el juego</value>
+	</data>
+	<data name="EnterSumFromTo" xml:space="preserve">
+		<value>Introduzca una cantidad de 10 a 1000</value>
+	</data>
+	<data name="SelectPhotoLocation" xml:space="preserve">
+		<value>Seleccione la ubicación de la foto</value>
+	</data>
+	<data name="TakePhoto" xml:space="preserve">
+		<value>Hacer foto</value>
+	</data>
+	<data name="SelectPhoto" xml:space="preserve">
+		<value>Elegir foto</value>
+	</data>
+	<data name="EmailCheck" xml:space="preserve">
+		<value>Comprobación de email</value>
+	</data>
+	<data name="YourEmail" xml:space="preserve">
+		<value>Su email</value>
+	</data>
+	<data name="Confirm" xml:space="preserve">
+		<value>Confirmar</value>
+	</data>
+	<data name="Share" xml:space="preserve">
+		<value>Compartir</value>
+	</data>
+	<data name="CodeCheck" xml:space="preserve">
+		<value>Comprobación del código</value>
+	</data>
+	<data name="ConfirmCode" xml:space="preserve">
+		<value>Código de confirmación</value>
+	</data>
+	<data name="StatusMessage" xml:space="preserve">
+		<value>Mensaje de estado</value>
+	</data>
+	<data name="GroupEnded" xml:space="preserve">
+		<value>El juego terminó el</value>
+	</data>
+	<data name="NeedInternetConnection" xml:space="preserve">
+		<value>Se necesita conexión a internet</value>
+	</data>
+	<data name="RemoteServerUnavailable" xml:space="preserve">
+		<value>El servidor remoto no está disponible Compruebe la conexión a internet</value>
+	</data>
+	<data name="AuthorizationError" xml:space="preserve">
+		<value>Error de autorización</value>
+	</data>
+	<data name="PhotoSizeUnavailable" xml:space="preserve">
+		<value>Tamaño de la foto no disponible</value>
+	</data>
+	<data name="Group" xml:space="preserve">
+		<value>Juego</value>
+	</data>
+	<data name="Chat" xml:space="preserve">
+		<value>Chatear</value>
+	</data>
+	<data name="Menu" xml:space="preserve">
+		<value>Menú</value>
+	</data>
+	<data name="RulesText" xml:space="preserve">
+	<value><![CDATA[<!DOCTYPE html>
+		<html>
+			<head>
+				<meta charset="UTF-8">
+					<title>Acerca de este programa</title>
+				</head>
+				<body>
+				Una aplicación plataforma de chat cruz móvil.
+					<br/>
+					<br/>
+				Los derechos de autor Elenin Boris.
+				</body>
+			</html>]]>
+		</value>
+	</data>
+</root>

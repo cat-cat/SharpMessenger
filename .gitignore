@@ -1,0 +1,55 @@
+ChatClient.userprefs
+*.dll
+*.userprefs
+*.suo
+*.mdb
+*.apk
+*.pdb
+_ReSharper.Caches/
+*.bin
+packages/
+bin/
+obj/
+*.user
+.vs/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# IDE
+.idea
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Babel ES6 compiles files
+dist
+
+# Uploaded files
+uploads
+
+# Dependency directory
+node_modules
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Other
+*.rdb
+yarn.lock

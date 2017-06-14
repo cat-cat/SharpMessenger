@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:ChatClient.Core.Common.Helpers;assembly=ChatClient.Core.Common"
+             xmlns:controls="clr-namespace:ChatClient.Core.UI.Controls;assembly=ChatClient.Core.UI"
+             xmlns:abstractions="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
+             x:Class="ChatClient.Core.UI.Pages.pgFinishedGroup"
+			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common"
+             Title="{Binding PageTitle}">
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <helpers:FinishedDateConverter x:Key="EndDateConverter"></helpers:FinishedDateConverter>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+  <ScrollView>
+    <StackLayout  Padding="10" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+      <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal" VerticalOptions="FillAndExpand">
+        <Image x:Name="imgGroup"    Source="{Binding CurrentGroup.Image}"  HorizontalOptions="StartAndExpand" HeightRequest="100" WidthRequest="100"  VerticalOptions="CenterAndExpand"/>
+        <Label x:Name="lblName" Text="{Binding CurrentGroup.Name}" HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand" Margin="5"  VerticalTextAlignment="Start" HorizontalTextAlignment="Start" Style="{StaticResource LabelHeaderStyle}"/>
+   
+      </StackLayout>
+      <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <Button Text="{i18n:Translate DiscussInChat}" Style="{StaticResource YellowButton}" Command="{Binding StartChatCommand}"   />
+      </StackLayout>
+        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
+          <abstractions:CircleImage Source="{Binding CurrentGroup.Creator.Photo}"  Aspect ="AspectFill" HeightRequest="25"  HorizontalOptions="StartAndExpand"  FillColor="Transparent"  WidthRequest="25"    />
+          <Label Text="{Binding CurrentGroup.Creator.Nickname}"  VerticalTextAlignment="Start" HorizontalTextAlignment="Start" VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand"   Style="{StaticResource LableContentStyle}"/>
+          <Button Image="arrow.png"  Style="{StaticResource ImageButton}" HorizontalOptions="EndAndExpand" Command="{Binding StartPrivatChatCommand}" CommandParameter="{Binding CurrentGroup.Creator}"/>
+        </StackLayout>
+        <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" Color="Gray"/>
+      </StackLayout>
+    </ScrollView>
+</ContentPage>

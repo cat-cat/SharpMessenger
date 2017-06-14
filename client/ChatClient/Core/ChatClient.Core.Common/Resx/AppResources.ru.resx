@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="NotesLabel" xml:space="preserve">
+	    <value>Notas:</value>
+	    <comment>label for input field</comment>
+	</data>
+	<data name="NotesPlaceholder" xml:space="preserve">
+	    <value>por ejemplo . comprar leche</value>
+	    <comment>example input for notes field</comment>
+	</data>
+	<data name="AddFunds" xml:space="preserve">
+	    <value>Пополнить</value>
+	    <comment>this string appears on a button to add a new item to the list</comment>
+	</data>
+	<data name="PickerName" xml:space="preserve">
+	    <value>Elegir un número</value>
+	</data>
+	<data name="EnterCorrectFundSum" xml:space="preserve">
+		<value>Введите корректную сумму вклада</value>
+	</data>
+	<data name="IncorrectSum" xml:space="preserve">
+		<value>Некорректная сумма</value>
+	</data>
+	<data name="RemoveWarning" xml:space="preserve">
+		<value>Вы действительно хотите прервать игру? Игра будет прервана через 10 минут, а всем вкладчикам будет отправлено уведомление о приближении игры к окончанию.</value>
+	</data>
+	<data name="EnterGroupNominal" xml:space="preserve">
+		<value>Введите номинал игры</value>
+	</data>
+	<data name="NewGroup" xml:space="preserve">
+		<value>Новая игра</value>
+	</data>
+	<data name="EnterGroupName" xml:space="preserve">
+		<value>Введите название игры</value>
+	</data>
+	<data name="YouDidNotSelectImageForGroup" xml:space="preserve">
+		<value>Вы не выбрали картинку игры</value>
+	</data>
+
+
+	
+	<data name="Continue" xml:space="preserve">
+		<value>Продолжить</value>
+	</data>
+	<data name="Save" xml:space="preserve">
+		<value>Сохранить</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Отменить</value>
+	</data>
+	<data name="ListOfGroups" xml:space="preserve">
+		<value>Список групп</value>
+	</data>
+	<data name="ByEndingTime" xml:space="preserve">
+		<value>По времени окончания</value>
+	</data>	
+	<data name="Notification" xml:space="preserve">
+		<value>Уведомление</value>
+	</data>	
+
+	<data name="EndingGroupQuestion" xml:space="preserve">
+		<value>Игра подходит к завершению, перейти к ней?</value>
+	</data>	
+	<data name="NewMember" xml:space="preserve">
+		<value>Игрок</value>
+	</data>	
+	<data name="Yes" xml:space="preserve">
+		<value>Да</value>
+	</data>	
+	<data name="No" xml:space="preserve">
+		<value>Нет</value>
+	</data>	
+	<data name="MainPage" xml:space="preserve">
+		<value>Главная</value>
+	</data>	
+	<data name="MyAccount" xml:space="preserve">
+		<value>Мой аккаунт</value>
+	</data>	
+	<data name="Members" xml:space="preserve">
+		<value>Участники</value>
+	</data>	
+	<data name="MyGroups" xml:space="preserve">
+		<value>Мои группы</value>
+	</data>
+	<data name="Dialogs" xml:space="preserve">
+		<value>Диалоги</value>
+	</data>
+	<data name="About" xml:space="preserve">
+		<value>О программе</value>
+	</data>
+	<data name="HowToAddFunds" xml:space="preserve">
+		<value>Как пополнить счёт</value>
+	</data>
+	<data name="GroupWillEnd" xml:space="preserve">
+		<value>Игра завершится</value>
+	</data>	
+	<data name="EnterCorrectSum" xml:space="preserve">
+		<value>Введите корректную сумму</value>
+	</data>
+	<data name="MakeContribution" xml:space="preserve">
+		<value>Сделать вклад</value>
+	</data>
+	<data name="DiscussInChat" xml:space="preserve">
+		<value>Обсудить в чате</value>
+	</data>
+	<data name="GroupNominal" xml:space="preserve">
+		<value>Номинал</value>
+	</data>
+	<data name="UntilGroupEnd" xml:space="preserve">
+		<value>До окончания игры осталось</value>
+	</data>
+	<data name="CurrentFund" xml:space="preserve">
+		<value>Фонд</value>
+	</data>
+	<data name="NumberOfMembers" xml:space="preserve">
+		<value>Участников всего</value>
+	</data>
+	// Message
+	<data name="MessageToOwner" xml:space="preserve">
+		<value>Написать владельцу игры</value>
+	</data>
+	// Crear un juego nuevo
+	<data name="CreateNewGroup" xml:space="preserve">
+		<value>Создать новую группу</value>
+	</data>
+	// Ordenar juegos
+	<data name="OrderGroups" xml:space="preserve">
+		<value>Сортировка игр</value>
+	</data>
+	<data name="TimeLeft" xml:space="preserve">
+		<value>Осталось</value>
+	</data>
+	<data name="Nominal" xml:space="preserve">
+		<value>Номинал</value>
+	</data>
+	<data name="Fund" xml:space="preserve">
+		<value>Фонт</value>
+	</data>
+	<data name="LastMember" xml:space="preserve">
+		<value>Последний вклад</value>
+	</data>
+	<data name="BetInGroup" xml:space="preserve">
+		<value>Сделать вклад</value>
+	</data>
+	<data name="Sum" xml:space="preserve">
+		<value>Сумма</value>
+	</data>
+	<data name="Contribution" xml:space="preserve">
+		<value>Вклад</value>
+	</data>
+	<data name="AmountOfWinnings" xml:space="preserve">
+		<value>Выигрыш</value>
+	</data>
+	<data name="WinningMember" xml:space="preserve">
+		<value>Выигравший игрок</value>
+	</data>
+	<data name="GroupOwner" xml:space="preserve">
+		<value>Владелец игры</value>
+	</data>
+	<data name="ByLastMember" xml:space="preserve">
+		<value>По последнему вкладу</value>
+	</data>
+	<data name="ByEndTime" xml:space="preserve">
+		<value>По времени окончания</value>
+	</data>
+	<data name="ByNominal" xml:space="preserve">
+		<value>По номиналу</value>
+	</data>
+	<data name="ByFundNominal" xml:space="preserve">
+		<value>По приближению фонда к номиналу</value>
+	</data>
+	<data name="AccountAmount" xml:space="preserve">
+		<value>Сумма счёта</value>
+	</data>
+	<data name="AccountID" xml:space="preserve">
+		<value>Аккаунт ID</value>
+	</data>
+	<data name="RestoreAccount" xml:space="preserve">
+		<value>Восстановить аккаунт</value>
+	</data>
+	<data name="EnterEmail" xml:space="preserve">
+		<value>Введите email</value>
+	</data>
+	<data name="RemoveGroup" xml:space="preserve">
+		<value>Прервать игру</value>
+	</data>
+	<data name="EnterSumFromTo" xml:space="preserve">
+		<value>Введите сумму от 10 до 1000</value>
+	</data>
+	<data name="SelectPhotoLocation" xml:space="preserve">
+		<value>Выберите расположение фото</value>
+	</data>
+	<data name="TakePhoto" xml:space="preserve">
+		<value>Сделать снимок</value>
+	</data>
+	<data name="SelectPhoto" xml:space="preserve">
+		<value>Выбрать фото</value>
+	</data>
+	<data name="EmailCheck" xml:space="preserve">
+		<value>Проверка email</value>
+	</data>
+	<data name="YourEmail" xml:space="preserve">
+		<value>Ваш email</value>
+	</data>
+	<data name="Confirm" xml:space="preserve">
+		<value>Подтвердить</value>
+	</data>
+	<data name="Share" xml:space="preserve">
+		<value>Поделиться</value>
+	</data>
+	<data name="CodeCheck" xml:space="preserve">
+		<value>Проверка кода</value>
+	</data>
+	<data name="ConfirmCode" xml:space="preserve">
+		<value>Код проверки</value>
+	</data>
+	<data name="StatusMessage" xml:space="preserve">
+		<value>Mensaje de estado</value>
+	</data>
+	<data name="GroupEnded" xml:space="preserve">
+		<value>Игра завершена</value>
+	</data>
+	<data name="NeedInternetConnection" xml:space="preserve">
+		<value>Необходимо подключение к интернету</value>
+	</data>
+	<data name="RemoteServerUnavailable" xml:space="preserve">
+		<value>Удалённый сервер не доступен, проверьте подключение</value>
+	</data>
+	<data name="AuthorizationError" xml:space="preserve">
+		<value>Ошибка авторизации</value>
+	</data>
+	<data name="PhotoSizeUnavailable" xml:space="preserve">
+		<value>Размер фото не доступен</value>
+	</data>
+	<data name="Group" xml:space="preserve">
+		<value>Игра</value>
+	</data>
+	<data name="Chat" xml:space="preserve">
+		<value>Чат</value>
+	</data>
+	<data name="Menu" xml:space="preserve">
+		<value>Меню</value>
+	</data>
+	<data name="RulesText" xml:space="preserve">
+	<value><![CDATA[<!DOCTYPE html>
+		<html>
+			<head>
+				<meta charset="UTF-8">
+					<title>О программе</title>
+				</head>
+				<body>
+				Кросплатформенное мобильное приложение для чата.
+					<br/>
+					<br/>
+				Авторские права - Elenin Boris.
+				</body>
+			</html>]]>
+		</value>
+	</data>
+</root>

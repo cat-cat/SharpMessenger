@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:abstractions="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
+             x:Class="ChatClient.Core.UI.Pages.pgMyAccount" 
+			 xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common"
+  Title="{Binding PageTitle}"
+             >
+  <ScrollView>
+ <StackLayout Padding="10" Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+   <StackLayout Orientation="Horizontal" Margin="0,15,0,15">
+     <abstractions:CircleImage  Aspect ="AspectFill" HeightRequest="100"  FillColor="Transparent"  WidthRequest="100" x:Name="imgAvatar" Source="{Binding Account.Photo}"  />
+     <Entry x:Name="txbUserName" Text="{Binding Account.Nickname}" IsVisible="False" Unfocused="txb_OnUnfocused" Margin="0" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand"/>
+     <Label x:Name="lblUserName"  Style="{StaticResource LabelHeaderStyle}" IsVisible="True" Text="{Binding Account.Nickname}" Margin="0" HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand"/>
+   </StackLayout>
+   <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" Color="Gray"/>
+   <StackLayout  Orientation="Horizontal" Margin="0,25,0,25">
+     <Label Style="{StaticResource LableCenterNameStyle}" Text="{i18n:Translate AccountID}" HorizontalOptions="StartAndExpand"/>
+     <Label Style="{StaticResource LableContentStyle}" Text="{Binding Account.Id}" HorizontalOptions="EndAndExpand"/>
+   </StackLayout>
+  <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" Color="Gray"/>
+   <StackLayout  Orientation="Horizontal" Margin="0,25,0,25">
+     <Label Style="{StaticResource LableCenterNameStyle}" Text="Email" HorizontalOptions="StartAndExpand"/>
+     <Entry Keyboard="Email" x:Name="txbUserEmail"  Text="{Binding Account.Email}" IsVisible="False" Unfocused="txb_OnUnfocused" Margin="0" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand"/>
+     <Label x:Name="lblUserEmail" Style="{StaticResource LableContentStyle}" Text="{Binding Account.Email}" HorizontalOptions="EndAndExpand"/>
+   </StackLayout>
+   <StackLayout HorizontalOptions="EndAndExpand">
+     <Button Text="{i18n:Translate RestoreAccount}" TextColor="{StaticResource GreenColor}" HorizontalOptions="EndAndExpand" Command="{Binding StartRestoreAccountCommand}"/>
+   </StackLayout>
+ </StackLayout>
+    
+    </ScrollView>
+</ContentPage>
