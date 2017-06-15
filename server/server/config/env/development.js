@@ -8,11 +8,10 @@ export default {
     MONGOOSE_DEBUG: true,
     db: 'mongodb://localhost/groups-dev',
     mongoose_opts: { server: { socketOptions: { keepAlive: 1 } } },
-    port: process.env.PORT || 3003,
-    jwt: '..?241Hfnsa.',
+    port: process.env.PORT || 2003,
+    jwt: '..Hfnsa.',
     filePrefix: function() {return 'http://' + ip + ':' + this.port +'/images/groups/'},
     userAvatarPrefix: function() {return 'http://' + ip + ':' + this.port +'/images/users/'},
-    nx: 'https://perfectmoney.is/api/step1.asp',
     srv: ip,
-    nxacc: 'U14023919'
+    socketPort: 8020
 };

@@ -20,8 +20,8 @@ var db_collection_conversations = null;
  * Listen socket service and register listeners
  */
 function listen() {
-    http.listen(9020, () => {
-        console.log('Socket service started on port ' + 9020);
+    http.listen(cfg.socketPort, () => {
+        console.log('Socket service started on port ' + cfg.socketPort);
         mongo.connect(cfg.db, function(err, db) {
             if (err) {
                 console.log("Error connecting Mongo for sockets: " + util.inspect(err, false, null));
@@ -47,7 +47,7 @@ function listeners() {
     .on('connection', socketioJwt.authorize({
             secret: cfg.jwt,
             timeout: 60000
-                     }), console.log('Socket connection on port ' + 9020))
+                     }), console.log('Socket connection on port ' + cfg.socketPort))
         .on('authenticated', function(socket) {
             //console.log("authenticated: " + socket.decoded_token._id);
             //        joinRoom(socket);
@@ -359,7 +359,7 @@ function connectedListeners(socket) {
             _id: socket.decoded_token._id,
             status: 0
         })
-        console.log('Socket service disconnect on port ' + 9020);
+        console.log('Socket service disconnect on port ' + cfg.socketPort);
     });
 
     io.on('connect_error', () => console.log('Connection failed'));

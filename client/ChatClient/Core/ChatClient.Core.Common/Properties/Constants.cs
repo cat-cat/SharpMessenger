@@ -7,11 +7,11 @@ namespace ChatClient.Core.Common
 		{
 		}
 		// http://62.173.154.163/
-		public static string debugURL = "http://10.1.12.223";
+		public static string debugURL = "http://10.1.12.207";
 		//public static string debugURL = "http://85.25.34.76";
 		public static string baseURL = "http://85.25.34.76";
-		public static string chatPort = "9020";
-		public static string port = "4040";
-		public static string debugPort = "3003";
+		public static string chatPort = "8020";
+		public static string port = "3040";
+		public static string debugPort = "2003";
 	}
 }

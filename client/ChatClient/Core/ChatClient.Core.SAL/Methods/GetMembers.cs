@@ -15,7 +15,7 @@ using Xamarin.Forms;
 
 namespace ChatClient.Core.SAL.Methods
 {
-  public  class GetBidders:Request<Dictionary<string, object>>
+  public  class GetMembers:Request<Dictionary<string, object>>
     {
       private readonly string _target= "transactions/group";
       private Dictionary<string, string> _headers=new Dictionary<string, string>();
@@ -110,7 +110,7 @@ namespace ChatClient.Core.SAL.Methods
             return lDictionary;
         }
 
-      public GetBidders(string token,string groupId) {
+      public GetMembers(string token,string groupId) {
             _headers.Add("Authorization", token);
             _urlParameters.Add("_id",groupId);
         }

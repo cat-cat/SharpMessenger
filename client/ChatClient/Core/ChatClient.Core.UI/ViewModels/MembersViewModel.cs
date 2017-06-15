@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -89,7 +89,10 @@ namespace ChatClient.Core.UI.ViewModels
 				return;
 			}
 
-			Dictionary<string, object> response = await new GetBidders(lUser.Token, _groupId).Object();
+
+			//Dictionary<string, object> response = await new GetMembers(lUser.Token, _groupId).Object();
+			// TODO:
+			Dictionary<string, object> response = null;
 			if (response == null)
 			{
 				IsBusy = false;
