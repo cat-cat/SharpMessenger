@@ -1,4 +1,4 @@
-# SharpChat - cross-platform chat client and server
+# Sharp Messenger - C# cross-platform mobile messenger client and Node.js/Socket.IO/MongoDB/Redis server supporting private and group chats
 
 ## Images
 ![Screen1](https://raw.githubusercontent.com/cat-cat/SharpChat/PreRelease/img/one.png)
