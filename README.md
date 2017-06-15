@@ -1,6 +1,12 @@
-# SharpChat - cross platform chat client and server
+# SharpChat - cross-platform chat client and server
 
-Application features:
+## Images
+![Screen1](https://raw.githubusercontent.com/cat-cat/SharpChat/PreRelease/img/one.png)
+![Screen2](https://raw.githubusercontent.com/cat-cat/SharpChat/PreRelease/img/two.png)
+![Screen3](https://raw.githubusercontent.com/cat-cat/SharpChat/PreRelease/img/three.png)
+![Screen4](https://raw.githubusercontent.com/cat-cat/SharpChat/PreRelease/img/four.png)
+
+## Application features:
 
  * Server and Client complete source code
  * WWW alive test server, no need to setup your own - for fastest dive in code.
