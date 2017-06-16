@@ -30,9 +30,11 @@ namespace ChatClient.iOS.Services
 		string roomID;
 		private User _user;
 		private string _lastConversation;
+
+
+
 		public ChatPrivateService()
 		{
-
 			//var options = new IO.Options() { IgnoreServerCertificateValidation = true, AutoConnect = true, ForceNew = true };
 			//options.Transports = Quobject.Collections.Immutable.ImmutableList.Create<string>("websocket");
 			//socket = IO.Socket("ws://10.1.15.209:9020", options);

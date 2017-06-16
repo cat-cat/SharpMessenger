@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -64,6 +65,25 @@ namespace ChatClient.Core.UI.ViewModels
 				await PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
 			_chatServices.Disabled();
 		}
+
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
+				if (newItem.Key == v.k.UpdateUserOnlineStatus)
+				{
+					var data = (Dictionary<string, string>)newItem.Value;
+					if (data["userid"] == _receiver.Id)
+					{
+						v.Consume(newItem.Key);
+						// set status: data["status"] = "online" ? On : Off;
+					}
+				}
+				
+			}
+		}
+
 		public ChatViewModel(User user)
 		{
 			_messages = new ObservableCollection<ChatMessageViewModel>();
@@ -73,6 +93,8 @@ namespace ChatClient.Core.UI.ViewModels
 			// _chatMessage = new ChatMessageViewModel();
 
 			//    _messages = new ObservableCollection<ChatMessageViewModel>();
+			v.h(OnCollectionChanged);
+			v.Add(v.k.OnlineStatus, new Dictionary<string, object>() { { "userid", _receiver.Id } });
 			_receiver = user;
 			if (string.IsNullOrEmpty(_receiver.Nickname))
 				_receiver.Nickname = _receiver.Id;
