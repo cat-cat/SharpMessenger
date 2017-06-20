@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Plugin.DeviceInfo;
 using ChatClient.Core.Common;
@@ -22,7 +24,7 @@ namespace ChatClient.iOS.Services
 {
 	public class ChatPrivateService : IChatServices
 	{
-		public event EventHandler<ChatMessage> OnMessageReceived;
+		//public event EventHandler<ChatMessage> OnMessageReceived;
 
 
 
@@ -31,7 +33,32 @@ namespace ChatClient.iOS.Services
 		private User _user;
 		private string _lastConversation;
 
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
+				if (newItem.Key == v.k.SetRoomID)
+				{
+					//v.Consume(newItem.Key);
+					string roomID = (string)newItem.Value;
+					SetRoomID(roomID);
+				}
+				else if (newItem.Key == v.k.JoinRoom)
+				{
+					//v.Consume(newItem.Key);
+					string roomID = (string)newItem.Value;
+					JoinRoom(roomID);
+				}
+				else if (newItem.Key == v.k.MessageSend)
+				{
+					//v.Consume(v.k.MessageSend);
+					var messageData =  (Dictionary<string, object>)newItem.Value;
+					Send((ChatMessage)messageData["message"], (string)messageData["roomName"]);
+				}
+			}
 
+		}
 
 		public ChatPrivateService()
 		{
@@ -48,10 +75,15 @@ namespace ChatClient.iOS.Services
 			//{
 			//	Debug.WriteLine("Disconnected");
 			//});
-
+			v.h(OnCollectionChanged);
 		}
 
-		public void SetRoomID(string _roomID)
+		~ChatPrivateService()
+		{
+			v.m(OnCollectionChanged);
+		}
+
+		void SetRoomID(string _roomID)
 		{
 			roomID = _roomID;
 		}
@@ -69,6 +101,11 @@ namespace ChatClient.iOS.Services
 		}
 
 
+
+		private void OnMessageReceived(object sender, ChatMessage message)
+		{
+			v.Add(v.k.OnMessageReceived, message);
+		}
 		#region IChatServices implementation
 
 		public async Task Connect()
@@ -137,7 +174,9 @@ namespace ChatClient.iOS.Services
 			socket.On("update-people", (data) =>
 			{
 				Debug.WriteLine("on.update-people: " + data);
-				socket.Emit("createRoom", roomID);
+
+				if(!string.IsNullOrEmpty(roomID)) // TODO: don't create room for whispering
+					socket.Emit("createRoom", roomID);
 			});
 
 			socket.On("conversation", (data) =>
@@ -287,15 +326,14 @@ namespace ChatClient.iOS.Services
 	//	socket.Emit("send", message.Message);
 		}
 
-		public async Task JoinRoom(string roomName)
+		void JoinRoom(string roomName)
 		{
 			socket.Emit("joinRoom", roomID);
 		}
-        public async void Disabled() {
+        public void Disabled() {
             _lastConversation = null;
             socket.Disconnect();
-       socket.Close();
-           
+			socket.Close();
         }
         #endregion
 

@@ -32,9 +32,9 @@ namespace ChatClient.Core.UI.ViewModels
 		#region Fields
 
 		private ChatMessageViewModel _chatMessage = new ChatMessageViewModel();
-		private IChatServices _chatServices;
+		//private IChatServices _chatServices;
 		private ObservableCollection<ChatMessageViewModel> _messages = new ObservableCollection<ChatMessageViewModel>();
-		private string _roomName = "MyPrivateRoom";
+		private string _roomName;
 		private bool _isPrivatChat { get; set; }
 
 		private CacheMessage _cacheMessage;
@@ -44,13 +44,19 @@ namespace ChatClient.Core.UI.ViewModels
 		#endregion
 
 		#region Constractors and Destructors
+		~ChatViewModel()
+		{
+			v.m(OnCollectionChanged);
+		}
+
 		public ChatViewModel(string roomName)
 		{
 			_roomName = roomName;
-			_chatServices = DependencyService.Get<IChatServices>();
-			_chatServices.SetRoomID(roomName);
-			_chatServices.Connect();
-			_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
+			//_chatServices = DependencyService.Get<IChatServices>();
+			//_chatServices.SetRoomID(roomName);
+			v.Add(v.k.SetRoomID, roomName);
+			//_chatServices.Connect();
+			//_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
 			GetMessages();
 			_messages = new ObservableCollection<ChatMessageViewModel>();
 			///  _chatServices.JoinRoom(roomName);
@@ -63,7 +69,7 @@ namespace ChatClient.Core.UI.ViewModels
 		{
 			if (_cacheMessage != null)
 				await PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
-			_chatServices.Disabled();
+			//_chatServices.Disabled();
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -71,35 +77,49 @@ namespace ChatClient.Core.UI.ViewModels
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
 				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
-				if (newItem.Key == v.k.UpdateUserOnlineStatus)
+				if (newItem.Key == v.k.OnUpdateUserOnlineStatus)
 				{
-					var data = (Dictionary<string, string>)newItem.Value;
-					if (data["userid"] == _receiver.Id)
+					var data = (string)newItem.Value;
+					if (data == _receiver.Id)
 					{
-						v.Consume(newItem.Key);
+						//v.Consume(newItem.Key);
 						// set status: data["status"] = "online" ? On : Off;
 					}
 				}
-				
+				else if (newItem.Key == v.k.OnMessageReceived)
+				{
+					ChatMessage message = (ChatMessage)newItem.Value;
+					_chatServices_OnMessageReceived(sender, message);
+				}
+
 			}
 		}
 
 		public ChatViewModel(User user)
 		{
 			_messages = new ObservableCollection<ChatMessageViewModel>();
-			_chatServices = DependencyService.Get<IChatServices>();
-			_chatServices.SetRoomID(_roomName);
+			//_chatServices = DependencyService.Get<IChatServices>();
+			//_chatServices.SetRoomID(_roomName);
 			//_chatServices = new ChatPrivateService();
 			// _chatMessage = new ChatMessageViewModel();
 
 			//    _messages = new ObservableCollection<ChatMessageViewModel>();
-			v.h(OnCollectionChanged);
-			v.Add(v.k.OnlineStatus, new Dictionary<string, object>() { { "userid", _receiver.Id } });
 			_receiver = user;
+
+			// subscribe for events
+			v.h(OnCollectionChanged);
+
+			// request from server online status for interlocutor
+			v.Add(v.k.OnlineStatus, _receiver.Id);
+
+			//v.Add(v.k.MessageReceived, _receiver.Id);
+
 			if (string.IsNullOrEmpty(_receiver.Nickname))
 				_receiver.Nickname = _receiver.Id;
-			_chatServices.Connect();
-			_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
+
+			//_chatServices.Connect();
+			//_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
+
 			_isPrivatChat = true;
 			GetMessages();
 		}
@@ -145,7 +165,7 @@ namespace ChatClient.Core.UI.ViewModels
 
 		#endregion
 
-        #region Private Methods and Operators
+		#region Private Methods and Operators
 		private async void GetMessages()
 		{
 			IsBusy = true;
@@ -225,41 +245,44 @@ namespace ChatClient.Core.UI.ViewModels
 				Debug.Assert(false);
 #endif
 			}
-         
-        }
-        #endregion
 
-        #region Send Message Command
+		}
+		#endregion
 
-        private Command sendMessageCommand;
+		#region Send Message Command
 
-        /// <summary>
-        ///     Command to Send Message
-        /// </summary>
-        public Command SendMessageCommand
-        {
-            get
-            {
-                return sendMessageCommand ??
-                       (sendMessageCommand = new Command(ExecuteSendMessageCommand));
-            }
-        }
+		private Command sendMessageCommand;
 
-        private async void ExecuteSendMessageCommand()
-        {
-            //if(string.IsNullOrEmpty(_cacheMessage.Message))
-            //    return;
-            //if(_cacheMessage!=null && !_cacheMessage.IsSended)
-            //    return;
-            IsBusy = true;
-            string lMessage = _chatMessage.Message;
-            if (_cacheMessage != null) {
-                _cacheMessage.IsSended = false;
-                _cacheMessage.Message = _chatMessage.Message;
-            }
-           if(_isPrivatChat)
-                lMessage=String.Format("w:{0}:{1}",_receiver.Id,_chatMessage.Message);
-            await _chatServices.Send(new ChatMessage { Name = _chatMessage.Name, Message = lMessage }, _roomName);
+		/// <summary>
+		///     Command to Send Message
+		/// </summary>
+		public Command SendMessageCommand
+		{
+			get
+			{
+				return sendMessageCommand ??
+					   (sendMessageCommand = new Command(ExecuteSendMessageCommand));
+			}
+		}
+
+		private async void ExecuteSendMessageCommand()
+		{
+			//if(string.IsNullOrEmpty(_cacheMessage.Message))
+			//    return;
+			//if(_cacheMessage!=null && !_cacheMessage.IsSended)
+			//    return;
+			IsBusy = true;
+			string lMessage = _chatMessage.Message;
+			if (_cacheMessage != null)
+			{
+				_cacheMessage.IsSended = false;
+				_cacheMessage.Message = _chatMessage.Message;
+			}
+			if (_isPrivatChat)
+				lMessage = String.Format("w:{0}:{1}", _receiver.Id, _chatMessage.Message);
+
+			v.Add(v.k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", _roomName} });
+            //await _chatServices.Send(new ChatMessage { Name = _chatMessage.Name, Message = lMessage }, _roomName);
             IsBusy = false;
         }
 
@@ -284,7 +307,8 @@ namespace ChatClient.Core.UI.ViewModels
         private async void ExecuteJoinRoomCommand()
         {
             IsBusy = true;
-            await _chatServices.JoinRoom(_roomName);
+			v.Add(v.k.JoinRoom, _roomName);
+            //await _chatServices.JoinRoom(_roomName);
             IsBusy = false;
         }
 		#endregion

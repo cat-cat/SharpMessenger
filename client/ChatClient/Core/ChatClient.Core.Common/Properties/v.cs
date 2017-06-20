@@ -7,7 +7,7 @@ namespace ChatClient.Core.Common
 	public class v
 	{
 		//static int init = 0;
-		public enum k {OnlineStatus, UpdateUserOnlineStatus, LocationError }
+		public enum k {MessageSend, JoinRoom, SetRoomID, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
 
 		static ObservableCollection<KeyValuePair<k, object> > s = new ObservableCollection<KeyValuePair<k, object> >();
 
@@ -16,7 +16,12 @@ namespace ChatClient.Core.Common
 			s.CollectionChanged += handler;
 		}
 
-		public static void Add(k key, Dictionary<string, object> d)
+		public static void m(System.Collections.Specialized.NotifyCollectionChangedEventHandler handler)
+		{
+			s.CollectionChanged -= handler;
+		}
+
+		public static void Add(k key, object o)
 		{
 			//if (init == 0)
 			//{
@@ -24,7 +29,7 @@ namespace ChatClient.Core.Common
 			//	init = 1;
 			//}
 
-			var loc = new KeyValuePair<k, object>(key, d);
+			var loc = new KeyValuePair<k, object>(key, o);
 			s.Add(loc);
 		}
 
