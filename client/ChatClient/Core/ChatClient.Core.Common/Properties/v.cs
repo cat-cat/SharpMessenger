@@ -6,8 +6,9 @@ namespace ChatClient.Core.Common
 {
 	public class v
 	{
-		//static int init = 0;
-		public enum k {MessageSend, JoinRoom, SetRoomID, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
+		public enum k {MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
+
+		static Stack<k> keysToRemove = new Stack<k>();
 
 		static ObservableCollection<KeyValuePair<k, object> > s = new ObservableCollection<KeyValuePair<k, object> >();
 
@@ -23,11 +24,8 @@ namespace ChatClient.Core.Common
 
 		public static void Add(k key, object o)
 		{
-			//if (init == 0)
-			//{
-			//	initialize();
-			//	init = 1;
-			//}
+			while (keysToRemove.Count > 0)
+				Remove(keysToRemove.Pop());
 
 			var loc = new KeyValuePair<k, object>(key, o);
 			s.Add(loc);
@@ -45,13 +43,12 @@ namespace ChatClient.Core.Common
 				}
 			}
 
-			if (item.Value != null)
-				s.Remove(item);
+			s.Remove(item);
 		}
 
 		public static void Consume(k key)
 		{
-			Remove(key);
+			keysToRemove.Push(key);
 		}
 
 		public static bool ContainsKey(k key)

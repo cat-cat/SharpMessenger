@@ -51,10 +51,13 @@ namespace ChatClient.Core.UI.ViewModels
 
 		public ChatViewModel(string roomName)
 		{
+			// subscribe for events
+			v.h(OnCollectionChanged);
+
 			_roomName = roomName;
+			ExecuteJoinRoomCommand();
 			//_chatServices = DependencyService.Get<IChatServices>();
 			//_chatServices.SetRoomID(roomName);
-			v.Add(v.k.SetRoomID, roomName);
 			//_chatServices.Connect();
 			//_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
 			GetMessages();
@@ -82,7 +85,7 @@ namespace ChatClient.Core.UI.ViewModels
 					var data = (string)newItem.Value;
 					if (data == _receiver.Id)
 					{
-						//v.Consume(newItem.Key);
+						v.Consume(newItem.Key);
 						// set status: data["status"] = "online" ? On : Off;
 					}
 				}

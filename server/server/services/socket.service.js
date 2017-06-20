@@ -8,7 +8,7 @@ import Conversation from '../models/conversation.model';
 const app = require('express')();
 const http = require('http').Server(app);
 const _ = require('underscore')._;
-const io = require('socket.io')(http, {'pingInterval': 500, 'pingTimeout': 5000});
+const io = require('socket.io')(http);
 const util = require('util');
 const Room = require('../models/room.js');
 var mongo = require('mongodb').MongoClient;
@@ -62,10 +62,8 @@ function listeners() {
  * @param socket {socket} - socket connection
  */
 function connectedListeners(socket) {
-	socket.on('disconnect', function() {
-	  //console.log('Got disconnect! ' + socket.decoded_token._id);
 
-	  delete people[socket.id]
+    socket.onclose = function(reason) {
 
 	  var i = sockets.indexOf(socket);
 	  if(i >= 0) {
@@ -73,15 +71,33 @@ function connectedListeners(socket) {
 	  	sockets.splice(i, 1);
 	  }
 
-	  var numClients = io.sockets.adapter.rooms[socket.room]
-	  if (numClients == undefined) {
-		//console.log(socket.decoded_token._id + " was last in a room " + socket.room)
-		delete rooms[socket.room]
-	  }
+	 // var numClients = io.sockets.adapter.rooms[socket.room]
+	 // if (numClients == undefined) {
+		////console.log(socket.decoded_token._id + " was last in a room " + socket.room)
+		//delete rooms[socket.room]
+	 // }
+
+	  var rooms = Object.keys(socket.rooms)
+	  rooms.forEach(function(room) {
+		  try { // in case there are no sockets in room
+		  	io.sockets.in(room).emit("update-people", {offline:people[socket.id].id})
+		  } catch(err) {
+		  }
+	  })
+
+	  delete people[socket.id];
+
+      Object.getPrototypeOf(this).onclose.call(this, reason);
+    }
+
+
+
+	socket.on('disconnect', function() {
+	  console.log('Got disconnect! ' + socket.decoded_token._id);
 	});
 
     socket.on("joinserver", function(name, device) {
-        //console.log("joined server: " + name);
+        console.log("joined server: " + name);
         //                  var exists = false;
         var ownerRoomID = null;
         var inRoomID = null;
@@ -111,7 +127,7 @@ function connectedListeners(socket) {
         sockets.push(socket);
         var sizePeople = _.size(people);
         var sizeRooms = _.size(rooms);
-        io.sockets.emit("update-people", {
+        socket.emit("update-people", {
             people: people,
             count: sizePeople
         });
@@ -261,7 +277,8 @@ function connectedListeners(socket) {
     });
 
     //Room functions
-    socket.on("createRoom", function(name) {
+    function CreateRoom(name) {
+    	// TODO: sometimes crashes with: Cannot read property 'inroom' of undefined
         if (people[socket.id].inroom) {
             socket.emit("update", "You are in a room. Please leave it first to create your own.");
         } else if (!people[socket.id].owns) {
@@ -270,7 +287,7 @@ function connectedListeners(socket) {
             var room = new Room(name, id, socket.id);
             rooms[id] = room;
             var sizeRooms = _.size(rooms);
-            io.sockets.emit("roomList", {
+            socket.emit("roomList", {
                 rooms: rooms,
                 count: sizeRooms
             });
@@ -288,7 +305,7 @@ function connectedListeners(socket) {
         } else {
             socket.emit("update", "You have already created a room.");
         }
-    });
+    };
 
     socket.on("check", function(name, fn) {
         var match = false;
@@ -311,9 +328,8 @@ function connectedListeners(socket) {
     });
 
     socket.on("joinRoom", function(id) {
-        if (_.size(rooms) == 0) {
-            console.log("Cannot join room, no open rooms exist.");
-            return;
+        if (io.sockets.adapter.rooms[id] == undefined) {
+            CreateRoom(id)
         }
         if (typeof people[socket.id] !== "undefined") {
             var room = rooms[id];

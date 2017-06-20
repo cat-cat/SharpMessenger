@@ -42,7 +42,7 @@ namespace ChatClient.Core.SAL.Adapters
             if (UrlParameters != null && UrlParameters.Count > 0)
                 lUrl += "?" +  String.Join("&", UrlParameters.Select(o=>o.Key+ "="+  o.Value));
 
-			Debug.WriteLine("\n ~~~~~~~~~~~~~~~~ Request url: " + lUrl + '\n');
+			//Debug.WriteLine("\n ~~~~~~~~~~~~~~~~ Request url: " + lUrl + '\n');
 
             return lUrl;
         }

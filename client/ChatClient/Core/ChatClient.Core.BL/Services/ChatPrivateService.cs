@@ -25,11 +25,7 @@ namespace ChatClient.iOS.Services
 	public class ChatPrivateService : IChatServices
 	{
 		//public event EventHandler<ChatMessage> OnMessageReceived;
-
-
-
 		Socket socket;
-		string roomID;
 		private User _user;
 		private string _lastConversation;
 
@@ -38,21 +34,14 @@ namespace ChatClient.iOS.Services
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
 				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
-				if (newItem.Key == v.k.SetRoomID)
+				if (newItem.Key == v.k.JoinRoom)
 				{
-					//v.Consume(newItem.Key);
-					string roomID = (string)newItem.Value;
-					SetRoomID(roomID);
-				}
-				else if (newItem.Key == v.k.JoinRoom)
-				{
-					//v.Consume(newItem.Key);
-					string roomID = (string)newItem.Value;
-					JoinRoom(roomID);
+					v.Consume(newItem.Key);
+                    JoinRoom((string)newItem.Value);
 				}
 				else if (newItem.Key == v.k.MessageSend)
 				{
-					//v.Consume(v.k.MessageSend);
+					v.Consume(v.k.MessageSend);
 					var messageData =  (Dictionary<string, object>)newItem.Value;
 					Send((ChatMessage)messageData["message"], (string)messageData["roomName"]);
 				}
@@ -83,10 +72,10 @@ namespace ChatClient.iOS.Services
 			v.m(OnCollectionChanged);
 		}
 
-		void SetRoomID(string _roomID)
-		{
-			roomID = _roomID;
-		}
+		//void SetRoomID(string _roomID)
+		//{
+		//	roomID = _roomID;
+		//}
 
 		public void Start()
 		{
@@ -175,8 +164,8 @@ namespace ChatClient.iOS.Services
 			{
 				Debug.WriteLine("on.update-people: " + data);
 
-				if(!string.IsNullOrEmpty(roomID)) // TODO: don't create room for whispering
-					socket.Emit("createRoom", roomID);
+				//if(!string.IsNullOrEmpty(roomID)) // TODO: don't create room for whispering
+				//	socket.Emit("createRoom", roomID);
 			});
 
 			socket.On("conversation", (data) =>
@@ -328,7 +317,7 @@ namespace ChatClient.iOS.Services
 
 		void JoinRoom(string roomName)
 		{
-			socket.Emit("joinRoom", roomID);
+			socket.Emit("joinRoom", roomName);
 		}
         public void Disabled() {
             _lastConversation = null;
