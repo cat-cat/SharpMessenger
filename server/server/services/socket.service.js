@@ -457,7 +457,24 @@ function alarmNearest(_id, data) {
     io.sockets.to(_id).emit('group:nearest', data);
 }
 
+function getOnline(ids){
+	var dictionary = {}
+	var idsArr = ids.split(',')
+	idsArr.forEach(function(id) {
+		for(var key in people) {
+			if(id == people[key].id)
+				dictionary[id] = true
+		};
+
+		if(dictionary[id] == undefined)
+			dictionary[id] = false
+	});
+	console.log(JSON.stringify(dictionary))
+	return JSON.stringify(dictionary)
+}
+
 export default {
     listen,
-    alarmPublication
+    alarmPublication,
+    getOnline
 };

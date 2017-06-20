@@ -82,11 +82,13 @@ namespace ChatClient.Core.UI.ViewModels
 				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
 				if (newItem.Key == v.k.OnUpdateUserOnlineStatus)
 				{
-					var data = (string)newItem.Value;
-					if (data == _receiver.Id)
+					v.Consume(newItem.Key);
+
+					var data = (Dictionary<string, bool>)newItem.Value;
+					if (data.ContainsKey(_receiver.Id))
 					{
-						v.Consume(newItem.Key);
-						// set status: data["status"] = "online" ? On : Off;
+						bool status = data[_receiver.Id];
+						// TODO: display status
 					}
 				}
 				else if (newItem.Key == v.k.OnMessageReceived)

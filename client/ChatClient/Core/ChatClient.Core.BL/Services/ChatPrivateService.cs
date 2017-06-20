@@ -10,8 +10,8 @@ using ChatClient.Core.Common.Services;
 using ChatClient.Core.BL.Session;
 using ChatClient.Core.Common.Interfaces;
 using ChatClient.Core.Common.Models.Base;
+using ChatClient.Core.SAL.Methods;
 using ChatClient.iOS.Services;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -37,13 +37,18 @@ namespace ChatClient.iOS.Services
 				if (newItem.Key == v.k.JoinRoom)
 				{
 					v.Consume(newItem.Key);
-                    JoinRoom((string)newItem.Value);
+					JoinRoom((string)newItem.Value);
 				}
 				else if (newItem.Key == v.k.MessageSend)
 				{
 					v.Consume(v.k.MessageSend);
-					var messageData =  (Dictionary<string, object>)newItem.Value;
+					var messageData = (Dictionary<string, object>)newItem.Value;
 					Send((ChatMessage)messageData["message"], (string)messageData["roomName"]);
+				}
+				else if (newItem.Key == v.k.OnlineStatus)
+				{
+					v.Consume(v.k.OnlineStatus);
+					new OnlineStatusGet(_user.Token, (string)newItem.Value).Object();
 				}
 			}
 
@@ -102,7 +107,7 @@ namespace ChatClient.iOS.Services
 
 			//var options = new IO.Options() { IgnoreServerCertificateValidation = true, AutoConnect = true, ForceNew = true };
 			//options.Transports = Quobject.Collections.Immutable.ImmutableList.Create<string>("websocket");
-			_user = await Authorization.GetUser();
+			_user = await Core.BL.Session.Authorization.GetUser();
 			if (string.IsNullOrEmpty(_user.Nickname))
 				_user.Nickname = "Phone";
 #if DEBUG
