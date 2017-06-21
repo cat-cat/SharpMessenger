@@ -48,7 +48,7 @@ namespace ChatClient.iOS.Services
 				else if (newItem.Key == v.k.OnlineStatus)
 				{
 					v.Consume(v.k.OnlineStatus);
-					new OnlineStatusGet(_user.Token, (string)newItem.Value).Object();
+					new OnlineStatusGet(_user.Token, (string)newItem.Value, _user.Id).Object();
 				}
 			}
 
@@ -167,6 +167,11 @@ namespace ChatClient.iOS.Services
 			//io.sockets.emit("update-people", { people: people, count: sizePeople});
 			socket.On("update-people", (data) =>
 			{
+				var definition = new { onlineStatus = "", id = ""};
+				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
+				Dictionary<string, bool> d = new Dictionary<string, bool>() { { o.id, Convert.ToBoolean(o.onlineStatus) } };
+				v.Add(v.k.OnUpdateUserOnlineStatus, d);
+
 				Debug.WriteLine("on.update-people: " + data);
 
 				//if(!string.IsNullOrEmpty(roomID)) // TODO: don't create room for whispering
@@ -180,10 +185,10 @@ namespace ChatClient.iOS.Services
 			});
 
 			//socket.emit("roomList", { rooms: rooms, count: sizeRooms});
-			socket.On("roomList", (data) =>
-			{
-				Debug.WriteLine("on.roomList: " + data);
-			});
+			//socket.On("roomList", (data) =>
+			//{
+			//	Debug.WriteLine("on.roomList: " + data);
+			//});
 
 			//socket.emit("joined"); //extra emit for GeoLocation
 			socket.On("joined", (data) =>

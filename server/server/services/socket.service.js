@@ -80,9 +80,20 @@ function connectedListeners(socket) {
 	  var rooms = Object.keys(socket.rooms)
 	  rooms.forEach(function(room) {
 		  try { // in case there are no sockets in room
-		  	io.sockets.in(room).emit("update-people", {offline:people[socket.id].id})
+		  	io.sockets.in(room).emit("update-people", {onlineStatus: false, id: people[socket.id].id})
 		  } catch(err) {
 		  }
+	  })
+
+	  people[socket.id].participants.forEach(function(id) {
+		for(var key in people) {
+			if(id == people[key].id) {
+				try {
+					io.sockets.connected[key].emit("update-people", {onlineStatus: false, id: people[socket.id].id})
+				} catch (err) {
+				}
+			}
+		};
 	  })
 
 	  delete people[socket.id];
@@ -122,19 +133,20 @@ function connectedListeners(socket) {
             "name": name,
             "owns": ownerRoomID,
             "inroom": inRoomID,
-            "device": device
+            "device": device,
+            "participants": []
         };
         sockets.push(socket);
         var sizePeople = _.size(people);
         var sizeRooms = _.size(rooms);
-        socket.emit("update-people", {
-            people: people,
-            count: sizePeople
-        });
-        socket.emit("roomList", {
-            rooms: rooms,
-            count: sizeRooms
-        });
+        //socket.emit("update-people", {
+        //    people: people,
+        //    count: sizePeople
+        //});
+        //socket.emit("roomList", {
+        //    rooms: rooms,
+        //    count: sizeRooms
+        //});
         socket.emit("joined"); //extra emit for GeoLocation
         //io.sockets.emit("update", people[socket.id].name + " is online.")
         //                  }
@@ -457,20 +469,21 @@ function alarmNearest(_id, data) {
     io.sockets.to(_id).emit('group:nearest', data);
 }
 
-function getOnline(ids){
+function getOnline(ids, client){
 	var dictionary = {}
 	var idsArr = ids.split(',')
 	idsArr.forEach(function(id) {
 		for(var key in people) {
-			if(id == people[key].id)
+			if(id == people[key].id) {
 				dictionary[id] = true
+				people[key].participants.push(client)
+			}
 		};
 
 		if(dictionary[id] == undefined)
 			dictionary[id] = false
 	});
-	console.log(JSON.stringify(dictionary))
-	return JSON.stringify(dictionary)
+	return dictionary
 }
 
 export default {

@@ -34,7 +34,7 @@ var shortid = require('shortid');
 //}
 
 function check (req, res, next) {
-	res.send({success: true, data:socketService.getOnline(req.query.ids)})
+	res.json({success: true, data:socketService.getOnline(req.query.ids, req.query.client)})
 }
 
 export default { check };

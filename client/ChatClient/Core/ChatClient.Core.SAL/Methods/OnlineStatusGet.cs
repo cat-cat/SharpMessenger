@@ -94,11 +94,11 @@ namespace ChatClient.Core.SAL.Methods
 					Dispose();
 					return false;
 				}
-				success = Response.ResponseObject["success"];
-				//success = Convert.ToBoolean(lresp);
+				string s = Response.ResponseObject["success"].ToString();
+				success = Convert.ToBoolean(s);
 				if (success)
 				{
-					Dictionary<string, bool> lResponse = JsonConvert.DeserializeObject<Dictionary<string, bool>>(Response.ResponseObject["data"]);
+					Dictionary<string, bool> lResponse = JsonConvert.DeserializeObject<Dictionary<string, bool>>(Response.ResponseObject["data"].ToString());
 					v.Add(v.k.OnUpdateUserOnlineStatus, lResponse);
 				}
 				return success;
@@ -115,10 +115,11 @@ namespace ChatClient.Core.SAL.Methods
 			return success;
 		}
 
-		public OnlineStatusGet(string token, string ids)
+		public OnlineStatusGet(string token, string ids, string thisUserId)
 		{
 			_headers.Add("Authorization", token);  
 			_urlParameters.Add("ids", ids);
+			_urlParameters.Add("client", thisUserId);
         }
 	}
 }
