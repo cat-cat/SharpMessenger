@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
-
+using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
 using ChatClient.Core.UI.Controls;
 using ChatClient.Core.UI.ViewModels;
@@ -15,8 +15,9 @@ using Xamarin.Forms;
 
 namespace ChatClient.Core.UI.Pages
 {
-    public class ChatPage : BasePage<ChatViewModel>
+    public class ChatPage : BasePage<BaseViewModel>
     {
+		DateTime isTypingDateTime = DateTimeOffset.UtcNow.DateTime - new TimeSpan(0,0,6);
         //private Entry nameEntry;
         private Editor messageEntry;
         private Button sendMessageButton;
@@ -102,7 +103,7 @@ namespace ChatClient.Core.UI.Pages
             };
             this.Disappearing +=  (sender,e) =>
             {
-               (ViewModel as ChatViewModel).SocketOff();
+				ViewModel.SocketOff();
             };
         
         }
@@ -112,8 +113,15 @@ namespace ChatClient.Core.UI.Pages
         private void MessageEntry_TextChanged(object sender, TextChangedEventArgs e) {
             if (e.NewTextValue.Length > 0)
                 sendMessageButton.Image = "send_message_normal.png";
-            else sendMessageButton.Image = "send_message_inactive.png";
-            
+            else 
+				sendMessageButton.Image = "send_message_inactive.png";
+
+			// handle Typing... logic
+			if ((DateTimeOffset.UtcNow.DateTime - isTypingDateTime) > new TimeSpan(0, 0, 5))
+			{
+				isTypingDateTime = DateTimeOffset.UtcNow.DateTime;
+				ViewModel.TypingBroadcast(isTypingDateTime);
+			}
         }
 
         private Cell CreateMessageCell()

@@ -9,158 +9,182 @@ using Xamarin.Forms;
 #endregion
 
 namespace ChatClient.Core.UI.ViewModels {
-    public class BaseViewModel : INotifyPropertyChanged {
-        #region Static & Const
+	public class BaseViewModel : INotifyPropertyChanged
+	{
+		#region Static & Const
 
-        /// <summary>
-        ///     Gets or sets the "IsBusy" property
-        /// </summary>
-        /// <value>The isbusy property.</value>
-        public const string CanLoadMorePropertyName = "CanLoadMore";
+		/// <summary>
+		///     Gets or sets the "IsBusy" property
+		/// </summary>
+		/// <value>The isbusy property.</value>
+		public const string CanLoadMorePropertyName = "CanLoadMore";
 
-        /// <summary>
-        ///     Gets or sets the "IsBusy" property
-        /// </summary>
-        /// <value>The isbusy property.</value>
-        public const string IsBusyPropertyName = "IsBusy";
+		/// <summary>
+		///     Gets or sets the "IsBusy" property
+		/// </summary>
+		/// <value>The isbusy property.</value>
+		public const string IsBusyPropertyName = "IsBusy";
 
-        /// <summary>
-        ///     Gets or sets the "IsValid" property
-        /// </summary>
-        /// <value>The isbusy property.</value>
-        public const string IsValidPropertyName = "IsValid";
+		/// <summary>
+		///     Gets or sets the "IsValid" property
+		/// </summary>
+		/// <value>The isbusy property.</value>
+		public const string IsValidPropertyName = "IsValid";
 
-        /// <summary>
-        ///     Gets or sets the "Subtitle" property
-        /// </summary>
-        public const string SubtitlePropertyName = "Subtitle";
+		/// <summary>
+		///     Gets or sets the "Subtitle" property
+		/// </summary>
+		public const string SubtitlePropertyName = "Subtitle";
 
-        /// <summary>
-        ///     Gets or sets the "Icon" of the viewmodel
-        /// </summary>
-        public const string IconPropertyName = "Icon";
+		/// <summary>
+		///     Gets or sets the "Icon" of the viewmodel
+		/// </summary>
+		public const string IconPropertyName = "Icon";
 
-        #endregion
+		#endregion
 
-        #region Fields
+		#region Fields
 
-        private bool canLoadMore;
-        private string icon = null;
-        private bool isBusy;
-        private bool isValid;
-        private string subTitle = string.Empty;
+		private bool canLoadMore;
+		private string icon = null;
+		private bool isBusy;
+		private bool isValid;
+		private string subTitle = string.Empty;
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public bool IsInitialized { get; set; }
+		public bool IsInitialized { get; set; }
 
-        public bool CanLoadMore {
-            get {
-                return canLoadMore;
-            }
-            set {
-                SetProperty(ref canLoadMore, value, CanLoadMorePropertyName);
-            }
-        }
+		public bool CanLoadMore
+		{
+			get
+			{
+				return canLoadMore;
+			}
+			set
+			{
+				SetProperty(ref canLoadMore, value, CanLoadMorePropertyName);
+			}
+		}
 
-        public bool IsBusy {
-            get {
-                return isBusy;
-            }
-            set {
-                SetProperty(ref isBusy, value, IsBusyPropertyName);
-            }
-        }
+		public bool IsBusy
+		{
+			get
+			{
+				return isBusy;
+			}
+			set
+			{
+				SetProperty(ref isBusy, value, IsBusyPropertyName);
+			}
+		}
 
-        public bool IsValid {
-            get {
-                return isValid;
-            }
-            set {
-                SetProperty(ref isValid, value, IsValidPropertyName);
-            }
-        }
+		public bool IsValid
+		{
+			get
+			{
+				return isValid;
+			}
+			set
+			{
+				SetProperty(ref isValid, value, IsValidPropertyName);
+			}
+		}
 
-        public string Subtitle {
-            get {
-                return subTitle;
-            }
-            set {
-                SetProperty(ref subTitle, value, SubtitlePropertyName);
-            }
-        }
+		public string Subtitle
+		{
+			get
+			{
+				return subTitle;
+			}
+			set
+			{
+				SetProperty(ref subTitle, value, SubtitlePropertyName);
+			}
+		}
 
-        public string Icon {
-            get {
-                return icon;
-            }
-            set {
-                SetProperty(ref icon, value, IconPropertyName);
-            }
-        }
+		public string Icon
+		{
+			get
+			{
+				return icon;
+			}
+			set
+			{
+				SetProperty(ref icon, value, IconPropertyName);
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region INotifyPropertyChanged Members
+		#region INotifyPropertyChanged Members
 
-        #region INotifyPropertyChanged implementation
+		#region INotifyPropertyChanged implementation
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        #endregion
+		#endregion
 
-        #endregion
+		#endregion
 
-        #region Public Methods and Operators
+		#region Public Methods and Operators
 
-        #region INotifyPropertyChanging implementation
+		#region INotifyPropertyChanging implementation
 
-        public event PropertyChangingEventHandler PropertyChanging;
+		public event PropertyChangingEventHandler PropertyChanging;
 
-        #endregion
+		#endregion
 
-        public void OnPropertyChanging(string propertyName) {
-            if (PropertyChanging == null)
-                return;
+		public void OnPropertyChanging(string propertyName)
+		{
+			if (PropertyChanging == null)
+				return;
 
-            PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
-        }
+			PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
+		}
 
-        public void OnPropertyChanged(string propertyName) {
-            if (PropertyChanged == null)
-                return;
+		public void OnPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged == null)
+				return;
 
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+			PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
 
-        #endregion
+		#endregion
 
-        #region Protected Methods and Operators
+		#region Protected Methods and Operators
 
-        protected void SetProperty<U>(
-            ref U backingStore,
-            U value,
-            string propertyName,
-            Action onChanged = null,
-            Action<U> onChanging = null) {
-            if (EqualityComparer<U>.Default.Equals(backingStore, value))
-                return;
+		protected void SetProperty<U>(
+			ref U backingStore,
+			U value,
+			string propertyName,
+			Action onChanged = null,
+			Action<U> onChanging = null)
+		{
+			if (EqualityComparer<U>.Default.Equals(backingStore, value))
+				return;
 
-            if (onChanging != null)
-                onChanging(value);
+			if (onChanging != null)
+				onChanging(value);
 
-            OnPropertyChanging(propertyName);
+			OnPropertyChanging(propertyName);
 
-            backingStore = value;
+			backingStore = value;
 
-            if (onChanged != null)
-                onChanged();
+			if (onChanged != null)
+				onChanged();
 
-            OnPropertyChanged(propertyName);
-        }
+			OnPropertyChanged(propertyName);
+		}
 
-        #endregion
-    }
+		#endregion
+
+		#region Custom functions
+		virtual public void SocketOff() { }
+		virtual public void TypingBroadcast(DateTime d) { }
+		#endregion
+	}
 }

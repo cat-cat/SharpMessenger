@@ -50,6 +50,14 @@ namespace ChatClient.iOS.Services
 					v.Consume(v.k.OnlineStatus);
 					new OnlineStatusGet(_user.Token, (string)newItem.Value, _user.Id).Object();
 				}
+				else if (newItem.Key == v.k.IsTyping)
+				{
+					v.Consume(v.k.IsTyping);
+					var data = (Dictionary<string, object>)newItem.Value;
+					var room = data.ContainsKey("room") ? (string)data["room"] : null;
+					var participant = data.ContainsKey("participant") ? (string)data["participant"] : null;
+					new TypingSetRequest(_user.Token, participant, room, (string)data["isTypingTimeStamp"]).Object();
+				}
 			}
 
 		}
@@ -75,6 +83,9 @@ namespace ChatClient.iOS.Services
 		~ChatPrivateService()
 		{
 			v.m(OnCollectionChanged);
+			v.Remove(v.k.OnMessageReceived);
+			v.Remove(v.k.OnUpdateUserOnlineStatus);
+			v.Remove(v.k.OnIsTyping);
 		}
 
 		//void SetRoomID(string _roomID)
@@ -162,8 +173,6 @@ namespace ChatClient.iOS.Services
 					Debug.WriteLine("Socket error: " + data);
 				});
 
-
-
 			//io.sockets.emit("update-people", { people: people, count: sizePeople});
 			socket.On("update-people", (data) =>
 			{
@@ -227,6 +236,11 @@ namespace ChatClient.iOS.Services
 
 			socket.On("isTyping", (data) =>
 			{
+				var definition = new { person = "" };
+				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
+
+				v.Add(v.k.OnIsTyping, o.person);
+
 				Debug.WriteLine("on.isTyping: " + data);
 			});
 

@@ -29,8 +29,6 @@ namespace ChatClient.Core.UI.ViewModels
         private int _totalPages;
         private Command _uploadCommand;
 
-
-
 		public string PageTitle
 		{
 			get

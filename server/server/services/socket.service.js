@@ -486,7 +486,29 @@ function getOnline(ids, client){
 	return dictionary
 }
 
+function setIsTyping(user, client, room, timestamp){
+	console.log("is typing called with client: " + client + " room " + util.inspect(room, false, null) + " timestamp "+ timestamp)
+
+	// TODO: move searching in people to redis
+	for(var key in people) {
+		try {
+		      if (room.length > 0 && user == people[key].id) {
+			      	io.sockets.connected[key].broadcast.to(room).emit("isTyping", {person: user})
+			      	break
+		      }
+		      else if(client.length > 0 && client == people[key].id) // private chat
+		      {
+					io.sockets.connected[key].emit("isTyping", {person: user});
+					break
+		      }
+	      } catch (err) {
+	      	console.log(err)
+	      }
+	};
+}
+
 export default {
+	setIsTyping,
     listen,
     alarmPublication,
     getOnline

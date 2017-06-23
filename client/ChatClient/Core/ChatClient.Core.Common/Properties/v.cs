@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -6,7 +6,7 @@ namespace ChatClient.Core.Common
 {
 	public class v
 	{
-		public enum k {MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
+		public enum k {OnIsTyping, IsTyping, MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
 
 		static Stack<k> keysToRemove = new Stack<k>();
 

@@ -11,9 +11,11 @@ import chatRoutes from './conversations.route';
 import mailRoutes from './mail.route';
 import favRoutes from './favorites.route';
 import onlineRoutes from './onlinestat.route';
+import isTypingRoutes from './istyping.route';
 
 const router = express.Router();
 
+router.use('/isTyping', isTypingRoutes);
 router.use('/onlineStatus', onlineRoutes);
 router.use('/user', userRoutes);
 router.use('/group', groupsRoutes);

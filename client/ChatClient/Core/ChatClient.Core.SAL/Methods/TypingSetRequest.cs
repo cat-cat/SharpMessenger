@@ -16,14 +16,14 @@ using Xamarin.Forms;
 
 namespace ChatClient.Core.SAL.Methods
 {
-	public class OnlineStatusGet : Request<bool>
+	public class TypingSetRequest : Request<bool>
 	{
-		private readonly string _target = "onlineStatus";
+		private readonly string _target = "isTyping";
 		private Dictionary<string, string> _headers = new Dictionary<string, string>();
 		private Dictionary<string, object> _urlParameters = new Dictionary<string, object>();
 		private string _requestMethod = "GET";
 
-		~OnlineStatusGet()
+		~TypingSetRequest()
 		{
 			v.Remove(v.k.OnUpdateUserOnlineStatus);
 		}
@@ -100,18 +100,13 @@ namespace ChatClient.Core.SAL.Methods
 				}
 				string s = Response.ResponseObject["success"].ToString();
 				success = Convert.ToBoolean(s);
-				if (success)
-				{
-					Dictionary<string, bool> lResponse = JsonConvert.DeserializeObject<Dictionary<string, bool>>(Response.ResponseObject["data"].ToString());
-					v.Add(v.k.OnUpdateUserOnlineStatus, lResponse);
-				}
 				return success;
 
 			}
 			catch (Exception lException)
 			{
 #if DEBUG
-				LogHelper.WriteLog(lException.Message, "RequestError", "OnlineStatusGet");
+				LogHelper.WriteLog(lException.Message, "RequestError", "TypingSetRequest");
 				DependencyService.Get<IExceptionHandler>().ShowMessage(lException.Message);
 #endif
 			}
@@ -119,11 +114,12 @@ namespace ChatClient.Core.SAL.Methods
 			return success;
 		}
 
-		public OnlineStatusGet(string token, string ids, string thisUserId)
+		public TypingSetRequest(string token, string client, string room, string ts)
 		{
 			_headers.Add("Authorization", token);  
-			_urlParameters.Add("ids", ids);
-			_urlParameters.Add("client", thisUserId);
+			_urlParameters.Add("room", room);
+			_urlParameters.Add("client", client);
+			_urlParameters.Add("timestamp", ts);
         }
 	}
 }

@@ -27,15 +27,13 @@ using Xamarin.Forms;
 
 namespace ChatClient.Core.UI.ViewModels
 {
-	public class ChatViewModel : BaseViewModel
+	public class PrivateChatViewModel : BaseViewModel
 	{
 		#region Fields
 
 		private ChatMessageViewModel _chatMessage = new ChatMessageViewModel();
 		//private IChatServices _chatServices;
 		private ObservableCollection<ChatMessageViewModel> _messages = new ObservableCollection<ChatMessageViewModel>();
-		private string _roomName;
-		private bool _isPrivatChat { get; set; }
 
 		private CacheMessage _cacheMessage;
 
@@ -44,71 +42,61 @@ namespace ChatClient.Core.UI.ViewModels
 		#endregion
 
 		#region Constractors and Destructors
-		~ChatViewModel()
+		~PrivateChatViewModel()
 		{
 			v.m(OnCollectionChanged);
+			v.Remove(v.k.IsTyping);
+			v.Remove(v.k.OnlineStatus);
+			v.Remove(v.k.MessageSend);
 		}
 
-		public ChatViewModel(string roomName)
+		public override void TypingBroadcast(DateTime d)
 		{
-			// subscribe for events
-			v.h(OnCollectionChanged);
-
-			_roomName = roomName;
-			ExecuteJoinRoomCommand();
-			//_chatServices = DependencyService.Get<IChatServices>();
-			//_chatServices.SetRoomID(roomName);
-			//_chatServices.Connect();
-			//_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
-			GetMessages();
-			_messages = new ObservableCollection<ChatMessageViewModel>();
-			///  _chatServices.JoinRoom(roomName);
-
+			
+			v.Add(v.k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", _receiver == null ? null: _receiver.Id }, { "room", null } });
 		}
 
-
-
-		public async void SocketOff()
+		public override async void SocketOff()
 		{
 			if (_cacheMessage != null)
 				await PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
 			//_chatServices.Disabled();
 		}
 
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+	void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
 				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
 				if (newItem.Key == v.k.OnUpdateUserOnlineStatus)
 				{
-					v.Consume(newItem.Key);
-
 					var data = (Dictionary<string, bool>)newItem.Value;
 					if (data.ContainsKey(_receiver.Id))
 					{
+						// only consume data for this _receiver
+						v.Consume(v.k.OnUpdateUserOnlineStatus);
 						bool status = data[_receiver.Id];
 						// TODO: display status
 					}
 				}
 				else if (newItem.Key == v.k.OnMessageReceived)
 				{
+					v.Consume(v.k.OnMessageReceived);
 					ChatMessage message = (ChatMessage)newItem.Value;
 					_chatServices_OnMessageReceived(sender, message);
 				}
-
+				else if (newItem.Key == v.k.OnIsTyping)
+				{
+						v.Consume(v.k.OnIsTyping);
+						// show newItem.Value isTyping...
+				}
 			}
 		}
 
-		public ChatViewModel(User user)
+		public PrivateChatViewModel(User user)
 		{
 			_messages = new ObservableCollection<ChatMessageViewModel>();
-			//_chatServices = DependencyService.Get<IChatServices>();
-			//_chatServices.SetRoomID(_roomName);
-			//_chatServices = new ChatPrivateService();
-			// _chatMessage = new ChatMessageViewModel();
 
-			//    _messages = new ObservableCollection<ChatMessageViewModel>();
 			_receiver = user;
 
 			// subscribe for events
@@ -117,15 +105,9 @@ namespace ChatClient.Core.UI.ViewModels
 			// request from server online status for interlocutor
 			v.Add(v.k.OnlineStatus, _receiver.Id);
 
-			//v.Add(v.k.MessageReceived, _receiver.Id);
-
 			if (string.IsNullOrEmpty(_receiver.Nickname))
 				_receiver.Nickname = _receiver.Id;
 
-			//_chatServices.Connect();
-			//_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
-
-			_isPrivatChat = true;
 			GetMessages();
 		}
 
@@ -180,19 +162,13 @@ namespace ChatClient.Core.UI.ViewModels
 				IsBusy = false;
 				return;
 			}
+
 			Dictionary<string, object> response = null;
-			if (_isPrivatChat)
-			{
-				response = await new GetMessages(lUser.Token, 1, 100, "", String.Format("{0},{1}", lUser.Id, _receiver.Id)).Object();
-				_cacheMessage = await PersisataceService.GetCacheMessagePersistance()
-								   .GetItemAsync(String.Format("{0},{1}", lUser.Id, _receiver.Id)) ?? new CacheMessage() { Id = String.Format("{0},{1}", lUser.Id, _receiver.Id), IsSended = true };
-			}
-			else if (!_isPrivatChat)
-			{
-				response = await new GetMessages(lUser.Token, 1, 100, _roomName).Object();
-				_cacheMessage = await PersisataceService.GetCacheMessagePersistance()
-									.GetItemAsync(_roomName) ?? new CacheMessage() { Id = _roomName, IsSended = true };
-			}
+
+			response = await new GetMessages(lUser.Token, 1, 100, "", String.Format("{0},{1}", lUser.Id, _receiver.Id)).Object();
+			_cacheMessage = await PersisataceService.GetCacheMessagePersistance()
+							   .GetItemAsync(String.Format("{0},{1}", lUser.Id, _receiver.Id)) ?? new CacheMessage() { Id = String.Format("{0},{1}", lUser.Id, _receiver.Id), IsSended = true };
+			
 			if (_cacheMessage != null && !_cacheMessage.IsSended)
 				ChatMessage.Message = _cacheMessage.Message;
 			if (response == null)
@@ -283,40 +259,15 @@ namespace ChatClient.Core.UI.ViewModels
 				_cacheMessage.IsSended = false;
 				_cacheMessage.Message = _chatMessage.Message;
 			}
-			if (_isPrivatChat)
-				lMessage = String.Format("w:{0}:{1}", _receiver.Id, _chatMessage.Message);
 
-			v.Add(v.k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", _roomName} });
-            //await _chatServices.Send(new ChatMessage { Name = _chatMessage.Name, Message = lMessage }, _roomName);
+			lMessage = String.Format("w:{0}:{1}", _receiver.Id, _chatMessage.Message);
+
+			v.Add(v.k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", null} });
             IsBusy = false;
         }
 
         #endregion
 
-        #region Join Room Command
-
-        private Command joinRoomCommand;
-
-        /// <summary>
-        ///     Command to Send Message
-        /// </summary>
-        public Command JoinRoomCommand
-        {
-            get
-            {
-                return joinRoomCommand ??
-                       (joinRoomCommand = new Command(ExecuteJoinRoomCommand));
-            }
-        }
-
-        private async void ExecuteJoinRoomCommand()
-        {
-            IsBusy = true;
-			v.Add(v.k.JoinRoom, _roomName);
-            //await _chatServices.JoinRoom(_roomName);
-            IsBusy = false;
-        }
-		#endregion
     }
 }
 
