@@ -45,15 +45,15 @@ namespace ChatClient.Core.UI.ViewModels
 		~PrivateChatViewModel()
 		{
 			v.m(OnCollectionChanged);
-			v.Remove(v.k.IsTyping);
-			v.Remove(v.k.OnlineStatus);
-			v.Remove(v.k.MessageSend);
+			// v.Remove(k.IsTyping);
+			// v.Remove(k.OnlineStatus);
+			// v.Remove(k.MessageSend);
 		}
 
 		public override void TypingBroadcast(DateTime d)
 		{
 			
-			v.Add(v.k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", _receiver == null ? null: _receiver.Id }, { "room", null } });
+			v.Add(k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", _receiver == null ? null: _receiver.Id }, { "room", null } });
 		}
 
 		public override async void SocketOff()
@@ -67,27 +67,27 @@ namespace ChatClient.Core.UI.ViewModels
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
-				if (newItem.Key == v.k.OnUpdateUserOnlineStatus)
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.OnUpdateUserOnlineStatus)
 				{
 					var data = (Dictionary<string, bool>)newItem.Value;
 					if (data.ContainsKey(_receiver.Id))
 					{
 						// only consume data for this _receiver
-						v.Consume(v.k.OnUpdateUserOnlineStatus);
+						// v.Consume(k.OnUpdateUserOnlineStatus);
 						bool status = data[_receiver.Id];
 						// TODO: display status
 					}
 				}
-				else if (newItem.Key == v.k.OnMessageReceived)
+				else if (newItem.Key == k.OnMessageReceived)
 				{
-					v.Consume(v.k.OnMessageReceived);
+					// v.Consume(k.OnMessageReceived);
 					ChatMessage message = (ChatMessage)newItem.Value;
 					_chatServices_OnMessageReceived(sender, message);
 				}
-				else if (newItem.Key == v.k.OnIsTyping)
+				else if (newItem.Key == k.OnIsTyping)
 				{
-						v.Consume(v.k.OnIsTyping);
+						// v.Consume(k.OnIsTyping);
 						// show newItem.Value isTyping...
 				}
 			}
@@ -103,7 +103,7 @@ namespace ChatClient.Core.UI.ViewModels
 			v.h(OnCollectionChanged);
 
 			// request from server online status for interlocutor
-			v.Add(v.k.OnlineStatus, _receiver.Id);
+			v.Add(k.OnlineStatus, _receiver.Id);
 
 			if (string.IsNullOrEmpty(_receiver.Nickname))
 				_receiver.Nickname = _receiver.Id;
@@ -262,7 +262,7 @@ namespace ChatClient.Core.UI.ViewModels
 
 			lMessage = String.Format("w:{0}:{1}", _receiver.Id, _chatMessage.Message);
 
-			v.Add(v.k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", null} });
+			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", null} });
             IsBusy = false;
         }
 

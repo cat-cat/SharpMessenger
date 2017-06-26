@@ -77,7 +77,7 @@ namespace ChatClient.Core.UI
 			//    _messages = new ObservableCollection<ChatMessageViewModel>();
 			//_receiver = user;
 			//v.h(OnCollectionChanged);
-			//v.Add(v.k.OnlineStatus, new Dictionary<string, object>() { { "userid", _receiver.Id } });
+			//v.Add(k.OnlineStatus, new Dictionary<string, object>() { { "userid", _receiver.Id } });
 			//if (string.IsNullOrEmpty(_receiver.Nickname))
 			//	_receiver.Nickname = _receiver.Id;
 			_chatServices.Connect();

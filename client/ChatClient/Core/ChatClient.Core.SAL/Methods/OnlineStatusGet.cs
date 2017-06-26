@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +25,7 @@ namespace ChatClient.Core.SAL.Methods
 
 		~OnlineStatusGet()
 		{
-			v.Remove(v.k.OnUpdateUserOnlineStatus);
+			// v.Remove(k.OnUpdateUserOnlineStatus);
 		}
 
 		public override string Target
@@ -103,7 +103,7 @@ namespace ChatClient.Core.SAL.Methods
 				if (success)
 				{
 					Dictionary<string, bool> lResponse = JsonConvert.DeserializeObject<Dictionary<string, bool>>(Response.ResponseObject["data"].ToString());
-					v.Add(v.k.OnUpdateUserOnlineStatus, lResponse);
+					v.Add(k.OnUpdateUserOnlineStatus, lResponse);
 				}
 				return success;
 

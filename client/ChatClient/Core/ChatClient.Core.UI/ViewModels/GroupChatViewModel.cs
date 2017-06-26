@@ -42,10 +42,10 @@ namespace ChatClient.Core.UI.ViewModels
 		~GroupChatViewModel()
 		{
 			v.m(OnCollectionChanged);
-			v.Remove(v.k.IsTyping);
-			v.Remove(v.k.OnlineStatus);
-			v.Remove(v.k.MessageSend);
-			v.Remove(v.k.JoinRoom);
+			// v.Remove(k.IsTyping);
+			// v.Remove(k.OnlineStatus);
+			// v.Remove(k.MessageSend);
+			// v.Remove(k.JoinRoom);
 		}
 
 		public GroupChatViewModel(string roomName)
@@ -63,7 +63,7 @@ namespace ChatClient.Core.UI.ViewModels
 		public override void TypingBroadcast(DateTime d)
 		{
 			
-			v.Add(v.k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", null }, { "room", string.IsNullOrEmpty(_roomName) ? null: _roomName } });
+			v.Add(k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", null }, { "room", string.IsNullOrEmpty(_roomName) ? null: _roomName } });
 		}
 
 		public override async void SocketOff()
@@ -77,22 +77,22 @@ namespace ChatClient.Core.UI.ViewModels
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
-				if (newItem.Key == v.k.OnUpdateUserOnlineStatus)
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.OnUpdateUserOnlineStatus)
 				{
 					var data = (Dictionary<string, bool>)newItem.Value;
-					v.Consume(v.k.OnUpdateUserOnlineStatus);
+					// v.Consume(k.OnUpdateUserOnlineStatus);
 					// TODO: display status
 				}
-				else if (newItem.Key == v.k.OnMessageReceived)
+				else if (newItem.Key == k.OnMessageReceived)
 				{
-					v.Consume(v.k.OnMessageReceived);
+					// v.Consume(k.OnMessageReceived);
 					ChatMessage message = (ChatMessage)newItem.Value;
 					_chatServices_OnMessageReceived(sender, message);
 				}
-				else if (newItem.Key == v.k.OnIsTyping)
+				else if (newItem.Key == k.OnIsTyping)
 				{
-					v.Consume(v.k.OnIsTyping);
+					// v.Consume(k.OnIsTyping);
 					// show newItem.Value isTyping...
 				}
 			}
@@ -245,7 +245,7 @@ namespace ChatClient.Core.UI.ViewModels
 				_cacheMessage.Message = _chatMessage.Message;
 			}
 
-			v.Add(v.k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", _roomName} });
+			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", _roomName} });
             //await _chatServices.Send(new ChatMessage { Name = _chatMessage.Name, Message = lMessage }, _roomName);
             IsBusy = false;
         }
@@ -271,7 +271,7 @@ namespace ChatClient.Core.UI.ViewModels
         private async void ExecuteJoinRoomCommand()
         {
             IsBusy = true;
-			v.Add(v.k.JoinRoom, _roomName);
+			v.Add(k.JoinRoom, _roomName);
             //await _chatServices.JoinRoom(_roomName);
             IsBusy = false;
         }

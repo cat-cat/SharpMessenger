@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +25,7 @@ namespace ChatClient.Core.SAL.Methods
 
 		~TypingSetRequest()
 		{
-			v.Remove(v.k.OnUpdateUserOnlineStatus);
+			// v.Remove(k.OnUpdateUserOnlineStatus);
 		}
 
 		public override string Target

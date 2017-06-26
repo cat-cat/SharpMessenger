@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -33,26 +33,26 @@ namespace ChatClient.iOS.Services
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				var newItem = (KeyValuePair<v.k, object>)e.NewItems[0];
-				if (newItem.Key == v.k.JoinRoom)
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.JoinRoom)
 				{
-					v.Consume(newItem.Key);
+					// v.Consume(newItem.Key);
 					JoinRoom((string)newItem.Value);
 				}
-				else if (newItem.Key == v.k.MessageSend)
+				else if (newItem.Key == k.MessageSend)
 				{
-					v.Consume(v.k.MessageSend);
+					// v.Consume(k.MessageSend);
 					var messageData = (Dictionary<string, object>)newItem.Value;
 					Send((ChatMessage)messageData["message"], (string)messageData["roomName"]);
 				}
-				else if (newItem.Key == v.k.OnlineStatus)
+				else if (newItem.Key == k.OnlineStatus)
 				{
-					v.Consume(v.k.OnlineStatus);
+					// v.Consume(k.OnlineStatus);
 					new OnlineStatusGet(_user.Token, (string)newItem.Value, _user.Id).Object();
 				}
-				else if (newItem.Key == v.k.IsTyping)
+				else if (newItem.Key == k.IsTyping)
 				{
-					v.Consume(v.k.IsTyping);
+					// v.Consume(k.IsTyping);
 					var data = (Dictionary<string, object>)newItem.Value;
 					var room = data.ContainsKey("room") ? (string)data["room"] : null;
 					var participant = data.ContainsKey("participant") ? (string)data["participant"] : null;
@@ -83,9 +83,9 @@ namespace ChatClient.iOS.Services
 		~ChatPrivateService()
 		{
 			v.m(OnCollectionChanged);
-			v.Remove(v.k.OnMessageReceived);
-			v.Remove(v.k.OnUpdateUserOnlineStatus);
-			v.Remove(v.k.OnIsTyping);
+			// v.Remove(v.OnMessageReceived);
+			// v.Remove(k.OnUpdateUserOnlineStatus);
+			// v.Remove(v.OnIsTyping);
 		}
 
 		//void SetRoomID(string _roomID)
@@ -109,7 +109,7 @@ namespace ChatClient.iOS.Services
 
 		private void OnMessageReceived(object sender, ChatMessage message)
 		{
-			v.Add(v.k.OnMessageReceived, message);
+			v.Add(k.OnMessageReceived, message);
 		}
 		#region IChatServices implementation
 
@@ -179,7 +179,7 @@ namespace ChatClient.iOS.Services
 				var definition = new { onlineStatus = "", id = ""};
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 				Dictionary<string, bool> d = new Dictionary<string, bool>() { { o.id, Convert.ToBoolean(o.onlineStatus) } };
-				v.Add(v.k.OnUpdateUserOnlineStatus, d);
+				v.Add(k.OnUpdateUserOnlineStatus, d);
 
 				Debug.WriteLine("on.update-people: " + data);
 
@@ -239,7 +239,7 @@ namespace ChatClient.iOS.Services
 				var definition = new { person = "" };
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 
-				v.Add(v.k.OnIsTyping, o.person);
+				v.Add(k.OnIsTyping, o.person);
 
 				Debug.WriteLine("on.isTyping: " + data);
 			});
