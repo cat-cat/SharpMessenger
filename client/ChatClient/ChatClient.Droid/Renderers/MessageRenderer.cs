@@ -13,7 +13,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
+using ChatClient.Core.Common.Models;
 using ChatClient.Core.Common.Helpers;
 using ChatClient.Core.UI.Controls;
 using ChatClient.Core.UI.ViewModels;
@@ -30,7 +30,7 @@ namespace ChatClient.Droid.Renderers
         protected override Android.Views.View GetCellCore(Cell item, Android.Views.View convertView, ViewGroup parent, Context context)
         {
             var inflatorservice = (LayoutInflater)Forms.Context.GetSystemService(Android.Content.Context.LayoutInflaterService);
-            var dataContext = item.BindingContext as ChatMessageViewModel;
+            var dataContext = item.BindingContext as ChatMessage;
 
 
 
@@ -40,7 +40,7 @@ namespace ChatClient.Droid.Renderers
                 return this.GetCellCore(item, convertView, parent, context);
             }
 
-            var textMsgVm = dataContext as ChatMessageViewModel;
+            var textMsgVm = dataContext as ChatMessage;
             if (textMsgVm != null)
             {
                 LinearLayout template = (LinearLayout)inflatorservice.Inflate(textMsgVm.IsMine ? Resource.Layout.image_item_owner : Resource.Layout.image_item_opponent, null, false);
@@ -50,10 +50,10 @@ namespace ChatClient.Droid.Renderers
 
 				try
 				{
-					if (textMsgVm.Image.Contains("http"))
-						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(GetImageBitmapFromUrl(textMsgVm.Image)));
-					else if (!string.IsNullOrEmpty(textMsgVm.Image) && textMsgVm.Image != "profile_avatar.png")
-						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(BitmapFactory.DecodeFile(textMsgVm.Image)));
+					if (textMsgVm.Photo.Contains("http"))
+						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(GetImageBitmapFromUrl(textMsgVm.Photo)));
+					else if (!string.IsNullOrEmpty(textMsgVm.Photo) && textMsgVm.Photo != "profile_avatar.png")
+						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(BitmapFactory.DecodeFile(textMsgVm.Photo)));
 				}
 				catch
 				{

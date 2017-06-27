@@ -31,8 +31,8 @@ namespace ChatClient.Core.UI.ViewModels
 	{
 		#region Fields
 
-		private ChatMessageViewModel _chatMessage = new ChatMessageViewModel();
-		private ObservableCollection<ChatMessageViewModel> _messages = new ObservableCollection<ChatMessageViewModel>();
+		private ChatMessage _chatMessage = new ChatMessage();
+		private ObservableCollection<ChatMessage> _messages = new ObservableCollection<ChatMessage>();
 		private string _roomName;
 
 		private CacheMessage _cacheMessage;
@@ -56,14 +56,14 @@ namespace ChatClient.Core.UI.ViewModels
 			_roomName = roomName;
 			ExecuteJoinRoomCommand();
 			GetMessages();
-			_messages = new ObservableCollection<ChatMessageViewModel>();
+			_messages = new ObservableCollection<ChatMessage>();
 
 		}
 
 		public override void TypingBroadcast(DateTime d)
 		{
-			
-			v.Add(k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", null }, { "room", string.IsNullOrEmpty(_roomName) ? null: _roomName } });
+
+			v.Add(k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", null }, { "room", string.IsNullOrEmpty(_roomName) ? null : _roomName } });
 		}
 
 		public override async void SocketOff()
@@ -110,7 +110,7 @@ namespace ChatClient.Core.UI.ViewModels
 			}
 		}
 
-		public ObservableCollection<ChatMessageViewModel> Messages
+		public ObservableCollection<ChatMessage> Messages
 		{
 			get
 			{
@@ -124,7 +124,7 @@ namespace ChatClient.Core.UI.ViewModels
 			}
 		}
 
-		public ChatMessageViewModel ChatMessage
+		public ChatMessage ChatMessage
 		{
 			get
 			{
@@ -153,7 +153,7 @@ namespace ChatClient.Core.UI.ViewModels
 			response = await new GetMessages(lUser.Token, 1, 100, _roomName).Object();
 			_cacheMessage = await PersisataceService.GetCacheMessagePersistance()
 								.GetItemAsync(_roomName) ?? new CacheMessage() { Id = _roomName, IsSended = true };
-			
+
 			if (_cacheMessage != null && !_cacheMessage.IsSended)
 				ChatMessage.Message = _cacheMessage.Message;
 			if (response == null)
@@ -167,17 +167,10 @@ namespace ChatClient.Core.UI.ViewModels
 			{
 				if (_messages.Any(mess => mess.Id == lMessage.Id))
 					continue;
-				_messages.Add(new ChatMessageViewModel()
-				{
-					Id = lMessage.Id,
-					Image = string.IsNullOrEmpty(lMessage.OwnerId.Photo) || lMessage.OwnerId.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
-						 DependencyService.Get<IFileHelper>()
-							 .PhotoCache(response["ImagePrefix"].ToString(), lMessage.OwnerId.Photo, ImageType.Users),
-					Name = string.IsNullOrEmpty(lMessage.OwnerId.Nickname) ? AppResources.NewMember : lMessage.OwnerId.Nickname,
-					Message = lMessage.Message,
-					IsMine = lMessage.OwnerId.Id == lUser.Id,
-					Timestamp = lMessage.Timestamp
-				});
+				lMessage.Photo = string.IsNullOrEmpty(lMessage.OwnerId.Photo) || lMessage.OwnerId.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
+					 DependencyService.Get<IFileHelper>().PhotoCache(response["ImagePrefix"].ToString(), lMessage.OwnerId.Photo, ImageType.Users);
+				lMessage.IsMine = lMessage.OwnerId.Id == lUser.Id;
+				_messages.Add(lMessage);
 			}
 			if (_messages.Count > 0)
 				ChatPage.messageList.ScrollTo(_messages[_messages.Count - 1], ScrollToPosition.End, true);
@@ -191,17 +184,9 @@ namespace ChatClient.Core.UI.ViewModels
 		{
 			try
 			{
-				ChatMessageViewModel lMessage = new ChatMessageViewModel
-				{
-					Name = e.Name,
-					Message = e.Message,
-					IsMine = e.IsMine,
-					Image = e.Photo,
-					Timestamp = e.Timestamp
-				};
-				if (lMessage.IsMine && lMessage.Message == _cacheMessage.Message)
+				if (e.IsMine && e.Message == _cacheMessage.Message)
 					_cacheMessage.IsSended = true;
-				_messages.Add(lMessage);
+				_messages.Add(e);
 			}
 			catch (Exception error)
 			{
@@ -244,8 +229,20 @@ namespace ChatClient.Core.UI.ViewModels
 				_cacheMessage.IsSended = false;
 				_cacheMessage.Message = _chatMessage.Message;
 			}
+			User lUser = await BL.Session.Authorization.GetUser();
+			ChatMessage cm = new ChatMessage
+			{
+				Name = lUser.Nickname,
+				Message = lMessage,
+				Guid = Guid.NewGuid().ToString(),
+				JustSent = true,
+				IsMine = true,
+				Photo = "profile_avatar.png",
+				Timestamp = DateTime.Now
+			};
+	
 
-			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", _roomName} });
+			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", cm}, { "roomName", _roomName} });
             //await _chatServices.Send(new ChatMessage { Name = _chatMessage.Name, Message = lMessage }, _roomName);
             IsBusy = false;
         }

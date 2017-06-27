@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace ChatClient.Core.Common
 {
-	public enum k { OnIsTyping, IsTyping, MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
+public enum k {MessageSendProgress, OnMessageSendProgress, OnIsTyping, IsTyping, MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
 
 	public class v : ObservableCollection<KeyValuePair<k, object> >
 	{

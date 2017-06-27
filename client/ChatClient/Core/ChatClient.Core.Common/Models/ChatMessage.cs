@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 namespace ChatClient.Core.Common.Models
 {
     public class ChatMessage {
+		private bool _justSent;
+		private string _guid;
         private string _id;
         private string _name;
         private string _message;
@@ -17,6 +19,31 @@ namespace ChatClient.Core.Common.Models
         private bool _isMine;
         private DateTime _timestamp;
         private User _opponent;
+
+		public bool JustSent
+		{
+			get
+			{
+				return _justSent;
+			}
+			set
+			{
+				_justSent = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "Guid")]
+		public string Guid
+		{
+			get
+			{
+				return _guid;
+			}
+			set
+			{
+				_guid = value;
+			}
+		}
 
         [JsonProperty(PropertyName = "Name")]
         public string Name {

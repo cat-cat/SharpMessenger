@@ -96,7 +96,6 @@
     <Compile Include="ViewModels\GroupsViewModel.cs" />
     <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
-    <Compile Include="ViewModels\ChatMessageViewModel.cs" />
     <Compile Include="ViewModels\GroupChatViewModel.cs" />
     <Compile Include="ViewModels\DialogsViewModel.cs" />
     <Compile Include="ViewModels\MembersViewModel.cs" />

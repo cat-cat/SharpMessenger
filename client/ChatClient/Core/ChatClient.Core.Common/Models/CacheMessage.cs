@@ -8,6 +8,7 @@ using SQLite;
 
 namespace ChatClient.Core.Common.Models
 {
+	// TODO: remove this class, replace with ChatMessage
   public  class CacheMessage {
       private string _id;
       private string _message;

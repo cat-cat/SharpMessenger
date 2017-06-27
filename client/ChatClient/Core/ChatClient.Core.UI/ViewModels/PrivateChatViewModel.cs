@@ -31,9 +31,9 @@ namespace ChatClient.Core.UI.ViewModels
 	{
 		#region Fields
 
-		private ChatMessageViewModel _chatMessage = new ChatMessageViewModel();
+		private ChatMessage _chatMessage = new ChatMessage();
 		//private IChatServices _chatServices;
-		private ObservableCollection<ChatMessageViewModel> _messages = new ObservableCollection<ChatMessageViewModel>();
+		private ObservableCollection<ChatMessage> _messages = new ObservableCollection<ChatMessage>();
 
 		private CacheMessage _cacheMessage;
 
@@ -95,7 +95,7 @@ namespace ChatClient.Core.UI.ViewModels
 
 		public PrivateChatViewModel(User user)
 		{
-			_messages = new ObservableCollection<ChatMessageViewModel>();
+			_messages = new ObservableCollection<ChatMessage>();
 
 			_receiver = user;
 
@@ -123,7 +123,7 @@ namespace ChatClient.Core.UI.ViewModels
 			}
 		}
 
-		public ObservableCollection<ChatMessageViewModel> Messages
+		public ObservableCollection<ChatMessage> Messages
 		{
 			get
 			{
@@ -137,7 +137,7 @@ namespace ChatClient.Core.UI.ViewModels
 			}
 		}
 
-		public ChatMessageViewModel ChatMessage
+		public ChatMessage ChatMessage
 		{
 			get
 			{
@@ -182,17 +182,10 @@ namespace ChatClient.Core.UI.ViewModels
 			{
 				if (_messages.Any(mess => mess.Id == lMessage.Id))
 					continue;
-				_messages.Add(new ChatMessageViewModel()
-				{
-					Id = lMessage.Id,
-					Image = string.IsNullOrEmpty(lMessage.OwnerId.Photo) || lMessage.OwnerId.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
-						 DependencyService.Get<IFileHelper>()
-							 .PhotoCache(response["ImagePrefix"].ToString(), lMessage.OwnerId.Photo, ImageType.Users),
-					Name = string.IsNullOrEmpty(lMessage.OwnerId.Nickname) ? AppResources.NewMember : lMessage.OwnerId.Nickname,
-					Message = lMessage.Message,
-					IsMine = lMessage.OwnerId.Id == lUser.Id,
-					Timestamp = lMessage.Timestamp
-				});
+				lMessage.Photo = string.IsNullOrEmpty(lMessage.OwnerId.Photo) || lMessage.OwnerId.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
+					 DependencyService.Get<IFileHelper>().PhotoCache(response["ImagePrefix"].ToString(), lMessage.OwnerId.Photo, ImageType.Users);
+				lMessage.IsMine = lMessage.OwnerId.Id == lUser.Id;
+				_messages.Add(lMessage);
 			}
 			if (_messages.Count > 0)
 				ChatPage.messageList.ScrollTo(_messages[_messages.Count - 1], ScrollToPosition.End, true);
@@ -206,17 +199,9 @@ namespace ChatClient.Core.UI.ViewModels
 		{
 			try
 			{
-				ChatMessageViewModel lMessage = new ChatMessageViewModel
-				{
-					Name = e.Name,
-					Message = e.Message,
-					IsMine = e.IsMine,
-					Image = e.Photo,
-					Timestamp = e.Timestamp
-				};
-				if (lMessage.IsMine && lMessage.Message == _cacheMessage.Message)
+				if (e.IsMine && e.Message == _cacheMessage.Message)
 					_cacheMessage.IsSended = true;
-				_messages.Add(lMessage);
+				_messages.Add(e);
 			}
 			catch (Exception error)
 			{
@@ -261,8 +246,19 @@ namespace ChatClient.Core.UI.ViewModels
 			}
 
 			lMessage = String.Format("w:{0}:{1}", _receiver.Id, _chatMessage.Message);
+			User lUser = await BL.Session.Authorization.GetUser();
+			ChatMessage cm = new ChatMessage
+			{
+				Name = lUser.Nickname,
+				Message = lMessage,
+				Guid = Guid.NewGuid().ToString(),
+				JustSent = true,
+				IsMine = true,
+				Photo = "profile_avatar.png",
+				Timestamp = DateTime.Now
+			};
 
-			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", new ChatMessage { Name = _chatMessage.Name, Message = lMessage } }, { "roomName", null} });
+			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", cm}, { "roomName", null} });
             IsBusy = false;
         }
 
