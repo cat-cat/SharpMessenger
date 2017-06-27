@@ -182,9 +182,9 @@ namespace ChatClient.Core.UI.ViewModels
 			{
 				if (_messages.Any(mess => mess.Id == lMessage.Id))
 					continue;
-				lMessage.Photo = string.IsNullOrEmpty(lMessage.OwnerId.Photo) || lMessage.OwnerId.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
-					 DependencyService.Get<IFileHelper>().PhotoCache(response["ImagePrefix"].ToString(), lMessage.OwnerId.Photo, ImageType.Users);
-				lMessage.IsMine = lMessage.OwnerId.Id == lUser.Id;
+				lMessage.Photo = string.IsNullOrEmpty(lMessage.Author.Photo) || lMessage.Author.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
+					 DependencyService.Get<IFileHelper>().PhotoCache(response["ImagePrefix"].ToString(), lMessage.Author.Photo, ImageType.Users);
+				lMessage.IsMine = lMessage.Author.Id == lUser.Id;
 				_messages.Add(lMessage);
 			}
 			if (_messages.Count > 0)
@@ -245,12 +245,12 @@ namespace ChatClient.Core.UI.ViewModels
 				_cacheMessage.Message = _chatMessage.Message;
 			}
 
-			lMessage = String.Format("w:{0}:{1}", _receiver.Id, _chatMessage.Message);
 			User lUser = await BL.Session.Authorization.GetUser();
 			ChatMessage cm = new ChatMessage
 			{
 				Name = lUser.Nickname,
-				Message = lMessage,
+				Opponent = _receiver,
+				Message = _chatMessage.Message,
 				Guid = Guid.NewGuid().ToString(),
 				JustSent = true,
 				IsMine = true,

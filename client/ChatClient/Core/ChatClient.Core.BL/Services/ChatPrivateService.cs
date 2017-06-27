@@ -226,7 +226,7 @@ namespace ChatClient.iOS.Services
 				ChatMessage cm = new ChatMessage();
 				cm.Message = o.msg;
 				cm.Name = o.socketID.name;
-				cm.OwnerId = new User() { Id = o.socketID.id }; ;
+				cm.Author = new User() { Id = o.socketID.id }; ;
 				cm.IsMine = _user.Id == o.socketID.id;
 				if (!string.IsNullOrEmpty(o.userImage) && o.userImage != "false")
 					cm.Photo = await
@@ -274,7 +274,7 @@ namespace ChatClient.iOS.Services
 				ChatMessage cm = new ChatMessage();
 				cm.Message = o.msg;
 				cm.Name = o.socketID.name;
-				cm.OwnerId = new User() { Id = o.socketID.id }; ;
+				cm.Author = new User() { Id = o.socketID.id }; ;
 				cm.IsMine = _user.Id == o.socketID.id;
 				if (!string.IsNullOrEmpty(o.userImage) && o.userImage != "false")
 					cm.Photo = await
@@ -330,6 +330,8 @@ namespace ChatClient.iOS.Services
 			// Second - send message to server
 			var jobj = new JObject();
 			jobj.Add("name", _user.Nickname);
+			if (message.Opponent != null) // private message
+				jobj.Add("opponent", message.Opponent.Id);
 			jobj.Add("message", message.Message);
 			jobj.Add("conversationId", _lastConversation);
 			jobj.Add("date", message.Timestamp.ToString());

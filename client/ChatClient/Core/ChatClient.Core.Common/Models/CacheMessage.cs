@@ -13,6 +13,20 @@ namespace ChatClient.Core.Common.Models
       private string _id;
       private string _message;
       private bool _isSended;
+		string _guid;
+
+		[Indexed]
+		public string guid
+		{
+			get
+			{
+				return _guid;
+			}
+			set
+			{
+				_guid = value;
+			}
+		}
         [PrimaryKey]
         public string Id {
             get {
@@ -20,7 +34,8 @@ namespace ChatClient.Core.Common.Models
             }
             set {
                 _id = value;
-            } }
+            } 
+		}
         public string Message
         {
             get

@@ -12,6 +12,10 @@ const Schema = mongoose.Schema;
  * Messages Schema
  */
 const MessagesSchema = new Schema({
+			guid: {
+				type: String,
+				index: true
+			},
 		  conversationId: {
 		    type: Schema.Types.ObjectId,
 		    ref: 'Conversation',

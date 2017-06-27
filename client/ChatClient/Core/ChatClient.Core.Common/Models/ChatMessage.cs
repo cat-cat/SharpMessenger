@@ -15,7 +15,7 @@ namespace ChatClient.Core.Common.Models
         private string _name;
         private string _message;
         private string _photo;
-        private User _ownerId;
+        private User _author;
         private bool _isMine;
         private DateTime _timestamp;
         private User _opponent;
@@ -87,12 +87,12 @@ namespace ChatClient.Core.Common.Models
             }
         }
         [JsonProperty(PropertyName = "_creator")]
-        public User OwnerId {
+        public User Author {
             get {
-                return _ownerId;
+				return _author;
             }
             set {
-                _ownerId = value;
+                _author = value;
             }
         }
 

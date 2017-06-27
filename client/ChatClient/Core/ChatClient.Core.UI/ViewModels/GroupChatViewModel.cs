@@ -88,6 +88,12 @@ namespace ChatClient.Core.UI.ViewModels
 				{
 					// v.Consume(k.OnMessageReceived);
 					ChatMessage message = (ChatMessage)newItem.Value;
+					if (message.JustSent)
+					{
+						_cacheMessage.guid = message.Guid;
+						PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
+					}
+
 					_chatServices_OnMessageReceived(sender, message);
 				}
 				else if (newItem.Key == k.OnIsTyping)
@@ -167,9 +173,9 @@ namespace ChatClient.Core.UI.ViewModels
 			{
 				if (_messages.Any(mess => mess.Id == lMessage.Id))
 					continue;
-				lMessage.Photo = string.IsNullOrEmpty(lMessage.OwnerId.Photo) || lMessage.OwnerId.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
-					 DependencyService.Get<IFileHelper>().PhotoCache(response["ImagePrefix"].ToString(), lMessage.OwnerId.Photo, ImageType.Users);
-				lMessage.IsMine = lMessage.OwnerId.Id == lUser.Id;
+				lMessage.Photo = string.IsNullOrEmpty(lMessage.Author.Photo) || lMessage.Author.Photo.Contains("profile_avatar") ? "profile_avatar.png" : await
+					 DependencyService.Get<IFileHelper>().PhotoCache(response["ImagePrefix"].ToString(), lMessage.Author.Photo, ImageType.Users);
+				lMessage.IsMine = lMessage.Author.Id == lUser.Id;
 				_messages.Add(lMessage);
 			}
 			if (_messages.Count > 0)

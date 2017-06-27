@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -97,7 +97,7 @@ namespace ChatClient.Core.UI.ViewModels
                     {
                         lConversation.Message.IsMine = true;
                         lConversation.Color = Color.Gray;
-                        lConversation.Opponent = lConversation.Message.OwnerId;
+                        lConversation.Opponent = lConversation.Message.Author;
                     }
                     else
                     {

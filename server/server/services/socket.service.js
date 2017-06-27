@@ -162,59 +162,40 @@ function connectedListeners(socket) {
     //                  });
 
     socket.on("send", function(data) {
-        var msTime = data.date,
-        msg = data.message;
+    	//console.log("updated conversation: " + util.inspect(data,false,null));
         var conversationId = data.conversationId;
         var whitespacePattern = /^\s*$/;
-        if (data.message == null || whitespacePattern.test(data.message)) {
-            console.log('Invalid! Cannot insert empty string.');
+        if (whitespacePattern.test(data.message)) {
+            //console.log('Invalid! Cannot insert empty string.');
             socket.emit("update", 'Did you typed in a MESSAGE yet?');
             return;
         }
 
-        var re = /^[w]:.*:/;
-        var whisper = re.test(msg);
-        var whisperStr = msg.split(":");
- 	 	var found = false;
-        if (whisper) {
-            var whisperTo = whisperStr[1];
-            var keys = Object.keys(people);
-            if (keys.length != 0) {
-                for (var i = 0; i < keys.length; i++) {
-                    if (people[keys[i]].id === whisperTo) {
-                        var whisperId = keys[i];
-                        found = true;
-                        if (socket.id === whisperId) { //can't whisper to ourselves
-                            socket.emit("update", "You can't whisper to yourself.");
-                        }
-//                        break;
-                    }
-                }
-            }
-            var whisperTo = whisperStr[1];
-            var whisperMsg = whisperStr[2];
+ 	 	//var found = false;
+        if (data.opponent != null) { // private message
 
-
+        	var msTime = data.date;
             new Promise((resolve, reject) => {
         		if(conversationId != null)
         			resolve({_id: conversationId})
 
-            	return Conversation.getConversation([socket.decoded_token._id, whisperTo])
+            	return Conversation.getConversation([socket.decoded_token._id, data.opponent])
             	.then(c => {
                 		if(c)
                 			resolve(c) 
 
-			        	resolve(Conversation.create([socket.decoded_token._id, whisperTo]))			        								        		
+			        	resolve(Conversation.create([socket.decoded_token._id, data.opponent]))			        								        		
 			     })		
            	})
         	.then(function(conv, error) {
                 db_collection_messages.insert({
+                	guid: data.guid,
                 	conversationId: ObjectId(conv._id),
                     createdAt: msTime,
                     Name: people[socket.id].name,
-                    Message: whisperMsg,
+                    Message: data.message,
                     _creator: ObjectId(socket.decoded_token._id),
-                    _to:ObjectId(whisperTo)
+                    _to:ObjectId(data.opponent)
                 }, function(error, message) {
                 	if(error)
                 		console.log(error)
@@ -222,31 +203,36 @@ function connectedListeners(socket) {
                     Conversation.updateWithMessage(message.ops[0])
                     .then((c, err) => {
 						if(c) {
-							//console.log("updated conversation: " + util.inspect(message,false,null));
-
 							socket.emit("conversation", message.ops[0].conversationId);
 
 							User.get({_id:ObjectId(socket.decoded_token._id)}, {image: 1})
 							.then(u => { 
-				                io.sockets.connected[socket.id].emit("whisper", {
-				                	userAvatarPrefix:cfg.userAvatarPrefix(),
-				                    msTime: msTime,
-				                    socketID: people[socket.id],
-				                    msg: whisperMsg,
-				                    userImage: u.image || false,
-				                    participantOnline: io.sockets.connected[whisperId] == undefined ? false : true 
-				                })
-
-				                User.get({_id:ObjectId(whisperTo)}, {image: 1})
+				                User.get({_id:ObjectId(data.opponent)}, {image: 1})
 				                .then( u => {
-					                io.sockets.connected[whisperId].emit("whisper", {
-					                	userAvatarPrefix:cfg.userAvatarPrefix(),
-					                    msTime: msTime,
-					                    socketID: people[socket.id],
-					                    msg: whisperMsg,
-					                    userImage: u.image || false,
-					                    participantOnline: true
-					                })
+
+
+            var keys = Object.keys(people);
+            var whisperId;
+            if (keys.length != 0) {
+                for (var i = 0; i < keys.length; i++) {
+                    if (people[keys[i]].id === data.opponent) {
+                        whisperId = keys[i];
+
+		                io.sockets.connected[keys[i]].emit("whisper", {
+		                	userAvatarPrefix:cfg.userAvatarPrefix(),
+		                    msTime: msTime,
+		                    socketID: people[socket.id],
+		                    msg: data.message,
+		                    userImage: u.image || false,
+		                    participantOnline: true
+		                })
+
+                        break;
+                    }
+                }
+            }
+
+
 					            })
 					            .catch(e => console.log(e))
 			                })
@@ -262,19 +248,19 @@ function connectedListeners(socket) {
 
 				User.get({_id:ObjectId(socket.decoded_token._id)}, {image: 1})
 				.then(u => { 
-	              io.sockets.in(socket.room).emit("chat", {
+	              io.sockets.connected[socket.id].broadcast.to(socket.room).emit("chat", {
 				        userAvatarPrefix:cfg.userAvatarPrefix(),
 	                    msTime: msTime,
 	                    socketID: people[socket.id],
 	                    userImage: u.image || false,
-	                    msg: msg
+	                    msg: data.message
 	                });
 	                //socket.emit("isTyping", false);
 	                db_collection_messages.insert({
 	                    Room: socket.room,
 	//                    createdAt: msTime,
 	                    Name: people[socket.id].name,
-	                    Message: msg,
+	                    Message: data.message,
 	                    _creator: ObjectId(socket.decoded_token._id),
 	                    _to:ObjectId(data.id)
 	                }, function() {
