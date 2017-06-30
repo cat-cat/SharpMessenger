@@ -22,9 +22,11 @@ namespace ChatClient.iOS.Renderers
             var textVm = item.BindingContext as ChatMessage;
             if (textVm != null)
             {
-                string text =  textVm.Message;
-				var chatBubble = new ChatBubble(!textVm.IsMine, text,textVm.Name,textVm.Timestamp,textVm.Photo);
-                return chatBubble.GetCell(tv);
+				var cell = tv.DequeueReusableCell(!textVm.IsMine ? ChatMessageCell.KeyLeft : ChatMessageCell.KeyRight) as ChatMessageCell;
+	            if (cell == null)
+	                cell = new ChatMessageCell(!textVm.IsMine);
+				cell.Update(textVm);
+	            return cell;
             }
             return base.GetCell(item, reusableCell, tv);
         }

@@ -49,7 +49,7 @@ function listeners() {
             timeout: 60000
                      }), console.log('Socket connection on port ' + cfg.socketPort))
         .on('authenticated', function(socket) {
-            //console.log("authenticated: " + socket.decoded_token._id);
+            console.log("authenticated: " + socket.decoded_token._id);
             //        joinRoom(socket);
             connectedListeners(socket);
             //        nearestAd(socket);
@@ -113,21 +113,6 @@ function connectedListeners(socket) {
         var ownerRoomID = null;
         var inRoomID = null;
 
-        //                  _.find(people, function(key,value) {
-        //                         if (key.name.toLowerCase() === name.toLowerCase())
-        //                         return exists = true;
-        //                  });
-        //                  if (exists) {//provide unique username:
-        //                      var randomNumber=Math.floor(Math.random()*1001)
-        //                      do {
-        //                          var proposedName = name+randomNumber;
-        //                          _.find(people, function(key,value) {
-        //                             if (key.name.toLowerCase() === proposedName.toLowerCase())
-        //                                 return exists = true;
-        //                          });
-        //                      } while (!exists);
-        //                          socket.emit("exists", {msg: "The username already exists, please pick another one.", proposedName: proposedName});
-        //                  } else {
         people[socket.id] = {
             "id": socket.decoded_token._id,
             "name": name,
@@ -139,27 +124,10 @@ function connectedListeners(socket) {
         sockets.push(socket);
         var sizePeople = _.size(people);
         var sizeRooms = _.size(rooms);
-        //socket.emit("update-people", {
-        //    people: people,
-        //    count: sizePeople
-        //});
-        //socket.emit("roomList", {
-        //    rooms: rooms,
-        //    count: sizeRooms
-        //});
         socket.emit("joined"); //extra emit for GeoLocation
         //io.sockets.emit("update", people[socket.id].name + " is online.")
         //                  }
     });
-
-    //        socket.on("getOnlinePeople", function(fn) {
-    //                  fn({people: people});
-    //        });
-
-    //        socket.on("typing", function(data) {
-    //                  if (typeof people[socket.id] !== "undefined")
-    //                  io.sockets.in(socket.room).emit("isTyping", {isTyping: data, person: people[socket.id].name});
-    //                  });
 
     socket.on("send", function(data) {
     	//console.log("updated conversation: " + util.inspect(data,false,null));
@@ -255,8 +223,8 @@ function connectedListeners(socket) {
 	                    userImage: u.image || false,
 	                    msg: data.message
 	                });
-	                //socket.emit("isTyping", false);
 	                db_collection_messages.insert({
+	                	guid: data.guid,
 	                    Room: socket.room,
 	//                    createdAt: msTime,
 	                    Name: people[socket.id].name,

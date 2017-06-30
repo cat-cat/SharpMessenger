@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
+using ChatClient.Core.Common;
 using ChatClient.Core.UI.Controls;
 using ChatClient.iOS.Renderers;
 
@@ -31,6 +31,21 @@ namespace ChatClient.iOS.Renderers
     public class ListViewDataSourceWrapper : UITableViewSource
     {
         private readonly UITableViewSource _underlyingTableSource;
+
+		[Export("tableView:willDisplayCell:forRowAtIndexPath:")]
+		public override void WillDisplay(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
+		{
+			var b = cell as ChatMessageCell;
+			b.OnAppear();
+		}
+
+		[Export("tableView:didEndDisplayingCell:forRowAtIndexPath:")]
+		[ObjCRuntime.Introduced(ObjCRuntime.PlatformName.iOS, 6, 0, ObjCRuntime.PlatformArchitecture.None, null)]
+		public override void CellDisplayingEnded(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
+		{
+			var b = cell as ChatMessageCell;
+			b.OnDisappear();
+		}
 
         public ListViewDataSourceWrapper(UITableViewSource underlyingTableSource)
         {
@@ -79,7 +94,7 @@ namespace ChatClient.iOS.Renderers
 
         public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
         {
-            var uiCell = (BubbleCell)GetCellInternal(tableView, indexPath);
+            var uiCell = (ChatMessageCell)GetCellInternal(tableView, indexPath);
 
             uiCell.SetNeedsLayout();
             uiCell.LayoutIfNeeded();

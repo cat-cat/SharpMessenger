@@ -66,12 +66,12 @@ namespace ChatClient.Core.UI.ViewModels
 			v.Add(k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", null }, { "room", string.IsNullOrEmpty(_roomName) ? null : _roomName } });
 		}
 
-		public override async void SocketOff()
-		{
-			if (_cacheMessage != null)
-				await PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
-			//_chatServices.Disabled();
-		}
+		//public override async void SocketOff()
+		//{
+		//	if (_cacheMessage != null)
+		//		await PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
+		//	//_chatServices.Disabled();
+		//}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -90,7 +90,8 @@ namespace ChatClient.Core.UI.ViewModels
 					ChatMessage message = (ChatMessage)newItem.Value;
 					if (message.JustSent)
 					{
-						_cacheMessage.guid = message.Guid;
+						_cacheMessage.guid = message.guid;
+						_cacheMessage.status = message.status;
 						PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
 					}
 
@@ -238,10 +239,12 @@ namespace ChatClient.Core.UI.ViewModels
 			User lUser = await BL.Session.Authorization.GetUser();
 			ChatMessage cm = new ChatMessage
 			{
+				Author = lUser,
 				Name = lUser.Nickname,
 				Message = lMessage,
-				Guid = Guid.NewGuid().ToString(),
+				guid = Guid.NewGuid().ToString(),
 				JustSent = true,
+				status = ChatMessage.Status.Pending,
 				IsMine = true,
 				Photo = "profile_avatar.png",
 				Timestamp = DateTime.Now

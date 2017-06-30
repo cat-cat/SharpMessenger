@@ -27,9 +27,9 @@ namespace ChatClient.Core.DAL.Data.Base {
 
         public abstract Task<int> SaveItemAsync(TTYPE item);
 
+		public abstract Task<int> DeleteItemAsync(TTYPE item);
 
-        public abstract Task<int> DeleteItemAsync(TTYPE item);
-        
+		public abstract Task<int> UpdateItemAsync(Dictionary<string, object> d);
     }
 }
 

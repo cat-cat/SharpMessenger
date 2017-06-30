@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 namespace ChatClient.Core.Common.Models
 {
     public class ChatMessage {
+		public enum Status {Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read }
+		private Status _status;
 		private bool _justSent;
 		private string _guid;
         private string _id;
@@ -19,6 +21,19 @@ namespace ChatClient.Core.Common.Models
         private bool _isMine;
         private DateTime _timestamp;
         private User _opponent;
+
+
+		public Status status
+		{
+			get
+			{
+				return _status;
+			}
+			set
+			{
+				_status = value;
+			}
+		}
 
 		public bool JustSent
 		{
@@ -32,8 +47,8 @@ namespace ChatClient.Core.Common.Models
 			}
 		}
 
-		[JsonProperty(PropertyName = "Guid")]
-		public string Guid
+		[JsonProperty(PropertyName = "guid")]
+		public string guid
 		{
 			get
 			{

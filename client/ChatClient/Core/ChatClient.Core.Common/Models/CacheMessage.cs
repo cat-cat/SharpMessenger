@@ -10,12 +10,25 @@ namespace ChatClient.Core.Common.Models
 {
 	// TODO: remove this class, replace with ChatMessage
   public  class CacheMessage {
+		private ChatMessage.Status _status;
       private string _id;
       private string _message;
       private bool _isSended;
 		string _guid;
 
-		[Indexed]
+		public ChatMessage.Status status
+		{
+			get
+			{
+				return _status;
+			}
+			set
+			{
+				_status = value;
+			}
+		}
+
+		[PrimaryKey]
 		public string guid
 		{
 			get
@@ -27,7 +40,6 @@ namespace ChatClient.Core.Common.Models
 				_guid = value;
 			}
 		}
-        [PrimaryKey]
         public string Id {
             get {
                 return _id;

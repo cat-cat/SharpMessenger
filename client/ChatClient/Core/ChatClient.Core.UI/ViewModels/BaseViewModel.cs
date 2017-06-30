@@ -183,7 +183,7 @@ namespace ChatClient.Core.UI.ViewModels {
 		#endregion
 
 		#region Custom functions
-		virtual public void SocketOff() { }
+		//virtual public void SocketOff() { }
 		virtual public void TypingBroadcast(DateTime d) { }
 		#endregion
 	}

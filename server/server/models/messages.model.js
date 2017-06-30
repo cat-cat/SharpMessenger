@@ -12,6 +12,10 @@ const Schema = mongoose.Schema;
  * Messages Schema
  */
 const MessagesSchema = new Schema({
+		status: {
+			type: Number,
+			default: 1 /* - delivered, 2 - read */
+		},
 			guid: {
 				type: String,
 				index: true
@@ -43,12 +47,9 @@ const MessagesSchema = new Schema({
 	        ref: 'User',
 	        required: true
 	    },
-    }, { collection: 'messages', strict: false, timestamps: true });
+    }, { collection: 'messages', strict: false, timestamps: true }
+);
 
-
-MessagesSchema.post('save', function () {
-    QueueService({ id: this._id }, this.endAt);
-});
 
 MessagesSchema.statics = {
     /**
@@ -63,22 +64,14 @@ MessagesSchema.statics = {
             (e) ? Promise.reject(e) : Promise.resolve(r));
     },
 
-    search(params) {
-	    return this.find(params)
-	    .select('createdAt body author')
-	    .sort('-createdAt')
-	    .populate({
-	      path: 'author',
-	      select: 'profile.firstName profile.lastName'
-	    })
-	    .exec(function(err, messages) {
-	      if (err) {
-	        res.send({ error: err });
-	        return next(err);
-	      }
+	status(params) {
+		 return this.findOne({ guid: { $in: params.guids.split(',') } }, function (err, doc) {
 
-	      res.status(200).json({ conversation: messages });
-    	});
+		 	if(params.read != undefined)
+		 		doc.status = 2
+
+		 	doc.save()
+		 }) 
 	}
 }
 

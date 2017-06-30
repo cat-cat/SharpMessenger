@@ -29,47 +29,57 @@ namespace ChatClient.Droid.Renderers
     {
         protected override Android.Views.View GetCellCore(Cell item, Android.Views.View convertView, ViewGroup parent, Context context)
         {
-            var inflatorservice = (LayoutInflater)Forms.Context.GetSystemService(Android.Content.Context.LayoutInflaterService);
-            var dataContext = item.BindingContext as ChatMessage;
+            //if (convertView == null)
+            //{
+            //    convertView = (context as Activity).LayoutInflater.Inflate(Resource.Layout.image_item_owner, null);
+            //    return this.GetCellCore(item, convertView, parent, context);
+            //}
 
+            var textMsgVm = item.BindingContext as ChatMessage;
+			//if (textMsgVm != null)
+			//{
+			LinearLayout template = (LinearLayout) convertView;
+			if (convertView == null)
+			{
+				var inflatorservice = (LayoutInflater)Forms.Context.GetSystemService(Android.Content.Context.LayoutInflaterService);
+				template = (LinearLayout)inflatorservice.Inflate(textMsgVm.IsMine? Resource.Layout.image_item_owner : Resource.Layout.image_item_opponent, null, false);
+			}
 
-
-            if (convertView == null)
-            {
-                convertView = (context as Activity).LayoutInflater.Inflate(Resource.Layout.image_item_owner, null);
-                return this.GetCellCore(item, convertView, parent, context);
-            }
-
-            var textMsgVm = dataContext as ChatMessage;
-            if (textMsgVm != null)
-            {
-                LinearLayout template = (LinearLayout)inflatorservice.Inflate(textMsgVm.IsMine ? Resource.Layout.image_item_owner : Resource.Layout.image_item_opponent, null, false);
-                template.FindViewById<TextView>(Resource.Id.timestamp).Text = textMsgVm.Timestamp.ToString("HH:mm");
-                if (!textMsgVm.IsMine)
-                    template.FindViewById<TextView>(Resource.Id.nick).Text = textMsgVm.Name;
-
-				try
+            template.FindViewById<TextView>(Resource.Id.timestamp).Text = textMsgVm.Timestamp.ToString("HH:mm");
+			if (!textMsgVm.IsMine)
+			{
+				TextView v = template.FindViewById<TextView>(Resource.Id.nick);
+				if (v != null)
+					template.FindViewById<TextView>(Resource.Id.nick).Text = textMsgVm.Name;
+				else
 				{
-					if (textMsgVm.Photo.Contains("http"))
-						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(GetImageBitmapFromUrl(textMsgVm.Photo)));
-					else if (!string.IsNullOrEmpty(textMsgVm.Photo) && textMsgVm.Photo != "profile_avatar.png")
-						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(BitmapFactory.DecodeFile(textMsgVm.Photo)));
+					int i = 4;
 				}
-				catch
-				{
-					LogHelper.WriteLog("android error getting avatar", "android error getting avatar", "MessageRenderer");
-					//FileHelper fh = new FileHelper();
-					//string avatarPath = fh.GetImageSrc("profile_avatar.png");
-					//Bitmap bitmap = BitmapFactory.DecodeResource(GetResources(), Resource.Drawable.profile_avatar); 
-					//template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(bitmap);
-				}
+			}
 
-                template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
-                return template;
+			try
+			{
+				if (textMsgVm.Photo.Contains("http"))
+					template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(GetImageBitmapFromUrl(textMsgVm.Photo)));
+				else if (!string.IsNullOrEmpty(textMsgVm.Photo) && textMsgVm.Photo != "profile_avatar.png")
+					template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(BitmapFactory.DecodeFile(textMsgVm.Photo)));
+			}
+			catch
+			{
+				LogHelper.WriteLog("android error getting avatar", "android error getting avatar", "MessageRenderer");
+				//FileHelper fh = new FileHelper();
+				//string avatarPath = fh.GetImageSrc("profile_avatar.png");
+				//Bitmap bitmap = BitmapFactory.DecodeResource(GetResources(), Resource.Drawable.profile_avatar); 
+				//template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(bitmap);
+			}
 
-            }
+            template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
+			//template.SetOnSystemUiVisibilityChangeListener(
+			return template;
 
-            return base.GetCellCore(item, convertView, parent, context);
+            //}
+
+            //return base.GetCellCore(item, convertView, parent, context);
         }
 
         private Bitmap GetImageBitmapFromUrl(string url)

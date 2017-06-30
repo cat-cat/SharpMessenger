@@ -99,8 +99,7 @@
     <Compile Include="Interfaces\ExceptionHandler.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Renderers\BubbleCell.cs" />
-    <Compile Include="Renderers\ChatBubble.cs" />
+    <Compile Include="Renderers\ChatMessageCell.cs" />
     <Compile Include="Renderers\ChatListViewRenderer.cs" />
     <Compile Include="Renderers\FilterButtonRenderer.cs" />
     <Compile Include="Renderers\MessageRenderer.cs" />

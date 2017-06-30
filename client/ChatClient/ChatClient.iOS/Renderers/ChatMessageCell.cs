@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using ChatClient.Core.Common.Helpers;
+using ChatClient.Core.Common;
+using ChatClient.Core.Common.Models;
 using CoreGraphics;
 
 using Foundation;
@@ -12,8 +15,9 @@ using UIKit;
 
 namespace ChatClient.iOS.Renderers
 {
-    public class BubbleCell : UITableViewCell
+    public class ChatMessageCell : UITableViewCell
     {
+		ChatMessage _chatMessage;
         public static NSString KeyLeft = new NSString("BubbleElementLeft");
         public static NSString KeyRight = new NSString("BubbleElementRight");
         public static UIImage bleft, bright, left, right;
@@ -28,7 +32,7 @@ namespace ChatClient.iOS.Renderers
         private UIImageView lAvatarView;
         bool isLeft;
 
-        static BubbleCell()
+        static ChatMessageCell()
         {
             bright = UIImage.FromFile("my_message.png");
             bleft = UIImage.FromFile("opponent_message.png");
@@ -40,13 +44,30 @@ namespace ChatClient.iOS.Renderers
             right = bright.StretchableImage(11, 11);
             ///	Avatar = Avatar.StretchableImage(11, 11);
         }
+
+		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
+		{
+			string i = _chatMessage.Message;
+			//v.Add(k.MessageSendProgress, _chatMessage.Guid);
+		}
+
+		public void OnAppear()
+		{
+			v.h(OnEvent);
+		}
+
+		public void OnDisappear()
+		{
+			v.m(OnEvent);
+		}
+
         static UIImage FromUrl(string uri)
         {
             using (var url = new NSUrl(uri))
             using (var data = NSData.FromUrl(url))
                 return UIImage.LoadFromData(data);
         }
-        public BubbleCell(bool isLeft)
+        public ChatMessageCell(bool isLeft)
             : base(UITableViewCellStyle.Default, isLeft ? KeyLeft : KeyRight)
         {
             var rect = new RectangleF(0, 0, 1, 10);
@@ -139,21 +160,22 @@ namespace ChatClient.iOS.Renderers
             return new SizeF((float)size.Width, (float)size.Height);
         }
 
-        public void Update(string text,string nickname,DateTime timestamp,string image)
+        public void Update(ChatMessage m)
         {
-            lblMessage.Text = text;
-            lblTimestamp.Text = timestamp.ToString("HH:mm");
-            lblNickname.Text = nickname;
+			_chatMessage = m;
+			lblMessage.Text = m.Message;
+			lblTimestamp.Text = m.Timestamp.ToString("HH:mm");
+			lblNickname.Text = m.Name;
 
 			try
 			{
-				if (image.Contains("http"))
+				if (m.Photo.Contains("http"))
 				{
-					Avatar = ResizeImage(FromUrl(image), 50, 50);
+					Avatar = ResizeImage(FromUrl(m.Photo), 50, 50);
 				}
-				else if (!string.IsNullOrEmpty(image) && image != "profile_avatar.png")
+				else if (!string.IsNullOrEmpty(m.Photo) && m.Photo != "profile_avatar.png")
 				{
-					Avatar = ResizeImage(UIImage.FromFile(image), 50, 50);
+					Avatar = ResizeImage(UIImage.FromFile(m.Photo), 50, 50);
 				}
 			}
 			catch

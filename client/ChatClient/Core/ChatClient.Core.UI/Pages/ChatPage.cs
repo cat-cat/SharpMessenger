@@ -101,10 +101,10 @@ namespace ChatClient.Core.UI.Pages
                 }
             }
             };
-            this.Disappearing +=  (sender,e) =>
-            {
-				ViewModel.SocketOff();
-            };
+    //        this.Disappearing +=  (sender,e) =>
+    //        {
+				//ViewModel.SocketOff();
+    //        };
         
         }
 
@@ -156,12 +156,12 @@ namespace ChatClient.Core.UI.Pages
                 Children = { lImage,stack}
                                                   };
 
-            //if (Device.Idiom == TargetIdiom.Tablet)
-            //{
-            //    stack.Children.Insert(0, timestampLabel);
-            //}
-            var view = new MessageViewCell
-            {
+			//if (Device.Idiom == TargetIdiom.Tablet)
+			//{
+			//    stack.Children.Insert(0, timestampLabel);
+			//}
+			var view = new MessageViewCell
+			{
                 View = lLayout
             };
             return view;

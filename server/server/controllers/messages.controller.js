@@ -47,43 +47,18 @@ function pagination (req, res, next) {
 		}
 	})
 	.then(o => {
-	    Messages.pagination(o, { page: req.query.page, limit: req.query.limit })
+	    Messages.pagination(o, { page: req.query.page, limit: Number(req.query.limit) })
 	        .then(r => res.json({userAvatarPrefix:cfg.userAvatarPrefix(), r}))
 	})
 	.catch(e => res.json({suscess: false, error: e}))
 }
 
-/**
- * Create group
- * @param req {req} - Request
- * @param res {res} - Response
- * @param next {next} - Next function
- */
-//function create (req, res, next) {
-//    upload(req, res, (e) => {
-//
-//        let group = req.body;
-//
-//        (e) ? res.json({ success: false, message: e }) :
-//            Groups.create(Object.assign(group, { _creator: req.user._id, image: req.file.filename }))
-//                .then((group) => res.json({success: true, _id: group._id}))
-//                .catch(e => {
-//                    console.log(e);
-//                    res.json({success: false})
-//                })
-//    });
-//}
+function messageStatus (req, res, next) {
+	    Messages.status(req.query)
+	    .then(data => res.json({success: true, data}))
+		.catch(e => res.json({suscess: false, error: e}))
+}
 
-/**
- * Get the Groups history
- * @param req {req} - Request
- * @param res {res} - Response
- * @param next {next} - Next function
- */
-//function history (req, res, next) {
-//    Groups.getAll({ '_ creator': req.user._id})
-//        .then(groups => res.json(groups))
-//        .catch(e => res.json({success: false}))
-//}
 
-export default { pagination };
+
+export default { pagination, messageStatus };

@@ -60,7 +60,8 @@ namespace ChatClient.iOS.Services
 				}
 				else if (newItem.Key == k.MessageSendProgress)
 				{
-
+					var m = (ChatMessage)newItem.Value;
+					new MessageStatusGet(_user.Token, (ChatMessage)newItem.Value).Object();
 				}
 			}
 
@@ -335,7 +336,7 @@ namespace ChatClient.iOS.Services
 			jobj.Add("message", message.Message);
 			jobj.Add("conversationId", _lastConversation);
 			jobj.Add("date", message.Timestamp.ToString());
-			jobj.Add("guid", message.Guid);
+			jobj.Add("guid", message.guid);
 			jobj.Add("avatar", "no avatar");
 
 			socket.Emit("send", jobj);
