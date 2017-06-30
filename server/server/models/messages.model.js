@@ -66,6 +66,8 @@ MessagesSchema.statics = {
 
 	status(params) {
 		 return this.findOne({ guid: { $in: params.guids.split(',') } }, function (err, doc) {
+		 	if(doc == null) // not found, probably new message didn't saved yet on server
+		 		return
 
 		 	if(params.read != undefined)
 		 		doc.status = 2

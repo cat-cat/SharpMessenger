@@ -47,13 +47,25 @@ namespace ChatClient.iOS.Renderers
 
 		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
 		{
-			string i = _chatMessage.Message;
-			//v.Add(k.MessageSendProgress, _chatMessage.Guid);
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.OnMessageSendProgress)
+				{
+					var d = (Dictionary<string, object>)newItem.Value;
+					if ((string)d["guid"] == _chatMessage.guid)
+					{
+						// display status
+						int i = 4;
+					}
+				}
+			}
 		}
 
 		public void OnAppear()
 		{
 			v.h(OnEvent);
+			v.Add(k.MessageSendProgress, _chatMessage);
 		}
 
 		public void OnDisappear()
