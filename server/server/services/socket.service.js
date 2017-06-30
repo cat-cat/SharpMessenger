@@ -50,6 +50,16 @@ function listeners() {
                      }), console.log('Socket connection on port ' + cfg.socketPort))
         .on('authenticated', function(socket) {
             console.log("authenticated: " + socket.decoded_token._id);
+             people[socket.id] = {
+	            "id": socket.decoded_token._id,
+	            "name": "",
+	            "owns": "",
+	            "inroom": "",
+	            "device": "",
+	            "participants": []
+	        };
+	        sockets.push(socket);
+
             //        joinRoom(socket);
             connectedListeners(socket);
             //        nearestAd(socket);
@@ -110,18 +120,9 @@ function connectedListeners(socket) {
     socket.on("joinserver", function(name, device) {
         console.log("joined server: " + name);
         //                  var exists = false;
-        var ownerRoomID = null;
-        var inRoomID = null;
+        people[socket.id].name = name
+        people[socket.id].device = device
 
-        people[socket.id] = {
-            "id": socket.decoded_token._id,
-            "name": name,
-            "owns": ownerRoomID,
-            "inroom": inRoomID,
-            "device": device,
-            "participants": []
-        };
-        sockets.push(socket);
         var sizePeople = _.size(people);
         var sizeRooms = _.size(rooms);
         socket.emit("joined"); //extra emit for GeoLocation
@@ -244,33 +245,27 @@ function connectedListeners(socket) {
 
     //Room functions
     function CreateRoom(name) {
-    	// TODO: sometimes crashes with: Cannot read property 'inroom' of undefined
-        if (people[socket.id].inroom) {
-            socket.emit("update", "You are in a room. Please leave it first to create your own.");
-        } else if (!people[socket.id].owns) {
-            //                  var id = uuid.v4();
-            var id = name;
-            var room = new Room(name, id, socket.id);
-            rooms[id] = room;
-            var sizeRooms = _.size(rooms);
-            socket.emit("roomList", {
-                rooms: rooms,
-                count: sizeRooms
-            });
-            //add room to socket, and auto join the creator of the room
-            socket.room = name;
-            socket.join(socket.room);
-            people[socket.id].owns = id;
-            people[socket.id].inroom = id;
-            room.addPerson(socket.id);
-            socket.emit("update", "Welcome to " + room.name + ".");
-            socket.emit("sendRoomID", {
-                id: id
-            });
-            //                      chatHistory[socket.room] = [];
-        } else {
-            socket.emit("update", "You have already created a room.");
-        }
+	// TODO: sometimes crashes with: Cannot read property 'inroom' of undefined
+        //                  var id = uuid.v4();
+        var id = name;
+        var room = new Room(name, id, socket.id);
+        rooms[id] = room;
+        var sizeRooms = _.size(rooms);
+        socket.emit("roomList", {
+            rooms: rooms,
+            count: sizeRooms
+        });
+        //add room to socket, and auto join the creator of the room
+        socket.room = name;
+        socket.join(socket.room);
+        people[socket.id].owns = id;
+        people[socket.id].inroom = id;
+        room.addPerson(socket.id);
+        socket.emit("update", "Welcome to " + room.name + ".");
+        socket.emit("sendRoomID", {
+            id: id
+        });
+        //                      chatHistory[socket.room] = [];
     };
 
     socket.on("check", function(name, fn) {
@@ -297,37 +292,21 @@ function connectedListeners(socket) {
         if (io.sockets.adapter.rooms[id] == undefined) {
             CreateRoom(id)
         }
-        if (typeof people[socket.id] !== "undefined") {
-            var room = rooms[id];
-            if (socket.id === room.owner) {
-                socket.emit("update", "You are the owner of this room and you have already been joined.");
-            } else {
-                if (_.contains((room.people), socket.id)) {
-                    socket.emit("update", "You have already joined this room.");
-                } else {
-                    if (people[socket.id].inroom !== null) {
-                        socket.emit("update", "You are already in a room (" + rooms[people[socket.id].inroom].name + "), please leave it first to join another room.");
-                    } else {
-                        room.addPerson(socket.id);
-                        people[socket.id].inroom = id;
-                        socket.room = room.name;
-                        socket.join(socket.room);
-                        var user = people[socket.id];
-                        io.sockets.in(socket.room).emit("update", user.name + " has connected to " + room.name + " room.");
-                        socket.emit("update", "Welcome to " + room.name + ".");
-                        socket.emit("sendRoomID", {
-                            id: id
-                        });
-                        //                                      var keys = _.keys(chatHistory);
-                        //                                      if (_.contains(keys, socket.room)) {
-                        //                                          socket.emit("history", chatHistory[socket.room]);
-                        //                                      }
-                    }
-                }
-            }
-        } else {
-            socket.emit("update", "Please enter a valid name first.");
-        }
+        var room = rooms[id];
+        room.addPerson(socket.id);
+        people[socket.id].inroom = id;
+        socket.room = room.name;
+        socket.join(socket.room);
+        var user = people[socket.id];
+        io.sockets.in(socket.room).emit("update", user.name + " has connected to " + room.name + " room.");
+        socket.emit("update", "Welcome to " + room.name + ".");
+        socket.emit("sendRoomID", {
+            id: id
+        });
+        //                                      var keys = _.keys(chatHistory);
+        //                                      if (_.contains(keys, socket.room)) {
+        //                                          socket.emit("history", chatHistory[socket.room]);
+        //                                      }
     });
 
     socket.on("leaveRoom", function(id) {

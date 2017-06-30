@@ -22,8 +22,7 @@ const MessagesSchema = new Schema({
 			},
 		  conversationId: {
 		    type: Schema.Types.ObjectId,
-		    ref: 'Conversation',
-		    required: true
+		    ref: 'Conversation'
 		  },
 	     Room: {
 	         type: String,
