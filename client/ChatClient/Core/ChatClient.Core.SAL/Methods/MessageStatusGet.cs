@@ -86,20 +86,20 @@ namespace ChatClient.Core.SAL.Methods
 		{
 			bool success = true;
 
-			// First search locally
-			List<object> locList = await findLocal();
-			if (locList.Count > 0)
-			{
-				var d = (Dictionary<string, object>)locList[0];
-				var status = (ChatMessage.Status) d["status"];
+			// TODO: First search locally
+			//List<object> locList = await findLocal();
+			//if (locList.Count > 0)
+			//{
+			//	var d = (Dictionary<string, object>)locList[0];
+			//	var status = (ChatMessage.Status) d["status"];
 
-				if (status == ChatMessage.Status.Read)
-				{
-					v.Add(k.OnMessageSendProgress, d);
-					Dispose();
-					return success;
-				}
-			}
+			//	if (status == ChatMessage.Status.Read)
+			//	{
+			//		v.Add(k.OnMessageSendProgress, d);
+			//		Dispose();
+			//		return success;
+			//	}
+			//}
 
 			// Second try to get message from server
 			try
@@ -127,7 +127,11 @@ namespace ChatClient.Core.SAL.Methods
 						var r = Response.ResponseObject["data"].ToString();
 						if(r.Contains("status")) // response not empty
 						{
-							var retVal = JsonConvert.DeserializeObject<Dictionary<string, object>>(r);
+							Dictionary<string, object> retVal = JsonConvert.DeserializeObject<Dictionary<string, object>>(r);
+
+							// convert status from web to internal type
+							retVal["status"] = (ChatMessage.Status)Enum.ToObject(typeof(ChatMessage.Status), retVal["status"]);
+
 							await PersisataceService.GetCacheMessagePersistance().UpdateItemAsync(retVal);
 							v.Add(k.OnMessageSendProgress, retVal);
 						}
@@ -149,8 +153,9 @@ namespace ChatClient.Core.SAL.Methods
 		{
 			_headers.Add("Authorization", token);
 
-
-			if (m.Id != m.Author.Id)
+			if (m.status == ChatMessage.Status.Deleted)
+				_urlParameters.Add("deleted", 1);
+			else if (m.Id != m.Author.Id)
 				_urlParameters.Add("read", 1);
 			
 			_urlParameters.Add("guids", m.guid);

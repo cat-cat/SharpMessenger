@@ -59,6 +59,4 @@ function messageStatus (req, res, next) {
 		.catch(e => res.json({suscess: false, error: e}))
 }
 
-
-
 export default { pagination, messageStatus };

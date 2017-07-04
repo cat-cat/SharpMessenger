@@ -36,11 +36,10 @@ namespace ChatClient.Core.DAL.Data
         }
 		public override Task<int> UpdateItemAsync(Dictionary<string, object> d)
 		{
-			ChatMessage.Status foo = (ChatMessage.Status)Enum.ToObject(typeof(ChatMessage.Status), d["status"]);
 			var m = new CacheMessage()
 			{
 				guid = (string)d["guid"],
-				status = foo
+				status = (ChatMessage.Status) d["status"]
 			};
 
 			return database.UpdateAsync(m);

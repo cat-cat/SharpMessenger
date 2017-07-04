@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text;
-
+using System.Collections.Specialized;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -13,6 +13,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
 using ChatClient.Core.Common.Helpers;
 using ChatClient.Core.UI.Controls;
@@ -25,8 +26,26 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer(typeof(MessageViewCell), typeof(MessageRenderer))]
 namespace ChatClient.Droid.Renderers
 {
+	class NotifyView : LinearLayout
+	{
+		public ChatMessage _chatMessage;
+
+
+		public NotifyView(Context c) : base(c)
+		{
+			Id = 2525;
+		}
+	}
+
     public class MessageRenderer : ViewCellRenderer
     {
+		void EventHandler<TEventArgs>(Object sender, TEventArgs e) 
+		{
+			var nv = sender as NotifyView;
+			nv._chatMessage.status = ChatMessage.Status.Deleted;
+			v.Add(k.MessageSendProgress, nv._chatMessage);
+		}
+
         protected override Android.Views.View GetCellCore(Cell item, Android.Views.View convertView, ViewGroup parent, Context context)
         {
             //if (convertView == null)
@@ -42,7 +61,17 @@ namespace ChatClient.Droid.Renderers
 			if (convertView == null)
 			{
 				var inflatorservice = (LayoutInflater)Forms.Context.GetSystemService(Android.Content.Context.LayoutInflaterService);
-				template = (LinearLayout)inflatorservice.Inflate(textMsgVm.IsMine? Resource.Layout.image_item_owner : Resource.Layout.image_item_opponent, null, false);
+				var nv = new NotifyView(Forms.Context);
+				template = (LinearLayout)inflatorservice.Inflate(textMsgVm.IsMine ? Resource.Layout.image_item_owner : Resource.Layout.image_item_opponent, nv);
+				template.LongClick += EventHandler;
+			}
+
+
+			var rv = template.FindViewById(2525) as NotifyView;
+
+			if (rv != null)
+			{
+				rv._chatMessage = textMsgVm;
 			}
 
             template.FindViewById<TextView>(Resource.Id.timestamp).Text = textMsgVm.Timestamp.ToString("HH:mm");
@@ -73,7 +102,10 @@ namespace ChatClient.Droid.Renderers
 				//template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(bitmap);
 			}
 
-            template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
+			if (textMsgVm.status == ChatMessage.Status.Deleted)
+				template.FindViewById<TextView>(Resource.Id.message).Text = "<deleted>";
+			else
+				template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
 			//template.SetOnSystemUiVisibilityChangeListener(
 			return template;
 

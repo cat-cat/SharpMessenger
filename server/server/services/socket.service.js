@@ -4,6 +4,7 @@ import socketioJwt from 'socketio-jwt';
 import User from '../models/user.model';
 import cfg from '../config/env';
 import Conversation from '../models/conversation.model';
+import Messages from '../models/messages.model';
 
 const app = require('express')();
 const http = require('http').Server(app);
@@ -157,7 +158,7 @@ function connectedListeners(socket) {
 			     })		
            	})
         	.then(function(conv, error) {
-                db_collection_messages.insert({
+                Messages.insert({
                 	guid: data.guid,
                 	conversationId: ObjectId(conv._id),
                     createdAt: msTime,
@@ -165,43 +166,39 @@ function connectedListeners(socket) {
                     Message: data.message,
                     _creator: ObjectId(socket.decoded_token._id),
                     _to:ObjectId(data.opponent)
-                }, function(error, message) {
+                }).then((message, error) => {
                 	if(error)
                 		console.log(error)
 
-                    Conversation.updateWithMessage(message.ops[0])
+                    Conversation.updateWithMessage(message)
                     .then((c, err) => {
 						if(c) {
-							socket.emit("conversation", message.ops[0].conversationId);
+							socket.emit("conversation", message.conversationId);
 
 							User.get({_id:ObjectId(socket.decoded_token._id)}, {image: 1})
 							.then(u => { 
 				                User.get({_id:ObjectId(data.opponent)}, {image: 1})
 				                .then( u => {
+						            var keys = Object.keys(people);
+						            var whisperId;
+						            if (keys.length != 0) {
+						                for (var i = 0; i < keys.length; i++) {
+						                    if (people[keys[i]].id === data.opponent) {
+						                        whisperId = keys[i];
 
+								                io.sockets.connected[keys[i]].emit("whisper", {
+								                	userAvatarPrefix:cfg.userAvatarPrefix(),
+								                    msTime: msTime,
+								                    socketID: people[socket.id],
+								                    msg: data.message,
+								                    userImage: u.image || false,
+								                    participantOnline: true
+								                })
 
-            var keys = Object.keys(people);
-            var whisperId;
-            if (keys.length != 0) {
-                for (var i = 0; i < keys.length; i++) {
-                    if (people[keys[i]].id === data.opponent) {
-                        whisperId = keys[i];
-
-		                io.sockets.connected[keys[i]].emit("whisper", {
-		                	userAvatarPrefix:cfg.userAvatarPrefix(),
-		                    msTime: msTime,
-		                    socketID: people[socket.id],
-		                    msg: data.message,
-		                    userImage: u.image || false,
-		                    participantOnline: true
-		                })
-
-                        break;
-                    }
-                }
-            }
-
-
+						                        break;
+						                    }
+						                }
+						            }
 					            })
 					            .catch(e => console.log(e))
 			                })
@@ -209,7 +206,7 @@ function connectedListeners(socket) {
 						}
 					})
 					.catch(e => console.log(e))
-                });
+                })
 		    })
         	.catch(e => console.log({success: false, error: e}))
         } else { // if not wisper
@@ -224,7 +221,7 @@ function connectedListeners(socket) {
 	                    userImage: u.image || false,
 	                    msg: data.message
 	                });
-	                db_collection_messages.insert({
+	                Messages.insert({
 	                	guid: data.guid,
 	                    Room: socket.room,
 	//                    createdAt: msTime,
@@ -232,8 +229,9 @@ function connectedListeners(socket) {
 	                    Message: data.message,
 	                    _creator: ObjectId(socket.decoded_token._id),
 	                    _to:ObjectId(data.id)
-	                }, function() {
-	                    //  console.log(data.name + ' inserted a message into db');
+	                }).then((message, error) => {
+	                	if(error)
+	                    	console.log('error inserting a message into db: ' + error);
 	                });
                 });
 

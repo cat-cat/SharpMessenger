@@ -25,10 +25,11 @@ namespace ChatClient.Core.UI.Controls
 				{
 					var d = (Dictionary<string, object>)newItem.Value;
 					ChatMessage m = this.BindingContext as ChatMessage;
-					if ((string)d["guid"] == m.guid)
+					if ((string)d["guid"] == m.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
 					{
 						// display status
-						int i = 4;
+						m.Message = "<deleted>";
+						this.BindingContext = m;
 					}
 				}
 			}

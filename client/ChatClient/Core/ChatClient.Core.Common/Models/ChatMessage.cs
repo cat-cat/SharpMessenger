@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace ChatClient.Core.Common.Models
 {
     public class ChatMessage {
-		public enum Status {Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read }
+		public enum Status {Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read, Deleted }
 		private Status _status;
 		private bool _justSent;
 		private string _guid;

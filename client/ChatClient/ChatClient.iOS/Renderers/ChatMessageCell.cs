@@ -31,6 +31,7 @@ namespace ChatClient.iOS.Renderers
         private UILabel lblTimestamp;
         private UIImageView lAvatarView;
         bool isLeft;
+		UILongPressGestureRecognizer longPressGesture;
 
         static ChatMessageCell()
         {
@@ -42,8 +43,20 @@ namespace ChatClient.iOS.Renderers
             //right = bright.CreateResizableImage (new UIEdgeInsets (11, 11, 17, 18));
             left = bleft.StretchableImage(11, 11);
             right = bright.StretchableImage(11, 11);
-            ///	Avatar = Avatar.StretchableImage(11, 11);
+			///	Avatar = Avatar.StretchableImage(11, 11);
         }
+
+		void LongPressMethod(UILongPressGestureRecognizer gestureRecognizer)
+		{
+			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
+			{
+				//Console.Write("LongPress");
+				//var selectCategory = new UIActionSheet("ActionSheet", null, "Cancel", "test");
+				//selectCategory.ShowInView(this);
+				_chatMessage.status = ChatMessage.Status.Deleted;
+				v.Add(k.MessageSendProgress, _chatMessage);
+			}
+		}
 
 		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
 		{
@@ -53,10 +66,10 @@ namespace ChatClient.iOS.Renderers
 				if (newItem.Key == k.OnMessageSendProgress)
 				{
 					var d = (Dictionary<string, object>)newItem.Value;
-					if ((string)d["guid"] == _chatMessage.guid)
+					if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
 					{
-						// display status
-						int i = 4;
+						_chatMessage.Message = "<deleted>";
+						lblMessage.Text = _chatMessage.Message;
 					}
 				}
 			}
@@ -66,11 +79,15 @@ namespace ChatClient.iOS.Renderers
 		{
 			v.h(OnEvent);
 			v.Add(k.MessageSendProgress, _chatMessage);
+
+			longPressGesture = new UILongPressGestureRecognizer(LongPressMethod);
+			AddGestureRecognizer(longPressGesture);
 		}
 
 		public void OnDisappear()
 		{
 			v.m(OnEvent);
+			RemoveGestureRecognizer(longPressGesture);
 		}
 
         static UIImage FromUrl(string uri)

@@ -12,14 +12,21 @@ const Schema = mongoose.Schema;
  * Messages Schema
  */
 const MessagesSchema = new Schema({
+		replyQuote: {
+			type: String,
+		},
+		replyId: {
+	        type: Schema.Types.ObjectId,
+	        ref: 'messages'
+		},
 		status: {
 			type: Number,
-			default: 1 /* - delivered, 2 - read */
+			default: 1 /* - delivered, 2 - read, 3 - deleted */
 		},
-			guid: {
-				type: String,
-				index: true
-			},
+		guid: {
+			type: String,
+			index: true
+		},
 		  conversationId: {
 		    type: Schema.Types.ObjectId,
 		    ref: 'Conversation'
@@ -70,9 +77,18 @@ MessagesSchema.statics = {
 
 		 	if(params.read != undefined)
 		 		doc.status = 2
+		 	else if(params.deleted != undefined)
+		 		doc.status = 3
 
 		 	doc.save()
 		 }) 
+	},
+
+	insert(data) {
+		return this.create(data, function (err) {
+		    if (err) 
+		    	return console.log(err);
+	    })
 	}
 }
 
