@@ -16,6 +16,7 @@ namespace ChatClient.Core.Common.Models
         private string _id;
         private string _name;
         private string _message;
+		private string _replyQuote;
         private string _photo;
         private User _author;
         private bool _isMine;
@@ -69,15 +70,32 @@ namespace ChatClient.Core.Common.Models
                 _name = value;
             }
         }
-        [JsonProperty(PropertyName = "Message")]
-        public string Message {
-            get {
-                return _message;
-            }
-            set {
-                _message = value;
-            }
-        }
+
+		[JsonProperty(PropertyName = "Message")]
+		public string Message
+		{
+			get
+			{
+				return _message;
+			}
+			set
+			{
+				_message = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "ReplyQuote")]
+		public string ReplyQuote
+		{
+			get
+			{
+				return _replyQuote;
+			}
+			set
+			{
+				_replyQuote = value;
+			}
+		}
 
         public string Photo {
             get {

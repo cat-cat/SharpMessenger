@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection.Emit;
@@ -24,6 +25,7 @@ namespace ChatClient.Core.UI.Pages
         //private ListView messagesListView;
         //private Button joinButton;
 		public static ChatListView messageList;
+		ChatMessage _messageReplyTo;
 
         public ChatPage()
         {
@@ -105,10 +107,22 @@ namespace ChatClient.Core.UI.Pages
     //        {
 				//ViewModel.SocketOff();
     //        };
-        
+
+			MessageReply.h(OnEvent);
         }
 
-      
+		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.MessageReply)
+				{
+					_messageReplyTo = (ChatMessage)newItem.Value;
+					messageEntry.Text = "replyTo: " + _messageReplyTo.Message;
+				}
+			}		
+		}     
 
         private void MessageEntry_TextChanged(object sender, TextChangedEventArgs e) {
             if (e.NewTextValue.Length > 0)

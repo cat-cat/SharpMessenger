@@ -50,11 +50,20 @@ namespace ChatClient.iOS.Renderers
 		{
 			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
 			{
-				//Console.Write("LongPress");
-				//var selectCategory = new UIActionSheet("ActionSheet", null, "Cancel", "test");
-				//selectCategory.ShowInView(this);
-				_chatMessage.status = ChatMessage.Status.Deleted;
-				v.Add(k.MessageSendProgress, _chatMessage);
+				var actionSheet = new UIActionSheet("ActionSheet", null, "Cancel", "Delete", new string[1] {"Reply"});
+			    actionSheet.Clicked += delegate(object a, UIButtonEventArgs b) {
+					if (b.ButtonIndex == 0) // delete
+					{
+						_chatMessage.status = ChatMessage.Status.Deleted;
+						v.Add(k.MessageSendProgress, _chatMessage);
+					}
+					else if (b.ButtonIndex == 1) // reply
+					{
+						v.Add(k.MessageReply, _chatMessage);
+					}
+			    };
+				actionSheet.ShowInView(this);
+
 			}
 		}
 
