@@ -108,7 +108,7 @@ namespace ChatClient.Core.UI.Pages
 				//ViewModel.SocketOff();
     //        };
 
-			MessageReply.h(OnEvent);
+			v.h(OnEvent);
         }
 
 		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
@@ -119,16 +119,27 @@ namespace ChatClient.Core.UI.Pages
 				if (newItem.Key == k.MessageReply)
 				{
 					_messageReplyTo = (ChatMessage)newItem.Value;
-					messageEntry.Text = "replyTo: " + _messageReplyTo.Message;
+					messageEntry.Text = "rep: ";
+					ViewModel.ChatMessage.ReplyQuote = _messageReplyTo.Message;
+					ViewModel.ChatMessage.ReplyGuid = _messageReplyTo.guid;
+					ViewModel.ChatMessage.ReplyId = _messageReplyTo.Id;
 				}
 			}		
 		}     
 
         private void MessageEntry_TextChanged(object sender, TextChangedEventArgs e) {
-            if (e.NewTextValue.Length > 0)
-                sendMessageButton.Image = "send_message_normal.png";
-            else 
+			if (e.NewTextValue.Length > 0)
+				sendMessageButton.Image = "send_message_normal.png";
+			else
+			{
 				sendMessageButton.Image = "send_message_inactive.png";
+
+				// reset replyTo message if wipe all the text in message entry
+				_messageReplyTo = null;
+				ViewModel.ChatMessage.ReplyQuote = null;
+				ViewModel.ChatMessage.ReplyGuid = null;
+				ViewModel.ChatMessage.ReplyId = null;
+			}
 
 			// handle Typing... logic
 			if ((DateTimeOffset.UtcNow.DateTime - isTypingDateTime) > new TimeSpan(0, 0, 5))

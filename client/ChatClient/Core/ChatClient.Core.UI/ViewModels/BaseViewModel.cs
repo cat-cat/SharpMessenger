@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using ChatClient.Core.Common.Models;
 using Xamarin.Forms;
 
 #endregion
@@ -11,6 +11,8 @@ using Xamarin.Forms;
 namespace ChatClient.Core.UI.ViewModels {
 	public class BaseViewModel : INotifyPropertyChanged
 	{
+		protected ChatMessage _chatMessage = new ChatMessage();
+
 		#region Static & Const
 
 		/// <summary>
@@ -56,6 +58,19 @@ namespace ChatClient.Core.UI.ViewModels {
 		#region Properties
 
 		public bool IsInitialized { get; set; }
+
+		public ChatMessage ChatMessage
+		{
+			get
+			{
+				return _chatMessage;
+			}
+			set
+			{
+				_chatMessage = value;
+				OnPropertyChanged("ChatMessage");
+			}
+		}
 
 		public bool CanLoadMore
 		{

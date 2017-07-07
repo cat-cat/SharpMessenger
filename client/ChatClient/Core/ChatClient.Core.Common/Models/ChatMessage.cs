@@ -10,9 +10,11 @@ namespace ChatClient.Core.Common.Models
 {
     public class ChatMessage {
 		public enum Status {Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read, Deleted }
+		private string _replyId;
 		private Status _status;
 		private bool _justSent;
 		private string _guid;
+		private string _replyGuid;
         private string _id;
         private string _name;
         private string _message;
@@ -45,6 +47,32 @@ namespace ChatClient.Core.Common.Models
 			set
 			{
 				_justSent = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "ReplyId")]
+		public string ReplyId
+		{
+			get
+			{
+				return _replyId;
+			}
+			set
+			{
+				_replyId = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "ReplyGuid")]
+		public string ReplyGuid
+		{
+			get
+			{
+				return _replyGuid;
+			}
+			set
+			{
+				_replyGuid = value;
 			}
 		}
 

@@ -91,6 +91,10 @@ namespace ChatClient.iOS.Renderers
 
 			longPressGesture = new UILongPressGestureRecognizer(LongPressMethod);
 			AddGestureRecognizer(longPressGesture);
+
+			if (_chatMessage.ReplyGuid != null)
+				// TODO: make this good
+				lblMessage.Text = "REPLIED: " + _chatMessage.Message + " TO: " + _chatMessage.ReplyQuote;
 		}
 
 		public void OnDisappear()

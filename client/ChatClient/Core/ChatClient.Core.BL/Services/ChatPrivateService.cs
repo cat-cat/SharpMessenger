@@ -221,10 +221,13 @@ namespace ChatClient.iOS.Services
 				Debug.WriteLine("on.chat: " + data);
 
 				// http://stackoverflow.com/questions/12674076/how-can-i-use-complex-property-names-in-anonymous-type
-				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "" };
+				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "" };
 
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 				ChatMessage cm = new ChatMessage();
+				cm.ReplyId = o.replyId;
+				cm.ReplyGuid = o.replyGuid;
+				cm.ReplyQuote = o.replyQuote;
 				cm.Message = o.msg;
 				cm.Name = o.socketID.name;
 				cm.Author = new User() { Id = o.socketID.id }; ;
@@ -269,10 +272,13 @@ namespace ChatClient.iOS.Services
 				Debug.WriteLine("on.whisper: " + data);
 
 				// http://stackoverflow.com/questions/12674076/how-can-i-use-complex-property-names-in-anonymous-type
-				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "" };
+				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "" };
 
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 				ChatMessage cm = new ChatMessage();
+				cm.ReplyId = o.replyId;
+				cm.ReplyGuid = o.replyGuid;
+				cm.ReplyQuote = o.replyQuote;
 				cm.Message = o.msg;
 				cm.Name = o.socketID.name;
 				cm.Author = new User() { Id = o.socketID.id }; ;
@@ -338,6 +344,9 @@ namespace ChatClient.iOS.Services
 			jobj.Add("date", message.Timestamp.ToString());
 			jobj.Add("guid", message.guid);
 			jobj.Add("avatar", "no avatar");
+			jobj.Add("replyGuid", message.ReplyGuid);
+			jobj.Add("replyQuote", message.ReplyQuote);
+			jobj.Add("replyId", message.ReplyId);
 
 			socket.Emit("send", jobj);
 		}

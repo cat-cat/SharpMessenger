@@ -165,7 +165,10 @@ function connectedListeners(socket) {
                     Name: people[socket.id].name,
                     Message: data.message,
                     _creator: ObjectId(socket.decoded_token._id),
-                    _to:ObjectId(data.opponent)
+                    _to:ObjectId(data.opponent),
+                    replyGuid: data.replyGuid,
+                    replyId: data.replyId,
+                    replyQuote: data.replyQuote
                 }).then((message, error) => {
                 	if(error)
                 		console.log(error)
@@ -192,7 +195,10 @@ function connectedListeners(socket) {
 								                    socketID: people[socket.id],
 								                    msg: data.message,
 								                    userImage: u.image || false,
-								                    participantOnline: true
+								                    participantOnline: true,
+								                    replyGuid: data.replyGuid,
+								                    replyId: data.replyId,
+								                    replyQuote: data.replyQuote
 								                })
 
 						                        break;
@@ -219,7 +225,10 @@ function connectedListeners(socket) {
 	                    msTime: msTime,
 	                    socketID: people[socket.id],
 	                    userImage: u.image || false,
-	                    msg: data.message
+	                    msg: data.message,
+	                    replyGuid: data.replyGuid,
+	                    replyId: data.replyId,
+	                    replyQuote: data.replyQuote
 	                });
 	                Messages.insert({
 	                	guid: data.guid,
@@ -228,7 +237,10 @@ function connectedListeners(socket) {
 	                    Name: people[socket.id].name,
 	                    Message: data.message,
 	                    _creator: ObjectId(socket.decoded_token._id),
-	                    _to:ObjectId(data.id)
+	                    _to:ObjectId(data.id),
+	                    replyGuid: data.replyGuid,
+	                    replyId: data.replyId,
+	                    replyQuote: data.replyQuote
 	                }).then((message, error) => {
 	                	if(error)
 	                    	console.log('error inserting a message into db: ' + error);

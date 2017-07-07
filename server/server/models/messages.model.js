@@ -13,11 +13,14 @@ const Schema = mongoose.Schema;
  */
 const MessagesSchema = new Schema({
 		replyQuote: {
-			type: String,
+			type: String
 		},
 		replyId: {
 	        type: Schema.Types.ObjectId,
 	        ref: 'messages'
+		},
+		replyGuid: {
+	        type: String
 		},
 		status: {
 			type: Number,

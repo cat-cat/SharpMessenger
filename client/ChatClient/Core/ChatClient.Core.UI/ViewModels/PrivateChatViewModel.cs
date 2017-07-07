@@ -31,7 +31,6 @@ namespace ChatClient.Core.UI.ViewModels
 	{
 		#region Fields
 
-		private ChatMessage _chatMessage = new ChatMessage();
 		//private IChatServices _chatServices;
 		private ObservableCollection<ChatMessage> _messages = new ObservableCollection<ChatMessage>();
 
@@ -143,19 +142,6 @@ namespace ChatClient.Core.UI.ViewModels
 			}
 		}
 
-		public ChatMessage ChatMessage
-		{
-			get
-			{
-				return _chatMessage;
-			}
-			set
-			{
-				_chatMessage = value;
-				OnPropertyChanged("ChatMessage");
-			}
-		}
-
 		#endregion
 
 		#region Private Methods and Operators
@@ -263,7 +249,10 @@ namespace ChatClient.Core.UI.ViewModels
 				status = ChatMessage.Status.Pending,
 				IsMine = true,
 				Photo = "profile_avatar.png",
-				Timestamp = DateTime.Now
+				Timestamp = DateTime.Now,
+				ReplyQuote = _chatMessage.ReplyQuote,
+				ReplyGuid = _chatMessage.ReplyGuid,
+				ReplyId = _chatMessage.ReplyId
 			};
 
 			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", cm}, { "roomName", null} });

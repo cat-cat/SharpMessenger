@@ -16,6 +16,7 @@ using Android.Widget;
 using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
 using ChatClient.Core.Common.Helpers;
+using ChatClient.Core.UI;
 using ChatClient.Core.UI.Controls;
 using ChatClient.Core.UI.ViewModels;
 using ChatClient.Droid.Renderers;
@@ -39,11 +40,20 @@ namespace ChatClient.Droid.Renderers
 
     public class MessageRenderer : ViewCellRenderer
     {
-		void EventHandler<TEventArgs>(Object sender, TEventArgs e) 
+		async void EventHandler<TEventArgs>(Object sender, TEventArgs e) 
 		{
+			string action = await App.Current.MainPage.DisplayActionSheet("Actions", "Cancel", "Delete", "Reply");
+
 			var nv = sender as NotifyView;
-			nv._chatMessage.status = ChatMessage.Status.Deleted;
-			v.Add(k.MessageSendProgress, nv._chatMessage);
+			if (action == "Delete") // delete
+			{
+				nv._chatMessage.status = ChatMessage.Status.Deleted;
+				v.Add(k.MessageSendProgress, nv._chatMessage);
+			}
+			else if (action == "Reply") // reply
+			{
+				v.Add(k.MessageReply, nv._chatMessage);
+			}
 		}
 
         protected override Android.Views.View GetCellCore(Cell item, Android.Views.View convertView, ViewGroup parent, Context context)
@@ -105,7 +115,13 @@ namespace ChatClient.Droid.Renderers
 			if (textMsgVm.status == ChatMessage.Status.Deleted)
 				template.FindViewById<TextView>(Resource.Id.message).Text = "<deleted>";
 			else
-				template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
+			{
+				if (textMsgVm.ReplyGuid != null)
+					// TODO: make this good
+					template.FindViewById<TextView>(Resource.Id.message).Text = "REPLIED: " + textMsgVm.Message + " TO: " + textMsgVm.ReplyQuote;
+				else
+					template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
+			}
 			//template.SetOnSystemUiVisibilityChangeListener(
 			return template;
 
