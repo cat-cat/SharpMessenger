@@ -42,7 +42,7 @@ namespace ChatClient.Droid.Renderers
     {
 		async void EventHandler<TEventArgs>(Object sender, TEventArgs e) 
 		{
-			string action = await App.Current.MainPage.DisplayActionSheet("Actions", "Cancel", "Delete", "Reply");
+			string action = await App.Current.MainPage.DisplayActionSheet("Actions", "Cancel", "Delete", new string[2] {"Reply", "Edit"});
 
 			var nv = sender as NotifyView;
 			if (action == "Delete") // delete
@@ -53,6 +53,10 @@ namespace ChatClient.Droid.Renderers
 			else if (action == "Reply") // reply
 			{
 				v.Add(k.MessageReply, nv._chatMessage);
+			}
+			else if (action == "Edit") // edit
+			{
+				v.Add(k.MessageEdit, nv._chatMessage);
 			}
 		}
 

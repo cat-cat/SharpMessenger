@@ -198,7 +198,8 @@ function connectedListeners(socket) {
 								                    participantOnline: true,
 								                    replyGuid: data.replyGuid,
 								                    replyId: data.replyId,
-								                    replyQuote: data.replyQuote
+								                    replyQuote: data.replyQuote,
+								                    guid: data.guid
 								                })
 
 						                        break;
@@ -228,7 +229,8 @@ function connectedListeners(socket) {
 	                    msg: data.message,
 	                    replyGuid: data.replyGuid,
 	                    replyId: data.replyId,
-	                    replyQuote: data.replyQuote
+	                    replyQuote: data.replyQuote,
+	                    guid: data.guid
 	                });
 	                Messages.insert({
 	                	guid: data.guid,

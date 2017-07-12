@@ -221,10 +221,11 @@ namespace ChatClient.iOS.Services
 				Debug.WriteLine("on.chat: " + data);
 
 				// http://stackoverflow.com/questions/12674076/how-can-i-use-complex-property-names-in-anonymous-type
-				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "" };
+				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "", guid = ""};
 
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 				ChatMessage cm = new ChatMessage();
+				cm.guid = o.guid;
 				cm.ReplyId = o.replyId;
 				cm.ReplyGuid = o.replyGuid;
 				cm.ReplyQuote = o.replyQuote;
@@ -272,10 +273,11 @@ namespace ChatClient.iOS.Services
 				Debug.WriteLine("on.whisper: " + data);
 
 				// http://stackoverflow.com/questions/12674076/how-can-i-use-complex-property-names-in-anonymous-type
-				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "" };
+				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "", guid = ""};
 
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 				ChatMessage cm = new ChatMessage();
+				cm.guid = o.guid;
 				cm.ReplyId = o.replyId;
 				cm.ReplyGuid = o.replyGuid;
 				cm.ReplyQuote = o.replyQuote;

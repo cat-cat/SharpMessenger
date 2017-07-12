@@ -22,6 +22,10 @@ const MessagesSchema = new Schema({
 		replyGuid: {
 	        type: String
 		},
+		messageEdited: {
+			type: Boolean,
+			default: false
+		},
 		status: {
 			type: Number,
 			default: 1 /* - delivered, 2 - read, 3 - deleted */
@@ -82,6 +86,12 @@ MessagesSchema.statics = {
 		 		doc.status = 2
 		 	else if(params.deleted != undefined)
 		 		doc.status = 3
+
+			// not exclusive condition in relation to status	
+		 	if(params.edited != undefined) {
+		 		doc.messageEdited = true
+		 		doc.Message = params.message
+		 	}
 
 		 	doc.save()
 		 }) 

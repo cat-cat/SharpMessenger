@@ -4,14 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using ChatClient.Core.Common.Models;
+using ChatClient.Core.SAL.Methods;
+using ChatClient.Core.UI.PopupPages;
 using Xamarin.Forms;
-
+using Rg.Plugins.Popup.Extensions;
 #endregion
 
 namespace ChatClient.Core.UI.ViewModels {
 	public class BaseViewModel : INotifyPropertyChanged
 	{
 		protected ChatMessage _chatMessage = new ChatMessage();
+		ChatMessage _editMessage;
 
 		#region Static & Const
 
@@ -46,18 +49,62 @@ namespace ChatClient.Core.UI.ViewModels {
 		#endregion
 
 		#region Fields
+		Command _cancelEditCommand;
+		Command _makeEditCommand;
 
-		private bool canLoadMore;
-		private string icon = null;
-		private bool isBusy;
-		private bool isValid;
-		private string subTitle = string.Empty;
+		bool canLoadMore;
+		string icon = null;
+		bool isBusy;
+		bool isValid;
+		string subTitle = string.Empty;
 
 		#endregion
 
 		#region Properties
 
 		public bool IsInitialized { get; set; }
+
+		public async void StartEditMessage(ChatMessage m)
+		{
+			EditMessage = m;
+
+			// will not show popup
+			//await App.Navigation.PushPopupAsync(new pgEditMessage(this));
+
+			await App.Navigation.PushAsync(new pgEditMessage(this));
+		}
+
+		async void CancelEditMessage()
+		{
+			EditMessage = null;
+			await App.Navigation.PopAsync();
+		}
+
+		async void MakeEditMessage()
+		{
+			await App.Navigation.PopAsync();
+
+			EditMessage.messageEdited = true;
+			// do request to server for editing
+			User lUser = await BL.Session.Authorization.GetUser();
+			new MessageStatusGet(lUser.Token, EditMessage).Object();
+		}
+
+		public Command MakeEditCommand
+		{
+			get
+			{
+				return _makeEditCommand ?? (_makeEditCommand = new Command(() => { MakeEditMessage(); }));
+			}
+		}
+
+		public Command CancelEditCommand
+		{
+			get
+			{
+				return _cancelEditCommand ?? (_cancelEditCommand = new Command(() => { CancelEditMessage(); }));
+			}
+		}
 
 		public ChatMessage ChatMessage
 		{
@@ -69,6 +116,19 @@ namespace ChatClient.Core.UI.ViewModels {
 			{
 				_chatMessage = value;
 				OnPropertyChanged("ChatMessage");
+			}
+		}
+
+		public ChatMessage EditMessage
+		{
+			get
+			{
+				return _editMessage;
+			}
+			set
+			{
+				_editMessage = value;
+				OnPropertyChanged("EditMessage");
 			}
 		}
 

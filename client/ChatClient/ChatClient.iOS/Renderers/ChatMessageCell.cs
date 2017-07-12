@@ -50,8 +50,9 @@ namespace ChatClient.iOS.Renderers
 		{
 			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
 			{
-				var actionSheet = new UIActionSheet("ActionSheet", null, "Cancel", "Delete", new string[1] {"Reply"});
-			    actionSheet.Clicked += delegate(object a, UIButtonEventArgs b) {
+				var actionSheet = new UIActionSheet("ActionSheet", null, "Cancel", "Delete", new string[2] {"Reply", "Edit"});
+			    actionSheet.Clicked += delegate(object a, UIButtonEventArgs b)
+				{
 					if (b.ButtonIndex == 0) // delete
 					{
 						_chatMessage.status = ChatMessage.Status.Deleted;
@@ -60,6 +61,10 @@ namespace ChatClient.iOS.Renderers
 					else if (b.ButtonIndex == 1) // reply
 					{
 						v.Add(k.MessageReply, _chatMessage);
+					}
+					else if (b.ButtonIndex == 2) // edit 
+					{
+						v.Add(k.MessageEdit, _chatMessage);
 					}
 			    };
 				actionSheet.ShowInView(this);

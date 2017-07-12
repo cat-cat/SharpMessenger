@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
+using ChatClient.Core.UI.PopupPages;
 using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
 using ChatClient.Core.UI.Controls;
@@ -13,6 +10,8 @@ using ChatClient.Core.UI.ViewModels;
 using ImageCircle.Forms.Plugin.Abstractions;
 
 using Xamarin.Forms;
+
+using Rg.Plugins.Popup.Extensions;
 
 namespace ChatClient.Core.UI.Pages
 {
@@ -107,11 +106,23 @@ namespace ChatClient.Core.UI.Pages
     //        {
 				//ViewModel.SocketOff();
     //        };
-
-			v.h(OnEvent);
         }
 
-		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			v.h(OnEvent);
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			v.m(OnEvent);
+		}
+
+		async void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
@@ -123,6 +134,17 @@ namespace ChatClient.Core.UI.Pages
 					ViewModel.ChatMessage.ReplyQuote = _messageReplyTo.Message;
 					ViewModel.ChatMessage.ReplyGuid = _messageReplyTo.guid;
 					ViewModel.ChatMessage.ReplyId = _messageReplyTo.Id;
+				}
+				else if (newItem.Key == k.MessageEdit)
+				{
+					var m = (ChatMessage)newItem.Value;
+					User lUser = await BL.Session.Authorization.GetUser();
+
+					// edit only messages of the current user 
+					if (lUser.Id == m.Author.Id)
+					{
+						ViewModel.StartEditMessage(m);
+					}
 				}
 			}		
 		}     
