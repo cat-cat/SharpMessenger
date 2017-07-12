@@ -42,6 +42,10 @@ namespace ChatClient.Core.DAL.Data
             return database.DeleteAsync(item);
         }
 
+		public override Task<int> UpdateItemAsync(Dictionary<string, object> d)
+		{
+			throw new NotImplementedException();
+		}
       
    }
 }

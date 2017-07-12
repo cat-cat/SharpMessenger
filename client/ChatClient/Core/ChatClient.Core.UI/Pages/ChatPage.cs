@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-
+using System.Collections.Specialized;
+using ChatClient.Core.UI.PopupPages;
+using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
 using ChatClient.Core.UI.Controls;
 using ChatClient.Core.UI.ViewModels;
@@ -13,16 +11,20 @@ using ImageCircle.Forms.Plugin.Abstractions;
 
 using Xamarin.Forms;
 
+using Rg.Plugins.Popup.Extensions;
+
 namespace ChatClient.Core.UI.Pages
 {
-    public class ChatPage : BasePage<ChatViewModel>
+    public class ChatPage : BasePage<BaseViewModel>
     {
+		DateTime isTypingDateTime = DateTimeOffset.UtcNow.DateTime - new TimeSpan(0,0,6);
         //private Entry nameEntry;
         private Editor messageEntry;
         private Button sendMessageButton;
         //private ListView messagesListView;
         //private Button joinButton;
 		public static ChatListView messageList;
+		ChatMessage _messageReplyTo;
 
         public ChatPage()
         {
@@ -100,20 +102,73 @@ namespace ChatClient.Core.UI.Pages
                 }
             }
             };
-            this.Disappearing +=  (sender,e) =>
-            {
-               (ViewModel as ChatViewModel).SocketOff();
-            };
-        
+    //        this.Disappearing +=  (sender,e) =>
+    //        {
+				//ViewModel.SocketOff();
+    //        };
         }
 
-      
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			v.h(OnEvent);
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			v.m(OnEvent);
+		}
+
+		async void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.MessageReply)
+				{
+					_messageReplyTo = (ChatMessage)newItem.Value;
+					messageEntry.Text = "rep: ";
+					ViewModel.ChatMessage.ReplyQuote = _messageReplyTo.Message;
+					ViewModel.ChatMessage.ReplyGuid = _messageReplyTo.guid;
+					ViewModel.ChatMessage.ReplyId = _messageReplyTo.Id;
+				}
+				else if (newItem.Key == k.MessageEdit)
+				{
+					var m = (ChatMessage)newItem.Value;
+					User lUser = await BL.Session.Authorization.GetUser();
+
+					// edit only messages of the current user 
+					if (lUser.Id == m.Author.Id)
+					{
+						ViewModel.StartEditMessage(m);
+					}
+				}
+			}		
+		}     
 
         private void MessageEntry_TextChanged(object sender, TextChangedEventArgs e) {
-            if (e.NewTextValue.Length > 0)
-                sendMessageButton.Image = "send_message_normal.png";
-            else sendMessageButton.Image = "send_message_inactive.png";
-            
+			if (e.NewTextValue.Length > 0)
+				sendMessageButton.Image = "send_message_normal.png";
+			else
+			{
+				sendMessageButton.Image = "send_message_inactive.png";
+
+				// reset replyTo message if wipe all the text in message entry
+				_messageReplyTo = null;
+				ViewModel.ChatMessage.ReplyQuote = null;
+				ViewModel.ChatMessage.ReplyGuid = null;
+				ViewModel.ChatMessage.ReplyId = null;
+			}
+
+			// handle Typing... logic
+			if ((DateTimeOffset.UtcNow.DateTime - isTypingDateTime) > new TimeSpan(0, 0, 5))
+			{
+				isTypingDateTime = DateTimeOffset.UtcNow.DateTime;
+				ViewModel.TypingBroadcast(isTypingDateTime);
+			}
         }
 
         private Cell CreateMessageCell()
@@ -148,12 +203,12 @@ namespace ChatClient.Core.UI.Pages
                 Children = { lImage,stack}
                                                   };
 
-            //if (Device.Idiom == TargetIdiom.Tablet)
-            //{
-            //    stack.Children.Insert(0, timestampLabel);
-            //}
-            var view = new MessageViewCell
-            {
+			//if (Device.Idiom == TargetIdiom.Tablet)
+			//{
+			//    stack.Children.Insert(0, timestampLabel);
+			//}
+			var view = new MessageViewCell
+			{
                 View = lLayout
             };
             return view;

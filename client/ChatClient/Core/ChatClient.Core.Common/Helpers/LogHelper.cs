@@ -13,7 +13,7 @@ namespace ChatClient.Core.Common.Helpers
 
         public static async void WriteLog(string message, params object[] args) {
 #if DEBUG
-            System.Diagnostics.Debug.WriteLine("{0}",string.Format(message, args));
+			System.Diagnostics.Debug.WriteLine("{0}", string.Format(message, args));
 #endif
             //TODO Create log for release version
         }

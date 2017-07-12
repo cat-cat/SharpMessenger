@@ -9,14 +9,99 @@ using Newtonsoft.Json;
 namespace ChatClient.Core.Common.Models
 {
     public class ChatMessage {
+		public enum Status { Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read, Deleted }
+		private bool _messageEdited;
+		private string _replyId;
+		private Status _status;
+		private bool _justSent;
+		private string _guid;
+		private string _replyGuid;
         private string _id;
         private string _name;
         private string _message;
+		private string _replyQuote;
         private string _photo;
-        private User _ownerId;
+        private User _author;
         private bool _isMine;
         private DateTime _timestamp;
         private User _opponent;
+
+
+		public Status status
+		{
+			get
+			{
+				return _status;
+			}
+			set
+			{
+				_status = value;
+			}
+		}
+
+		public bool JustSent
+		{
+			get
+			{
+				return _justSent;
+			}
+			set
+			{
+				_justSent = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "messageEdited")]
+		public bool messageEdited
+		{
+			get
+			{
+				return _messageEdited;
+			}
+			set
+			{
+				_messageEdited = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "ReplyId")]
+		public string ReplyId
+		{
+			get
+			{
+				return _replyId;
+			}
+			set
+			{
+				_replyId = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "ReplyGuid")]
+		public string ReplyGuid
+		{
+			get
+			{
+				return _replyGuid;
+			}
+			set
+			{
+				_replyGuid = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "guid")]
+		public string guid
+		{
+			get
+			{
+				return _guid;
+			}
+			set
+			{
+				_guid = value;
+			}
+		}
 
         [JsonProperty(PropertyName = "Name")]
         public string Name {
@@ -27,15 +112,32 @@ namespace ChatClient.Core.Common.Models
                 _name = value;
             }
         }
-        [JsonProperty(PropertyName = "Message")]
-        public string Message {
-            get {
-                return _message;
-            }
-            set {
-                _message = value;
-            }
-        }
+
+		[JsonProperty(PropertyName = "Message")]
+		public string Message
+		{
+			get
+			{
+				return _message;
+			}
+			set
+			{
+				_message = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "ReplyQuote")]
+		public string ReplyQuote
+		{
+			get
+			{
+				return _replyQuote;
+			}
+			set
+			{
+				_replyQuote = value;
+			}
+		}
 
         public string Photo {
             get {
@@ -60,12 +162,12 @@ namespace ChatClient.Core.Common.Models
             }
         }
         [JsonProperty(PropertyName = "_creator")]
-        public User OwnerId {
+        public User Author {
             get {
-                return _ownerId;
+				return _author;
             }
             set {
-                _ownerId = value;
+                _author = value;
             }
         }
 

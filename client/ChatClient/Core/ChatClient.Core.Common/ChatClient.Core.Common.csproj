@@ -70,6 +70,7 @@
     </Compile>
     <Compile Include="Interfaces\ILocalize.cs" />
     <Compile Include="TranslateExtension.cs" />
+    <Compile Include="Properties\v.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

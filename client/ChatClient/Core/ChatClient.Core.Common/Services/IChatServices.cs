@@ -10,11 +10,11 @@ namespace ChatClient.Core.Common.Services
 {
     public interface IChatServices
     {
-		void SetRoomID(string _roomID);
+		//void SetRoomID(string _roomID);
         Task Connect();
         Task Send(ChatMessage message, string roomName);
-        Task JoinRoom(string roomName);
-        event EventHandler<ChatMessage> OnMessageReceived;
+        //Task JoinRoom(string roomName);
+        //event EventHandler<ChatMessage> OnMessageReceived;
 
         void Disabled();
     }

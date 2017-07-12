@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text;
-
+using System.Collections.Specialized;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -13,8 +13,10 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
+using ChatClient.Core.Common;
+using ChatClient.Core.Common.Models;
 using ChatClient.Core.Common.Helpers;
+using ChatClient.Core.UI;
 using ChatClient.Core.UI.Controls;
 using ChatClient.Core.UI.ViewModels;
 using ChatClient.Droid.Renderers;
@@ -25,51 +27,111 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer(typeof(MessageViewCell), typeof(MessageRenderer))]
 namespace ChatClient.Droid.Renderers
 {
+	class NotifyView : LinearLayout
+	{
+		public ChatMessage _chatMessage;
+
+
+		public NotifyView(Context c) : base(c)
+		{
+			Id = 2525;
+		}
+	}
+
     public class MessageRenderer : ViewCellRenderer
     {
+		async void EventHandler<TEventArgs>(Object sender, TEventArgs e) 
+		{
+			string action = await App.Current.MainPage.DisplayActionSheet("Actions", "Cancel", "Delete", new string[2] {"Reply", "Edit"});
+
+			var nv = sender as NotifyView;
+			if (action == "Delete") // delete
+			{
+				nv._chatMessage.status = ChatMessage.Status.Deleted;
+				v.Add(k.MessageSendProgress, nv._chatMessage);
+			}
+			else if (action == "Reply") // reply
+			{
+				v.Add(k.MessageReply, nv._chatMessage);
+			}
+			else if (action == "Edit") // edit
+			{
+				v.Add(k.MessageEdit, nv._chatMessage);
+			}
+		}
+
         protected override Android.Views.View GetCellCore(Cell item, Android.Views.View convertView, ViewGroup parent, Context context)
         {
-            var inflatorservice = (LayoutInflater)Forms.Context.GetSystemService(Android.Content.Context.LayoutInflaterService);
-            var dataContext = item.BindingContext as ChatMessageViewModel;
+            //if (convertView == null)
+            //{
+            //    convertView = (context as Activity).LayoutInflater.Inflate(Resource.Layout.image_item_owner, null);
+            //    return this.GetCellCore(item, convertView, parent, context);
+            //}
+
+            var textMsgVm = item.BindingContext as ChatMessage;
+			//if (textMsgVm != null)
+			//{
+			LinearLayout template = (LinearLayout) convertView;
+			if (convertView == null)
+			{
+				var inflatorservice = (LayoutInflater)Forms.Context.GetSystemService(Android.Content.Context.LayoutInflaterService);
+				var nv = new NotifyView(Forms.Context);
+				template = (LinearLayout)inflatorservice.Inflate(textMsgVm.IsMine ? Resource.Layout.image_item_owner : Resource.Layout.image_item_opponent, nv);
+				template.LongClick += EventHandler;
+			}
 
 
+			var rv = template.FindViewById(2525) as NotifyView;
 
-            if (convertView == null)
-            {
-                convertView = (context as Activity).LayoutInflater.Inflate(Resource.Layout.image_item_owner, null);
-                return this.GetCellCore(item, convertView, parent, context);
-            }
+			if (rv != null)
+			{
+				rv._chatMessage = textMsgVm;
+			}
 
-            var textMsgVm = dataContext as ChatMessageViewModel;
-            if (textMsgVm != null)
-            {
-                LinearLayout template = (LinearLayout)inflatorservice.Inflate(textMsgVm.IsMine ? Resource.Layout.image_item_owner : Resource.Layout.image_item_opponent, null, false);
-                template.FindViewById<TextView>(Resource.Id.timestamp).Text = textMsgVm.Timestamp.ToString("HH:mm");
-                if (!textMsgVm.IsMine)
-                    template.FindViewById<TextView>(Resource.Id.nick).Text = textMsgVm.Name;
-
-				try
+            template.FindViewById<TextView>(Resource.Id.timestamp).Text = textMsgVm.Timestamp.ToString("HH:mm");
+			if (!textMsgVm.IsMine)
+			{
+				TextView v = template.FindViewById<TextView>(Resource.Id.nick);
+				if (v != null)
+					template.FindViewById<TextView>(Resource.Id.nick).Text = textMsgVm.Name;
+				else
 				{
-					if (textMsgVm.Image.Contains("http"))
-						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(GetImageBitmapFromUrl(textMsgVm.Image)));
-					else if (!string.IsNullOrEmpty(textMsgVm.Image) && textMsgVm.Image != "profile_avatar.png")
-						template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(BitmapFactory.DecodeFile(textMsgVm.Image)));
+					int i = 4;
 				}
-				catch
-				{
-					LogHelper.WriteLog("android error getting avatar", "android error getting avatar", "MessageRenderer");
-					//FileHelper fh = new FileHelper();
-					//string avatarPath = fh.GetImageSrc("profile_avatar.png");
-					//Bitmap bitmap = BitmapFactory.DecodeResource(GetResources(), Resource.Drawable.profile_avatar); 
-					//template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(bitmap);
-				}
+			}
 
-                template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
-                return template;
+			try
+			{
+				if (textMsgVm.Photo.Contains("http"))
+					template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(GetImageBitmapFromUrl(textMsgVm.Photo)));
+				else if (!string.IsNullOrEmpty(textMsgVm.Photo) && textMsgVm.Photo != "profile_avatar.png")
+					template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(getRoundedShape(BitmapFactory.DecodeFile(textMsgVm.Photo)));
+			}
+			catch
+			{
+				LogHelper.WriteLog("android error getting avatar", "android error getting avatar", "MessageRenderer");
+				//FileHelper fh = new FileHelper();
+				//string avatarPath = fh.GetImageSrc("profile_avatar.png");
+				//Bitmap bitmap = BitmapFactory.DecodeResource(GetResources(), Resource.Drawable.profile_avatar); 
+				//template.FindViewById<ImageView>(Resource.Id.image).SetImageBitmap(bitmap);
+			}
 
-            }
+			if (textMsgVm.status == ChatMessage.Status.Deleted)
+				template.FindViewById<TextView>(Resource.Id.message).Text = "<deleted>";
+			else
+			{
+				if (textMsgVm.ReplyGuid != null)
+					// TODO: make this good
+					template.FindViewById<TextView>(Resource.Id.message).Text = "REPLIED: " + textMsgVm.Message + " TO: " + textMsgVm.ReplyQuote;
+				else
+					template.FindViewById<TextView>(Resource.Id.message).Text = textMsgVm.Message;
+			}
+			//template.SetOnSystemUiVisibilityChangeListener(
+			return template;
 
-            return base.GetCellCore(item, convertView, parent, context);
+            //}
+
+            //return base.GetCellCore(item, convertView, parent, context);
         }
 
         private Bitmap GetImageBitmapFromUrl(string url)

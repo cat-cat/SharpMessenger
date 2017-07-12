@@ -309,13 +309,13 @@ namespace ChatClient.Core.UI.ViewModels
 
         private async Task StartChat()
         {
-            await App.Navigation.PushAsync(new ChatPage { BindingContext = new ChatViewModel(_group.Id) });
+            await App.Navigation.PushAsync(new ChatPage { BindingContext = new GroupChatViewModel(_group.Id) });
         }
 
         private async Task StartPrivatChat(User user) {
             User lUser = BL.Session.Authorization.GetUser().Result;
             if (user !=null && user.Id!=lUser.Id)
-            await App.Navigation.PushAsync(new ChatPage { BindingContext = new ChatViewModel(user) });
+				await App.Navigation.PushAsync(new ChatPage { BindingContext = new PrivateChatViewModel(user) });
         }
         private async void ShowMembers()
         {

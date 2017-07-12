@@ -20,7 +20,7 @@ namespace ChatClient.Core.DAL.Data
         }
 
         public override Task<CacheMessage> GetItemAsync(object id) {
-            return database.Table<CacheMessage>().Where(i => i.Id == (string)id).FirstOrDefaultAsync();
+			return database.Table<CacheMessage>().Where(i => i.guid == (string)id).FirstOrDefaultAsync();
         }
 
         public override async Task<int> SaveItemAsync(CacheMessage item)
@@ -34,9 +34,19 @@ namespace ChatClient.Core.DAL.Data
                 return await database.InsertAsync(item);
             }
         }
+		public override Task<int> UpdateItemAsync(Dictionary<string, object> d)
+		{
+			var m = new CacheMessage()
+			{
+				guid = (string)d["guid"],
+				status = (ChatMessage.Status) d["status"]
+			};
 
-        public override Task<int> DeleteItemAsync(CacheMessage item) {
-            throw new NotImplementedException();
-        }
+			return database.UpdateAsync(m);
+		}
+		public override Task<int> DeleteItemAsync(CacheMessage item)
+		{
+			throw new NotImplementedException();
+		}
     }
 }

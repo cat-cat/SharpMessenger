@@ -4,11 +4,12 @@ import socketioJwt from 'socketio-jwt';
 import User from '../models/user.model';
 import cfg from '../config/env';
 import Conversation from '../models/conversation.model';
+import Messages from '../models/messages.model';
 
 const app = require('express')();
 const http = require('http').Server(app);
 const _ = require('underscore')._;
-const io = require('socket.io')(http, {'pingInterval': 500, 'pingTimeout': 5000});
+const io = require('socket.io')(http);
 const util = require('util');
 const Room = require('../models/room.js');
 var mongo = require('mongodb').MongoClient;
@@ -49,7 +50,17 @@ function listeners() {
             timeout: 60000
                      }), console.log('Socket connection on port ' + cfg.socketPort))
         .on('authenticated', function(socket) {
-            //console.log("authenticated: " + socket.decoded_token._id);
+            console.log("authenticated: " + socket.decoded_token._id);
+             people[socket.id] = {
+	            "id": socket.decoded_token._id,
+	            "name": "",
+	            "owns": "",
+	            "inroom": "",
+	            "device": "",
+	            "participants": []
+	        };
+	        sockets.push(socket);
+
             //        joinRoom(socket);
             connectedListeners(socket);
             //        nearestAd(socket);
@@ -62,10 +73,8 @@ function listeners() {
  * @param socket {socket} - socket connection
  */
 function connectedListeners(socket) {
-	socket.on('disconnect', function() {
-	  //console.log('Got disconnect! ' + socket.decoded_token._id);
 
-	  delete people[socket.id]
+    socket.onclose = function(reason) {
 
 	  var i = sockets.indexOf(socket);
 	  if(i >= 0) {
@@ -73,152 +82,130 @@ function connectedListeners(socket) {
 	  	sockets.splice(i, 1);
 	  }
 
-	  var numClients = io.sockets.adapter.rooms[socket.room]
-	  if (numClients == undefined) {
-		//console.log(socket.decoded_token._id + " was last in a room " + socket.room)
-		delete rooms[socket.room]
-	  }
+	 // var numClients = io.sockets.adapter.rooms[socket.room]
+	 // if (numClients == undefined) {
+		////console.log(socket.decoded_token._id + " was last in a room " + socket.room)
+		//delete rooms[socket.room]
+	 // }
+
+	  var rooms = Object.keys(socket.rooms)
+	  rooms.forEach(function(room) {
+		  try { // in case there are no sockets in room
+		  	io.sockets.in(room).emit("update-people", {onlineStatus: false, id: people[socket.id].id})
+		  } catch(err) {
+		  }
+	  })
+
+	  people[socket.id].participants.forEach(function(id) {
+		for(var key in people) {
+			if(id == people[key].id) {
+				try {
+					io.sockets.connected[key].emit("update-people", {onlineStatus: false, id: people[socket.id].id})
+				} catch (err) {
+				}
+			}
+		};
+	  })
+
+	  delete people[socket.id];
+
+      Object.getPrototypeOf(this).onclose.call(this, reason);
+    }
+
+
+
+	socket.on('disconnect', function() {
+	  console.log('Got disconnect! ' + socket.decoded_token._id);
 	});
 
     socket.on("joinserver", function(name, device) {
-        //console.log("joined server: " + name);
+        console.log("joined server: " + name);
         //                  var exists = false;
-        var ownerRoomID = null;
-        var inRoomID = null;
+        people[socket.id].name = name
+        people[socket.id].device = device
 
-        //                  _.find(people, function(key,value) {
-        //                         if (key.name.toLowerCase() === name.toLowerCase())
-        //                         return exists = true;
-        //                  });
-        //                  if (exists) {//provide unique username:
-        //                      var randomNumber=Math.floor(Math.random()*1001)
-        //                      do {
-        //                          var proposedName = name+randomNumber;
-        //                          _.find(people, function(key,value) {
-        //                             if (key.name.toLowerCase() === proposedName.toLowerCase())
-        //                                 return exists = true;
-        //                          });
-        //                      } while (!exists);
-        //                          socket.emit("exists", {msg: "The username already exists, please pick another one.", proposedName: proposedName});
-        //                  } else {
-        people[socket.id] = {
-            "id": socket.decoded_token._id,
-            "name": name,
-            "owns": ownerRoomID,
-            "inroom": inRoomID,
-            "device": device
-        };
-        sockets.push(socket);
         var sizePeople = _.size(people);
         var sizeRooms = _.size(rooms);
-        io.sockets.emit("update-people", {
-            people: people,
-            count: sizePeople
-        });
-        socket.emit("roomList", {
-            rooms: rooms,
-            count: sizeRooms
-        });
         socket.emit("joined"); //extra emit for GeoLocation
         //io.sockets.emit("update", people[socket.id].name + " is online.")
         //                  }
     });
 
-    //        socket.on("getOnlinePeople", function(fn) {
-    //                  fn({people: people});
-    //        });
-
-    //        socket.on("typing", function(data) {
-    //                  if (typeof people[socket.id] !== "undefined")
-    //                  io.sockets.in(socket.room).emit("isTyping", {isTyping: data, person: people[socket.id].name});
-    //                  });
-
     socket.on("send", function(data) {
-        var msTime = data.date,
-        msg = data.message;
+    	//console.log("updated conversation: " + util.inspect(data,false,null));
         var conversationId = data.conversationId;
         var whitespacePattern = /^\s*$/;
-        if (data.message == null || whitespacePattern.test(data.message)) {
-            console.log('Invalid! Cannot insert empty string.');
+        if (whitespacePattern.test(data.message)) {
+            //console.log('Invalid! Cannot insert empty string.');
             socket.emit("update", 'Did you typed in a MESSAGE yet?');
             return;
         }
 
-        var re = /^[w]:.*:/;
-        var whisper = re.test(msg);
-        var whisperStr = msg.split(":");
- 	 	var found = false;
-        if (whisper) {
-            var whisperTo = whisperStr[1];
-            var keys = Object.keys(people);
-            if (keys.length != 0) {
-                for (var i = 0; i < keys.length; i++) {
-                    if (people[keys[i]].id === whisperTo) {
-                        var whisperId = keys[i];
-                        found = true;
-                        if (socket.id === whisperId) { //can't whisper to ourselves
-                            socket.emit("update", "You can't whisper to yourself.");
-                        }
-//                        break;
-                    }
-                }
-            }
-            var whisperTo = whisperStr[1];
-            var whisperMsg = whisperStr[2];
+ 	 	//var found = false;
+        if (data.opponent != null) { // private message
 
-
+        	var msTime = data.date;
             new Promise((resolve, reject) => {
         		if(conversationId != null)
         			resolve({_id: conversationId})
 
-            	return Conversation.getConversation([socket.decoded_token._id, whisperTo])
+            	return Conversation.getConversation([socket.decoded_token._id, data.opponent])
             	.then(c => {
                 		if(c)
                 			resolve(c) 
 
-			        	resolve(Conversation.create([socket.decoded_token._id, whisperTo]))			        								        		
+			        	resolve(Conversation.create([socket.decoded_token._id, data.opponent]))			        								        		
 			     })		
            	})
         	.then(function(conv, error) {
-                db_collection_messages.insert({
+                Messages.insert({
+                	guid: data.guid,
                 	conversationId: ObjectId(conv._id),
                     createdAt: msTime,
                     Name: people[socket.id].name,
-                    Message: whisperMsg,
+                    Message: data.message,
                     _creator: ObjectId(socket.decoded_token._id),
-                    _to:ObjectId(whisperTo)
-                }, function(error, message) {
+                    _to:ObjectId(data.opponent),
+                    replyGuid: data.replyGuid,
+                    replyId: data.replyId,
+                    replyQuote: data.replyQuote
+                }).then((message, error) => {
                 	if(error)
                 		console.log(error)
 
-                    Conversation.updateWithMessage(message.ops[0])
+                    Conversation.updateWithMessage(message)
                     .then((c, err) => {
 						if(c) {
-							//console.log("updated conversation: " + util.inspect(message,false,null));
-
-							socket.emit("conversation", message.ops[0].conversationId);
+							socket.emit("conversation", message.conversationId);
 
 							User.get({_id:ObjectId(socket.decoded_token._id)}, {image: 1})
 							.then(u => { 
-				                io.sockets.connected[socket.id].emit("whisper", {
-				                	userAvatarPrefix:cfg.userAvatarPrefix(),
-				                    msTime: msTime,
-				                    socketID: people[socket.id],
-				                    msg: whisperMsg,
-				                    userImage: u.image || false,
-				                    participantOnline: io.sockets.connected[whisperId] == undefined ? false : true 
-				                })
-
-				                User.get({_id:ObjectId(whisperTo)}, {image: 1})
+				                User.get({_id:ObjectId(data.opponent)}, {image: 1})
 				                .then( u => {
-					                io.sockets.connected[whisperId].emit("whisper", {
-					                	userAvatarPrefix:cfg.userAvatarPrefix(),
-					                    msTime: msTime,
-					                    socketID: people[socket.id],
-					                    msg: whisperMsg,
-					                    userImage: u.image || false,
-					                    participantOnline: true
-					                })
+						            var keys = Object.keys(people);
+						            var whisperId;
+						            if (keys.length != 0) {
+						                for (var i = 0; i < keys.length; i++) {
+						                    if (people[keys[i]].id === data.opponent) {
+						                        whisperId = keys[i];
+
+								                io.sockets.connected[keys[i]].emit("whisper", {
+								                	userAvatarPrefix:cfg.userAvatarPrefix(),
+								                    msTime: msTime,
+								                    socketID: people[socket.id],
+								                    msg: data.message,
+								                    userImage: u.image || false,
+								                    participantOnline: true,
+								                    replyGuid: data.replyGuid,
+								                    replyId: data.replyId,
+								                    replyQuote: data.replyQuote,
+								                    guid: data.guid
+								                })
+
+						                        break;
+						                    }
+						                }
+						            }
 					            })
 					            .catch(e => console.log(e))
 			                })
@@ -226,7 +213,7 @@ function connectedListeners(socket) {
 						}
 					})
 					.catch(e => console.log(e))
-                });
+                })
 		    })
         	.catch(e => console.log({success: false, error: e}))
         } else { // if not wisper
@@ -234,23 +221,31 @@ function connectedListeners(socket) {
 
 				User.get({_id:ObjectId(socket.decoded_token._id)}, {image: 1})
 				.then(u => { 
-	              io.sockets.in(socket.room).emit("chat", {
+	              io.sockets.connected[socket.id].broadcast.to(socket.room).emit("chat", {
 				        userAvatarPrefix:cfg.userAvatarPrefix(),
 	                    msTime: msTime,
 	                    socketID: people[socket.id],
 	                    userImage: u.image || false,
-	                    msg: msg
+	                    msg: data.message,
+	                    replyGuid: data.replyGuid,
+	                    replyId: data.replyId,
+	                    replyQuote: data.replyQuote,
+	                    guid: data.guid
 	                });
-	                //socket.emit("isTyping", false);
-	                db_collection_messages.insert({
+	                Messages.insert({
+	                	guid: data.guid,
 	                    Room: socket.room,
 	//                    createdAt: msTime,
 	                    Name: people[socket.id].name,
-	                    Message: msg,
+	                    Message: data.message,
 	                    _creator: ObjectId(socket.decoded_token._id),
-	                    _to:ObjectId(data.id)
-	                }, function() {
-	                    //  console.log(data.name + ' inserted a message into db');
+	                    _to:ObjectId(data.id),
+	                    replyGuid: data.replyGuid,
+	                    replyId: data.replyId,
+	                    replyQuote: data.replyQuote
+	                }).then((message, error) => {
+	                	if(error)
+	                    	console.log('error inserting a message into db: ' + error);
 	                });
                 });
 
@@ -261,34 +256,29 @@ function connectedListeners(socket) {
     });
 
     //Room functions
-    socket.on("createRoom", function(name) {
-        if (people[socket.id].inroom) {
-            socket.emit("update", "You are in a room. Please leave it first to create your own.");
-        } else if (!people[socket.id].owns) {
-            //                  var id = uuid.v4();
-            var id = name;
-            var room = new Room(name, id, socket.id);
-            rooms[id] = room;
-            var sizeRooms = _.size(rooms);
-            io.sockets.emit("roomList", {
-                rooms: rooms,
-                count: sizeRooms
-            });
-            //add room to socket, and auto join the creator of the room
-            socket.room = name;
-            socket.join(socket.room);
-            people[socket.id].owns = id;
-            people[socket.id].inroom = id;
-            room.addPerson(socket.id);
-            socket.emit("update", "Welcome to " + room.name + ".");
-            socket.emit("sendRoomID", {
-                id: id
-            });
-            //                      chatHistory[socket.room] = [];
-        } else {
-            socket.emit("update", "You have already created a room.");
-        }
-    });
+    function CreateRoom(name) {
+	// TODO: sometimes crashes with: Cannot read property 'inroom' of undefined
+        //                  var id = uuid.v4();
+        var id = name;
+        var room = new Room(name, id, socket.id);
+        rooms[id] = room;
+        var sizeRooms = _.size(rooms);
+        socket.emit("roomList", {
+            rooms: rooms,
+            count: sizeRooms
+        });
+        //add room to socket, and auto join the creator of the room
+        socket.room = name;
+        socket.join(socket.room);
+        people[socket.id].owns = id;
+        people[socket.id].inroom = id;
+        room.addPerson(socket.id);
+        socket.emit("update", "Welcome to " + room.name + ".");
+        socket.emit("sendRoomID", {
+            id: id
+        });
+        //                      chatHistory[socket.room] = [];
+    };
 
     socket.on("check", function(name, fn) {
         var match = false;
@@ -311,41 +301,24 @@ function connectedListeners(socket) {
     });
 
     socket.on("joinRoom", function(id) {
-        if (_.size(rooms) == 0) {
-            console.log("Cannot join room, no open rooms exist.");
-            return;
+        if (io.sockets.adapter.rooms[id] == undefined) {
+            CreateRoom(id)
         }
-        if (typeof people[socket.id] !== "undefined") {
-            var room = rooms[id];
-            if (socket.id === room.owner) {
-                socket.emit("update", "You are the owner of this room and you have already been joined.");
-            } else {
-                if (_.contains((room.people), socket.id)) {
-                    socket.emit("update", "You have already joined this room.");
-                } else {
-                    if (people[socket.id].inroom !== null) {
-                        socket.emit("update", "You are already in a room (" + rooms[people[socket.id].inroom].name + "), please leave it first to join another room.");
-                    } else {
-                        room.addPerson(socket.id);
-                        people[socket.id].inroom = id;
-                        socket.room = room.name;
-                        socket.join(socket.room);
-                        var user = people[socket.id];
-                        io.sockets.in(socket.room).emit("update", user.name + " has connected to " + room.name + " room.");
-                        socket.emit("update", "Welcome to " + room.name + ".");
-                        socket.emit("sendRoomID", {
-                            id: id
-                        });
-                        //                                      var keys = _.keys(chatHistory);
-                        //                                      if (_.contains(keys, socket.room)) {
-                        //                                          socket.emit("history", chatHistory[socket.room]);
-                        //                                      }
-                    }
-                }
-            }
-        } else {
-            socket.emit("update", "Please enter a valid name first.");
-        }
+        var room = rooms[id];
+        room.addPerson(socket.id);
+        people[socket.id].inroom = id;
+        socket.room = room.name;
+        socket.join(socket.room);
+        var user = people[socket.id];
+        io.sockets.in(socket.room).emit("update", user.name + " has connected to " + room.name + " room.");
+        socket.emit("update", "Welcome to " + room.name + ".");
+        socket.emit("sendRoomID", {
+            id: id
+        });
+        //                                      var keys = _.keys(chatHistory);
+        //                                      if (_.contains(keys, socket.room)) {
+        //                                          socket.emit("history", chatHistory[socket.room]);
+        //                                      }
     });
 
     socket.on("leaveRoom", function(id) {
@@ -441,7 +414,47 @@ function alarmNearest(_id, data) {
     io.sockets.to(_id).emit('group:nearest', data);
 }
 
+function getOnline(ids, client){
+	var dictionary = {}
+	var idsArr = ids.split(',')
+	idsArr.forEach(function(id) {
+		for(var key in people) {
+			if(id == people[key].id) {
+				dictionary[id] = true
+				people[key].participants.push(client)
+			}
+		};
+
+		if(dictionary[id] == undefined)
+			dictionary[id] = false
+	});
+	return dictionary
+}
+
+function setIsTyping(user, client, room, timestamp){
+	console.log("is typing called with client: " + client + " room " + util.inspect(room, false, null) + " timestamp "+ timestamp)
+
+	// TODO: move searching in people to redis
+	for(var key in people) {
+		try {
+		      if (room.length > 0 && user == people[key].id) {
+			      	io.sockets.connected[key].broadcast.to(room).emit("isTyping", {person: user})
+			      	break
+		      }
+		      else if(client.length > 0 && client == people[key].id) // private chat
+		      {
+					io.sockets.connected[key].emit("isTyping", {person: user});
+					break
+		      }
+	      } catch (err) {
+	      	console.log(err)
+	      }
+	};
+}
+
 export default {
+	setIsTyping,
     listen,
-    alarmPublication
+    alarmPublication,
+    getOnline
 };

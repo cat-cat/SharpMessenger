@@ -23,7 +23,7 @@ namespace ChatClient.Core.UI.Pages
                 {
                     User item = args.Item as Member;
                     if (item == null) return;
-                    await App.Navigation.PushAsync(new ChatPage { BindingContext = new ChatViewModel(item) });
+					await App.Navigation.PushAsync(new ChatPage { BindingContext = new PrivateChatViewModel(item) });
                     lsvMembers.SelectedItem = null;
                 };
             }

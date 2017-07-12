@@ -12,7 +12,7 @@ namespace ChatClient.Core.UI.Pages
 {
     public abstract class BasePage<TViewModel> : ContentPage where TViewModel : BaseViewModel
     {
-        #region ViewModel and Binding Context
+		#region ViewModel and Binding Context
 
         /// <summary>
         /// Gets the generically typed ViewModel from the underlying BindingContext.

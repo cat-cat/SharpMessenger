@@ -3,164 +3,263 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using ChatClient.Core.Common.Models;
+using ChatClient.Core.SAL.Methods;
+using ChatClient.Core.UI.PopupPages;
 using Xamarin.Forms;
-
+using Rg.Plugins.Popup.Extensions;
 #endregion
 
 namespace ChatClient.Core.UI.ViewModels {
-    public class BaseViewModel : INotifyPropertyChanged {
-        #region Static & Const
+	public class BaseViewModel : INotifyPropertyChanged
+	{
+		protected ChatMessage _chatMessage = new ChatMessage();
+		ChatMessage _editMessage;
 
-        /// <summary>
-        ///     Gets or sets the "IsBusy" property
-        /// </summary>
-        /// <value>The isbusy property.</value>
-        public const string CanLoadMorePropertyName = "CanLoadMore";
+		#region Static & Const
 
-        /// <summary>
-        ///     Gets or sets the "IsBusy" property
-        /// </summary>
-        /// <value>The isbusy property.</value>
-        public const string IsBusyPropertyName = "IsBusy";
+		/// <summary>
+		///     Gets or sets the "IsBusy" property
+		/// </summary>
+		/// <value>The isbusy property.</value>
+		public const string CanLoadMorePropertyName = "CanLoadMore";
 
-        /// <summary>
-        ///     Gets or sets the "IsValid" property
-        /// </summary>
-        /// <value>The isbusy property.</value>
-        public const string IsValidPropertyName = "IsValid";
+		/// <summary>
+		///     Gets or sets the "IsBusy" property
+		/// </summary>
+		/// <value>The isbusy property.</value>
+		public const string IsBusyPropertyName = "IsBusy";
 
-        /// <summary>
-        ///     Gets or sets the "Subtitle" property
-        /// </summary>
-        public const string SubtitlePropertyName = "Subtitle";
+		/// <summary>
+		///     Gets or sets the "IsValid" property
+		/// </summary>
+		/// <value>The isbusy property.</value>
+		public const string IsValidPropertyName = "IsValid";
 
-        /// <summary>
-        ///     Gets or sets the "Icon" of the viewmodel
-        /// </summary>
-        public const string IconPropertyName = "Icon";
+		/// <summary>
+		///     Gets or sets the "Subtitle" property
+		/// </summary>
+		public const string SubtitlePropertyName = "Subtitle";
 
-        #endregion
+		/// <summary>
+		///     Gets or sets the "Icon" of the viewmodel
+		/// </summary>
+		public const string IconPropertyName = "Icon";
 
-        #region Fields
+		#endregion
 
-        private bool canLoadMore;
-        private string icon = null;
-        private bool isBusy;
-        private bool isValid;
-        private string subTitle = string.Empty;
+		#region Fields
+		Command _cancelEditCommand;
+		Command _makeEditCommand;
 
-        #endregion
+		bool canLoadMore;
+		string icon = null;
+		bool isBusy;
+		bool isValid;
+		string subTitle = string.Empty;
 
-        #region Properties
+		#endregion
 
-        public bool IsInitialized { get; set; }
+		#region Properties
 
-        public bool CanLoadMore {
-            get {
-                return canLoadMore;
-            }
-            set {
-                SetProperty(ref canLoadMore, value, CanLoadMorePropertyName);
-            }
-        }
+		public bool IsInitialized { get; set; }
 
-        public bool IsBusy {
-            get {
-                return isBusy;
-            }
-            set {
-                SetProperty(ref isBusy, value, IsBusyPropertyName);
-            }
-        }
+		public async void StartEditMessage(ChatMessage m)
+		{
+			EditMessage = m;
 
-        public bool IsValid {
-            get {
-                return isValid;
-            }
-            set {
-                SetProperty(ref isValid, value, IsValidPropertyName);
-            }
-        }
+			// will not show popup
+			//await App.Navigation.PushPopupAsync(new pgEditMessage(this));
 
-        public string Subtitle {
-            get {
-                return subTitle;
-            }
-            set {
-                SetProperty(ref subTitle, value, SubtitlePropertyName);
-            }
-        }
+			await App.Navigation.PushAsync(new pgEditMessage(this));
+		}
 
-        public string Icon {
-            get {
-                return icon;
-            }
-            set {
-                SetProperty(ref icon, value, IconPropertyName);
-            }
-        }
+		async void CancelEditMessage()
+		{
+			EditMessage = null;
+			await App.Navigation.PopAsync();
+		}
 
-        #endregion
+		async void MakeEditMessage()
+		{
+			await App.Navigation.PopAsync();
 
-        #region INotifyPropertyChanged Members
+			EditMessage.messageEdited = true;
+			// do request to server for editing
+			User lUser = await BL.Session.Authorization.GetUser();
+			new MessageStatusGet(lUser.Token, EditMessage).Object();
+		}
 
-        #region INotifyPropertyChanged implementation
+		public Command MakeEditCommand
+		{
+			get
+			{
+				return _makeEditCommand ?? (_makeEditCommand = new Command(() => { MakeEditMessage(); }));
+			}
+		}
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		public Command CancelEditCommand
+		{
+			get
+			{
+				return _cancelEditCommand ?? (_cancelEditCommand = new Command(() => { CancelEditMessage(); }));
+			}
+		}
 
-        #endregion
+		public ChatMessage ChatMessage
+		{
+			get
+			{
+				return _chatMessage;
+			}
+			set
+			{
+				_chatMessage = value;
+				OnPropertyChanged("ChatMessage");
+			}
+		}
 
-        #endregion
+		public ChatMessage EditMessage
+		{
+			get
+			{
+				return _editMessage;
+			}
+			set
+			{
+				_editMessage = value;
+				OnPropertyChanged("EditMessage");
+			}
+		}
 
-        #region Public Methods and Operators
+		public bool CanLoadMore
+		{
+			get
+			{
+				return canLoadMore;
+			}
+			set
+			{
+				SetProperty(ref canLoadMore, value, CanLoadMorePropertyName);
+			}
+		}
 
-        #region INotifyPropertyChanging implementation
+		public bool IsBusy
+		{
+			get
+			{
+				return isBusy;
+			}
+			set
+			{
+				SetProperty(ref isBusy, value, IsBusyPropertyName);
+			}
+		}
 
-        public event PropertyChangingEventHandler PropertyChanging;
+		public bool IsValid
+		{
+			get
+			{
+				return isValid;
+			}
+			set
+			{
+				SetProperty(ref isValid, value, IsValidPropertyName);
+			}
+		}
 
-        #endregion
+		public string Subtitle
+		{
+			get
+			{
+				return subTitle;
+			}
+			set
+			{
+				SetProperty(ref subTitle, value, SubtitlePropertyName);
+			}
+		}
 
-        public void OnPropertyChanging(string propertyName) {
-            if (PropertyChanging == null)
-                return;
+		public string Icon
+		{
+			get
+			{
+				return icon;
+			}
+			set
+			{
+				SetProperty(ref icon, value, IconPropertyName);
+			}
+		}
 
-            PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
-        }
+		#endregion
 
-        public void OnPropertyChanged(string propertyName) {
-            if (PropertyChanged == null)
-                return;
+		#region INotifyPropertyChanged Members
 
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+		#region INotifyPropertyChanged implementation
 
-        #endregion
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        #region Protected Methods and Operators
+		#endregion
 
-        protected void SetProperty<U>(
-            ref U backingStore,
-            U value,
-            string propertyName,
-            Action onChanged = null,
-            Action<U> onChanging = null) {
-            if (EqualityComparer<U>.Default.Equals(backingStore, value))
-                return;
+		#endregion
 
-            if (onChanging != null)
-                onChanging(value);
+		#region Public Methods and Operators
 
-            OnPropertyChanging(propertyName);
+		#region INotifyPropertyChanging implementation
 
-            backingStore = value;
+		public event PropertyChangingEventHandler PropertyChanging;
 
-            if (onChanged != null)
-                onChanged();
+		#endregion
 
-            OnPropertyChanged(propertyName);
-        }
+		public void OnPropertyChanging(string propertyName)
+		{
+			if (PropertyChanging == null)
+				return;
 
-        #endregion
-    }
+			PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
+		}
+
+		public void OnPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged == null)
+				return;
+
+			PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		#endregion
+
+		#region Protected Methods and Operators
+
+		protected void SetProperty<U>(
+			ref U backingStore,
+			U value,
+			string propertyName,
+			Action onChanged = null,
+			Action<U> onChanging = null)
+		{
+			if (EqualityComparer<U>.Default.Equals(backingStore, value))
+				return;
+
+			if (onChanging != null)
+				onChanging(value);
+
+			OnPropertyChanging(propertyName);
+
+			backingStore = value;
+
+			if (onChanged != null)
+				onChanged();
+
+			OnPropertyChanged(propertyName);
+		}
+
+		#endregion
+
+		#region Custom functions
+		//virtual public void SocketOff() { }
+		virtual public void TypingBroadcast(DateTime d) { }
+		#endregion
+	}
 }

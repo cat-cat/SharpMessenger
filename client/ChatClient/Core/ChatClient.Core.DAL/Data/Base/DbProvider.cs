@@ -20,7 +20,8 @@ namespace ChatClient.Core.DAL.Data.Base
         public static SQLiteAsyncConnection GetSqLiteAsyncConnection() {
             if (_database != null)
                 return _database;
-            _database = new SQLiteAsyncConnection(DependencyService.Get<IFileHelper>().GetLocalFilePath("BulletinBoardSQLite.db3"));
+			string dbpath = DependencyService.Get<IFileHelper>().GetLocalFilePath("ChatClientSQLite.db3");
+			_database = new SQLiteAsyncConnection(dbpath);
             _database.CreateTableAsync<GeoLocation>().Wait();
             _database.CreateTableAsync<User>().Wait();
             _database.CreateTableAsync<PushId>().Wait();

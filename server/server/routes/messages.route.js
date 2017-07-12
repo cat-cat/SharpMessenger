@@ -1,8 +1,6 @@
 'use strict';
 
 import express from 'express';
-import validate from 'express-validation';
-import paramValidation from '../config/param-validation';
 import messagesCtrl from '../controllers/messages.controller';
 import auth from '../controllers/auth.controller';
 
@@ -15,8 +13,12 @@ const router = express.Router();
  * Url: {endpoint}/api/group/
  */
 router.route('/')
-    .get(validate(paramValidation.Groups.get), messagesCtrl.pagination);
+    .get(auth.user.controlApi, messagesCtrl.pagination);
 //    .post(auth.user.controlApi, groupsCtrl.create);
+
+router.route('/messageStatus')
+    .get(auth.user.controlApi, messagesCtrl.messageStatus);
+
 
 /**
  * Get data from one Groups

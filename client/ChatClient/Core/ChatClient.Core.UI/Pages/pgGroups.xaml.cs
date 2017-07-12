@@ -47,6 +47,9 @@ namespace ChatClient.Core.UI.Pages
                 else if (lException is BadConnection)
                      DisplayAlert("Bad connection", String.Format("{0, {1}}", lException.Message, "try again."), "OK");
             }
+
+			/* TODO: review all the timers used in app */
+
             Xamarin.Forms.Device.StartTimer(new TimeSpan(0, 0, 0, 1), Timer);
         }
 

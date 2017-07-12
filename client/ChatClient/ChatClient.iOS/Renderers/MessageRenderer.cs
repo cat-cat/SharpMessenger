@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using ChatClient.Core.UI.Controls;
-using ChatClient.Core.UI.ViewModels;
+using ChatClient.Core.Common.Models;
 using ChatClient.iOS.Renderers;
 
 using UIKit;
@@ -19,12 +19,14 @@ namespace ChatClient.iOS.Renderers
     {
         public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
         {
-            var textVm = item.BindingContext as ChatMessageViewModel;
+            var textVm = item.BindingContext as ChatMessage;
             if (textVm != null)
             {
-                string text =  textVm.Message;
-                var chatBubble = new ChatBubble(!textVm.IsMine, text,textVm.Name,textVm.Timestamp,textVm.Image);
-                return chatBubble.GetCell(tv);
+				var cell = tv.DequeueReusableCell(!textVm.IsMine ? ChatMessageCell.KeyLeft : ChatMessageCell.KeyRight) as ChatMessageCell;
+	            if (cell == null)
+	                cell = new ChatMessageCell(!textVm.IsMine);
+				cell.Update(textVm);
+	            return cell;
             }
             return base.GetCell(item, reusableCell, tv);
         }

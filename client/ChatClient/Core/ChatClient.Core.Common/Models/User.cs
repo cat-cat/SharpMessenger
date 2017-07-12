@@ -75,8 +75,6 @@ namespace ChatClient.Core.Common.Models {
             }
 
             set {
-                if(Equals(_nickname,value))
-                    return;
                 _nickname = value;
                 OnPropertyChanged("Nickname");
             }

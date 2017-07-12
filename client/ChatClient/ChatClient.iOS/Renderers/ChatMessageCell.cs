@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using ChatClient.Core.Common.Helpers;
+using ChatClient.Core.Common;
+using ChatClient.Core.Common.Models;
 using CoreGraphics;
 
 using Foundation;
@@ -12,8 +15,9 @@ using UIKit;
 
 namespace ChatClient.iOS.Renderers
 {
-    public class BubbleCell : UITableViewCell
+    public class ChatMessageCell : UITableViewCell
     {
+		ChatMessage _chatMessage;
         public static NSString KeyLeft = new NSString("BubbleElementLeft");
         public static NSString KeyRight = new NSString("BubbleElementRight");
         public static UIImage bleft, bright, left, right;
@@ -27,8 +31,9 @@ namespace ChatClient.iOS.Renderers
         private UILabel lblTimestamp;
         private UIImageView lAvatarView;
         bool isLeft;
+		UILongPressGestureRecognizer longPressGesture;
 
-        static BubbleCell()
+        static ChatMessageCell()
         {
             bright = UIImage.FromFile("my_message.png");
             bleft = UIImage.FromFile("opponent_message.png");
@@ -38,15 +43,78 @@ namespace ChatClient.iOS.Renderers
             //right = bright.CreateResizableImage (new UIEdgeInsets (11, 11, 17, 18));
             left = bleft.StretchableImage(11, 11);
             right = bright.StretchableImage(11, 11);
-            ///	Avatar = Avatar.StretchableImage(11, 11);
+			///	Avatar = Avatar.StretchableImage(11, 11);
         }
+
+		void LongPressMethod(UILongPressGestureRecognizer gestureRecognizer)
+		{
+			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
+			{
+				var actionSheet = new UIActionSheet("ActionSheet", null, "Cancel", "Delete", new string[2] {"Reply", "Edit"});
+			    actionSheet.Clicked += delegate(object a, UIButtonEventArgs b)
+				{
+					if (b.ButtonIndex == 0) // delete
+					{
+						_chatMessage.status = ChatMessage.Status.Deleted;
+						v.Add(k.MessageSendProgress, _chatMessage);
+					}
+					else if (b.ButtonIndex == 1) // reply
+					{
+						v.Add(k.MessageReply, _chatMessage);
+					}
+					else if (b.ButtonIndex == 2) // edit 
+					{
+						v.Add(k.MessageEdit, _chatMessage);
+					}
+			    };
+				actionSheet.ShowInView(this);
+
+			}
+		}
+
+		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.OnMessageSendProgress)
+				{
+					var d = (Dictionary<string, object>)newItem.Value;
+					if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
+					{
+						_chatMessage.Message = "<deleted>";
+						lblMessage.Text = _chatMessage.Message;
+					}
+				}
+			}
+		}
+
+		public void OnAppear()
+		{
+			v.h(OnEvent);
+			v.Add(k.MessageSendProgress, _chatMessage);
+
+			longPressGesture = new UILongPressGestureRecognizer(LongPressMethod);
+			AddGestureRecognizer(longPressGesture);
+
+			if (_chatMessage.ReplyGuid != null)
+				// TODO: make this good
+				lblMessage.Text = "REPLIED: " + _chatMessage.Message + " TO: " + _chatMessage.ReplyQuote;
+		}
+
+		public void OnDisappear()
+		{
+			v.m(OnEvent);
+			RemoveGestureRecognizer(longPressGesture);
+		}
+
         static UIImage FromUrl(string uri)
         {
             using (var url = new NSUrl(uri))
             using (var data = NSData.FromUrl(url))
                 return UIImage.LoadFromData(data);
         }
-        public BubbleCell(bool isLeft)
+        public ChatMessageCell(bool isLeft)
             : base(UITableViewCellStyle.Default, isLeft ? KeyLeft : KeyRight)
         {
             var rect = new RectangleF(0, 0, 1, 10);
@@ -139,21 +207,22 @@ namespace ChatClient.iOS.Renderers
             return new SizeF((float)size.Width, (float)size.Height);
         }
 
-        public void Update(string text,string nickname,DateTime timestamp,string image)
+        public void Update(ChatMessage m)
         {
-            lblMessage.Text = text;
-            lblTimestamp.Text = timestamp.ToString("HH:mm");
-            lblNickname.Text = nickname;
+			_chatMessage = m;
+			lblMessage.Text = m.Message;
+			lblTimestamp.Text = m.Timestamp.ToString("HH:mm");
+			lblNickname.Text = m.Name;
 
 			try
 			{
-				if (image.Contains("http"))
+				if (m.Photo.Contains("http"))
 				{
-					Avatar = ResizeImage(FromUrl(image), 50, 50);
+					Avatar = ResizeImage(FromUrl(m.Photo), 50, 50);
 				}
-				else if (!string.IsNullOrEmpty(image) && image != "profile_avatar.png")
+				else if (!string.IsNullOrEmpty(m.Photo) && m.Photo != "profile_avatar.png")
 				{
-					Avatar = ResizeImage(UIImage.FromFile(image), 50, 50);
+					Avatar = ResizeImage(UIImage.FromFile(m.Photo), 50, 50);
 				}
 			}
 			catch

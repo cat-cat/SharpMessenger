@@ -15,6 +15,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ChatClient.Core.Common.Resx;
 using ChatClient.Core.Common;
+using ChatClient.Core.Common.Services;
 
 namespace ChatClient.Core.UI
 {
@@ -22,7 +23,8 @@ namespace ChatClient.Core.UI
     {
         public static INavigation Navigation { get; set; }
 
-     //  public static InAppViewModel ViewModel;
+		//  public static InAppViewModel ViewModel;
+		IChatServices _chatServices;
 
         public async static void SetPage(Page page) {
             var a = await App.Current.MainPage.DisplayAlert(
@@ -50,11 +52,11 @@ namespace ChatClient.Core.UI
             Navigation = MainPage.Navigation;
             UpdatePushIds();
 
-			System.Diagnostics.Debug.WriteLine("====== resource debug info =========");
-			var assembly = typeof(App).GetTypeInfo().Assembly;
-			foreach (var res in assembly.GetManifestResourceNames())
-				System.Diagnostics.Debug.WriteLine("found resource: " + res);
-			System.Diagnostics.Debug.WriteLine("====================================");
+			//System.Diagnostics.Debug.WriteLine("====== resource debug info =========");
+			//var assembly = typeof(App).GetTypeInfo().Assembly;
+			//foreach (var res in assembly.GetManifestResourceNames())
+			//	System.Diagnostics.Debug.WriteLine("found resource: " + res);
+			//System.Diagnostics.Debug.WriteLine("====================================");
 
 			// This lookup NOT required for Windows platforms - the Culture will be automatically set
 			if (Device.OS == TargetPlatform.iOS || Device.OS == TargetPlatform.Android)
@@ -64,6 +66,24 @@ namespace ChatClient.Core.UI
 				AppResources.Culture = ci; // set the RESX for resource localization
 				DependencyService.Get<ILocalize>().SetLocale(ci); // set the Thread for locale-aware methods
 			}
+
+			// setup socket connection
+
+			_chatServices = DependencyService.Get<IChatServices>();
+			//_chatServices.SetRoomID(_roomName);
+			//_chatServices = new ChatPrivateService();
+			// _chatMessage = new ChatMessageViewModel();
+
+			//    _messages = new ObservableCollection<ChatMessageViewModel>();
+			//_receiver = user;
+			//v.h(OnCollectionChanged);
+			//v.Add(k.OnlineStatus, new Dictionary<string, object>() { { "userid", _receiver.Id } });
+			//if (string.IsNullOrEmpty(_receiver.Nickname))
+			//	_receiver.Nickname = _receiver.Id;
+			_chatServices.Connect();
+			//_chatServices.OnMessageReceived += _chatServices_OnMessageReceived;
+			//_isPrivatChat = true;
+			//GetMessages();
 
         }
 

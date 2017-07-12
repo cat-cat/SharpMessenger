@@ -12,10 +12,31 @@ const Schema = mongoose.Schema;
  * Messages Schema
  */
 const MessagesSchema = new Schema({
+		replyQuote: {
+			type: String
+		},
+		replyId: {
+	        type: Schema.Types.ObjectId,
+	        ref: 'messages'
+		},
+		replyGuid: {
+	        type: String
+		},
+		messageEdited: {
+			type: Boolean,
+			default: false
+		},
+		status: {
+			type: Number,
+			default: 1 /* - delivered, 2 - read, 3 - deleted */
+		},
+		guid: {
+			type: String,
+			index: true
+		},
 		  conversationId: {
 		    type: Schema.Types.ObjectId,
-		    ref: 'Conversation',
-		    required: true
+		    ref: 'Conversation'
 		  },
 	     Room: {
 	         type: String,
@@ -39,12 +60,9 @@ const MessagesSchema = new Schema({
 	        ref: 'User',
 	        required: true
 	    },
-    }, { collection: 'messages', strict: false, timestamps: true });
+    }, { collection: 'messages', strict: false, timestamps: true }
+);
 
-
-MessagesSchema.post('save', function () {
-    QueueService({ id: this._id }, this.endAt);
-});
 
 MessagesSchema.statics = {
     /**
@@ -59,22 +77,31 @@ MessagesSchema.statics = {
             (e) ? Promise.reject(e) : Promise.resolve(r));
     },
 
-    search(params) {
-	    return this.find(params)
-	    .select('createdAt body author')
-	    .sort('-createdAt')
-	    .populate({
-	      path: 'author',
-	      select: 'profile.firstName profile.lastName'
-	    })
-	    .exec(function(err, messages) {
-	      if (err) {
-	        res.send({ error: err });
-	        return next(err);
-	      }
+	status(params) {
+		 return this.findOne({ guid: { $in: params.guids.split(',') } }, function (err, doc) {
+		 	if(doc == null) // not found, probably new message didn't saved yet on server
+		 		return
 
-	      res.status(200).json({ conversation: messages });
-    	});
+		 	if(params.read != undefined)
+		 		doc.status = 2
+		 	else if(params.deleted != undefined)
+		 		doc.status = 3
+
+			// not exclusive condition in relation to status	
+		 	if(params.edited != undefined) {
+		 		doc.messageEdited = true
+		 		doc.Message = params.message
+		 	}
+
+		 	doc.save()
+		 }) 
+	},
+
+	insert(data) {
+		return this.create(data, function (err) {
+		    if (err) 
+		    	return console.log(err);
+	    })
 	}
 }
 
