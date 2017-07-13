@@ -9,22 +9,24 @@ using Newtonsoft.Json;
 namespace ChatClient.Core.Common.Models
 {
     public class ChatMessage {
-		public enum Status { Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read, Deleted }
-		private bool _messageEdited;
-		private string _replyId;
-		private Status _status;
-		private bool _justSent;
-		private string _guid;
-		private string _replyGuid;
-        private string _id;
-        private string _name;
-        private string _message;
-		private string _replyQuote;
-        private string _photo;
-        private User _author;
-        private bool _isMine;
-        private DateTime _timestamp;
-        private User _opponent;
+		public enum Status { Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read, Deleted, PendingDelete }
+		string _conversationId;
+		string _room;
+		bool _messageEdited;
+		string _replyId;
+		Status _status;
+		bool _justSent;
+		string _guid;
+		string _replyGuid;
+        string _id;
+        string _name;
+        string _message;
+		string _replyQuote;
+        string _photo;
+        User _author;
+        bool _isMine;
+        DateTime _timestamp;
+        User _opponent;
 
 
 		public Status status
@@ -61,6 +63,32 @@ namespace ChatClient.Core.Common.Models
 			set
 			{
 				_messageEdited = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "conversationId")]
+		public string conversationId
+		{
+			get
+			{
+				return _conversationId;
+			}
+			set
+			{
+				_conversationId = value;
+			}
+		}
+
+		[JsonProperty(PropertyName = "Room")]
+		public string Room
+		{
+			get
+			{
+				return _room;
+			}
+			set
+			{
+				_room = value;
 			}
 		}
 

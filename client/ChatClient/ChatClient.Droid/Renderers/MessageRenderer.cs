@@ -31,10 +31,30 @@ namespace ChatClient.Droid.Renderers
 	{
 		public ChatMessage _chatMessage;
 
+		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+				if (newItem.Key == k.OnMessageSendProgress)
+				{
+					var d = (Dictionary<string, object>)newItem.Value;
+					if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
+					{
+						Device.BeginInvokeOnMainThread (() => {
+							FindViewById<TextView>(Resource.Id.message).Text = "<deleted>";
+						});
+						_chatMessage.Message = "<deleted>";
+					}
+				}
+			}
+		}
 
 		public NotifyView(Context c) : base(c)
 		{
 			Id = 2525;
+
+			v.h(OnEvent);
 		}
 	}
 
@@ -47,7 +67,7 @@ namespace ChatClient.Droid.Renderers
 			var nv = sender as NotifyView;
 			if (action == "Delete") // delete
 			{
-				nv._chatMessage.status = ChatMessage.Status.Deleted;
+				nv._chatMessage.status = ChatMessage.Status.PendingDelete;
 				v.Add(k.MessageSendProgress, nv._chatMessage);
 			}
 			else if (action == "Reply") // reply

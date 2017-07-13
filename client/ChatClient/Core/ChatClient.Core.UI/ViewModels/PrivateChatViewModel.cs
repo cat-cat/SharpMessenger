@@ -255,7 +255,7 @@ namespace ChatClient.Core.UI.ViewModels
 				ReplyId = _chatMessage.ReplyId
 			};
 
-			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", cm}, { "roomName", null} });
+			v.Add(k.MessageSend, cm);
             IsBusy = false;
         }
 

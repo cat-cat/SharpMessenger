@@ -5,6 +5,7 @@ import Promise from 'bluebird';
 import mongoosePaginate from 'mongoose-paginate';
 import QueueService from '../services/queue.service';
 import User from './user.model';
+import Socket from '../services/socket.service';
 
 const Schema = mongoose.Schema;
 
@@ -77,15 +78,18 @@ MessagesSchema.statics = {
             (e) ? Promise.reject(e) : Promise.resolve(r));
     },
 
-	status(params) {
+	status(req) {
+			var params = req.query
 		 return this.findOne({ guid: { $in: params.guids.split(',') } }, function (err, doc) {
 		 	if(doc == null) // not found, probably new message didn't saved yet on server
 		 		return
 
 		 	if(params.read != undefined)
 		 		doc.status = 2
-		 	else if(params.deleted != undefined)
+		 	else if(params.deleted != undefined) {
 		 		doc.status = 3
+		 		Socket.broadcastDeleteMessage(req.user._id, params.client, params.room, params.guids)
+		 	}
 
 			// not exclusive condition in relation to status	
 		 	if(params.edited != undefined) {

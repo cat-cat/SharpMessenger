@@ -67,22 +67,31 @@ namespace ChatClient.Core.UI.ViewModels {
 		public async void StartEditMessage(ChatMessage m)
 		{
 			EditMessage = m;
-
+			var em = new pgEditMessage(this);
 			// will not show popup
-			//await App.Navigation.PushPopupAsync(new pgEditMessage(this));
+			Device.BeginInvokeOnMainThread (() => {
+				App.Navigation.PushPopupAsync(em);
+			});
 
-			await App.Navigation.PushAsync(new pgEditMessage(this));
+
+			//await App.Navigation.PushAsync(new pgEditMessage(this));
 		}
 
 		async void CancelEditMessage()
 		{
 			EditMessage = null;
-			await App.Navigation.PopAsync();
+			Device.BeginInvokeOnMainThread (() => {
+				App.Navigation.PopPopupAsync();
+			});
+			//await App.Navigation.PopPopupAsync();
 		}
 
 		async void MakeEditMessage()
 		{
-			await App.Navigation.PopAsync();
+			Device.BeginInvokeOnMainThread (() => {
+				App.Navigation.PopPopupAsync();
+			});
+			//await App.Navigation.PopPopupAsync();
 
 			EditMessage.messageEdited = true;
 			// do request to server for editing

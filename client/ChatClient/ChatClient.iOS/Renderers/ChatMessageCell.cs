@@ -8,7 +8,7 @@ using ChatClient.Core.Common.Helpers;
 using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
 using CoreGraphics;
-
+using Xamarin.Forms;
 using Foundation;
 
 using UIKit;
@@ -55,7 +55,7 @@ namespace ChatClient.iOS.Renderers
 				{
 					if (b.ButtonIndex == 0) // delete
 					{
-						_chatMessage.status = ChatMessage.Status.Deleted;
+						_chatMessage.status = ChatMessage.Status.PendingDelete;
 						v.Add(k.MessageSendProgress, _chatMessage);
 					}
 					else if (b.ButtonIndex == 1) // reply
@@ -83,7 +83,9 @@ namespace ChatClient.iOS.Renderers
 					if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
 					{
 						_chatMessage.Message = "<deleted>";
-						lblMessage.Text = _chatMessage.Message;
+						Device.BeginInvokeOnMainThread (() => {
+							lblMessage.Text = _chatMessage.Message;
+						});
 					}
 				}
 			}
@@ -105,7 +107,7 @@ namespace ChatClient.iOS.Renderers
 		public void OnDisappear()
 		{
 			v.m(OnEvent);
-			RemoveGestureRecognizer(longPressGesture);
+			//RemoveGestureRecognizer(longPressGesture);
 		}
 
         static UIImage FromUrl(string uri)

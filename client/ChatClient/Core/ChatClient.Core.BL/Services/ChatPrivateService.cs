@@ -42,8 +42,8 @@ namespace ChatClient.iOS.Services
 				else if (newItem.Key == k.MessageSend)
 				{
 					// v.Consume(k.MessageSend);
-					var messageData = (Dictionary<string, object>)newItem.Value;
-					Send((ChatMessage)messageData["message"], (string)messageData["roomName"]);
+					var m = (ChatMessage)newItem.Value;
+					Send(m);
 				}
 				else if (newItem.Key == k.OnlineStatus)
 				{
@@ -157,6 +157,16 @@ namespace ChatClient.iOS.Services
 				//array.Add("phone");
 				//array.Add("iphone simulator");
 				socket.Emit("joinserver", /*CrossDeviceInfo.Current.Id*/_user.Nickname, CrossDeviceInfo.Current.Id);
+			});
+
+			socket.On("messageDeleted", (data) =>
+			{
+				Debug.WriteLine("messageDeleted: " + data);
+
+				var definition = new { guid = ""};
+				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
+
+				v.Add(k.OnMessageSendProgress, new Dictionary<string, object>() { {"guid", o.guid }, {"status", ChatMessage.Status.Deleted } });
 			});
 
 			socket.On("unauthorized", (msg) =>
@@ -331,7 +341,7 @@ namespace ChatClient.iOS.Services
 			//socket.Connect();
 		}
 
-		public async Task Send(ChatMessage message, string roomName)
+		public async Task Send(ChatMessage message)
 		{
 			// First - show message
 			OnMessageReceived(this, message);

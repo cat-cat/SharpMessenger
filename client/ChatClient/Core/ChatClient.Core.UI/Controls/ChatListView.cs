@@ -12,7 +12,6 @@ namespace ChatClient.Core.UI.Controls
     {
 		void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
 		{
-			int i = 4;
 		}
 
 		public ChatListView()
