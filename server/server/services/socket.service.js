@@ -432,8 +432,7 @@ function getOnline(ids, client){
 }
 
 function setIsTyping(user, client, room, timestamp){
-	console.log("is typing called with client: " + client + " room " + util.inspect(room, false, null) + " timestamp "+ timestamp)
-
+	//console.log("is typing called with client: " + client + " room " + util.inspect(room, false, null) + " timestamp "+ timestamp)
 	// TODO: move searching in people to redis
 	for(var key in people) {
 		try {
@@ -452,7 +451,51 @@ function setIsTyping(user, client, room, timestamp){
 	};
 }
 
+function broadcastDeleteMessage(user, client, room, messageGuid) {
+	try {
+		if (room != undefined) {
+		  	io.sockets.in(room).emit("messageDeleted", {guid: messageGuid})
+		} 
+		else 
+		{
+			// TODO: move searching in people to redis
+			for(var key in people) {
+			      if(client.length > 0 && (client == people[key].id || user == people[key].id)) // private chat
+			      {
+					io.sockets.connected[key].emit("messageDeleted", {guid: messageGuid});
+			      }
+			};
+		}
+	} 
+	catch (err) {
+		console.log(err)
+	}
+}
+
+function broadcastEditMessage(user, client, room, messageGuid, message) {
+	try {
+		if (room != undefined) {
+		  	io.sockets.in(room).emit("messageEdited", {guid: messageGuid, message: message})
+		} 
+		else 
+		{
+			// TODO: move searching in people to redis
+			for(var key in people) {
+			      if(client.length > 0 && (client == people[key].id || user == people[key].id)) // private chat
+			      {
+					io.sockets.connected[key].emit("messageEdited", {guid: messageGuid, message: message});
+			      }
+			};
+		}
+	} 
+	catch (err) {
+		console.log(err)
+	}
+}
+
 export default {
+	broadcastEditMessage,
+	broadcastDeleteMessage,
 	setIsTyping,
     listen,
     alarmPublication,

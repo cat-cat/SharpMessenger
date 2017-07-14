@@ -54,7 +54,7 @@ function pagination (req, res, next) {
 }
 
 function messageStatus (req, res, next) {
-	    Messages.status(req.query)
+	    Messages.status(req)
 	    .then(data => res.json({success: true, data}))
 		.catch(e => res.json({suscess: false, error: e}))
 }

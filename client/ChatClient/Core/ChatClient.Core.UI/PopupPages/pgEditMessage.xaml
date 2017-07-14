@@ -4,7 +4,7 @@
              xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
              x:Class="ChatClient.Core.UI.PopupPages.pgEditMessage"
 			xmlns:i18n="clr-namespace:ChatClient.Core.Common;assembly=ChatClient.Core.Common" >
-  <ScrollView  >
+  <ScrollView  HorizontalOptions="Fill" VerticalOptions="Fill"  >
     <StackLayout Margin="15,30,15,30" Padding="15,30,15,30" BackgroundColor="White" VerticalOptions="CenterAndExpand">
       <!--<Grid Margin="15,30,15,30" BackgroundColor="White">
    <Grid.RowDefinitions>

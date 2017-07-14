@@ -12,7 +12,7 @@ namespace ChatClient.Core.Common.Services
     {
 		//void SetRoomID(string _roomID);
         Task Connect();
-        Task Send(ChatMessage message, string roomName);
+        Task Send(ChatMessage message);
         //Task JoinRoom(string roomName);
         //event EventHandler<ChatMessage> OnMessageReceived;
 

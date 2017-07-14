@@ -23,7 +23,6 @@ namespace  ChatClient.Core.UI.PopupPages
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
         }
 
     }

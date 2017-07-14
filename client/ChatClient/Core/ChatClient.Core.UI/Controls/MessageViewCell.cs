@@ -16,28 +16,28 @@ namespace ChatClient.Core.UI.Controls
 			//id =  id + "sf";
 		}
 
-		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
-		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
-			{
-				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-				if (newItem.Key == k.OnMessageSendProgress)
-				{
-					var d = (Dictionary<string, object>)newItem.Value;
-					ChatMessage m = this.BindingContext as ChatMessage;
-					if ((string)d["guid"] == m.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
-					{
-						// display status
-						m.Message = "<deleted>";
-						this.BindingContext = m;
-					}
-				}
-			}
-		}
+		//void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
+		//{
+		//	if (e.Action == NotifyCollectionChangedAction.Add)
+		//	{
+		//		var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+		//		if (newItem.Key == k.OnMessageSendProgress)
+		//		{
+		//			var d = (Dictionary<string, object>)newItem.Value;
+		//			ChatMessage m = this.BindingContext as ChatMessage;
+		//			if ((string)d["guid"] == m.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
+		//			{
+		//				// display status
+		//				m.Message = "<deleted>";
+		//				this.BindingContext = m;
+		//			}
+		//		}
+		//	}
+		//}
 
 		protected override void OnAppearing()
 		{
-			v.h(OnEvent);
+			//v.h(OnEvent);
 
 			ChatMessage m = this.BindingContext as ChatMessage;
 			//if (m.JustSent)
@@ -48,7 +48,7 @@ namespace ChatClient.Core.UI.Controls
 
 		protected override void OnDisappearing()
 		{
-			v.m(OnEvent);
+			//v.m(OnEvent);
 		}
     }
 }

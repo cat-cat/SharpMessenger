@@ -153,8 +153,18 @@ namespace ChatClient.Core.SAL.Methods
 		{
 			_headers.Add("Authorization", token);
 
-			if (m.status == ChatMessage.Status.Deleted)
+			if (m.status == ChatMessage.Status.PendingDelete || m.messageEdited)
+			{
+				if (!string.IsNullOrEmpty(m.Room)) // group message
+					_urlParameters.Add("room", m.Room);
+				else // private message
+					_urlParameters.Add("client", m.Opponent.Id);
+			}
+
+			if (m.status == ChatMessage.Status.PendingDelete)
+			{
 				_urlParameters.Add("deleted", 1);
+			}
 			else if (m.Id != m.Author.Id)
 				_urlParameters.Add("read", 1);
 

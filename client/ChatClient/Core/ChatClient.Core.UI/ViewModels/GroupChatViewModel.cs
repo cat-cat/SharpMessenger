@@ -225,6 +225,7 @@ namespace ChatClient.Core.UI.ViewModels
 			User lUser = await BL.Session.Authorization.GetUser();
 			ChatMessage cm = new ChatMessage
 			{
+				Room = _roomName,
 				Author = lUser,
 				Name = lUser.Nickname,
 				Message = lMessage,
@@ -240,7 +241,7 @@ namespace ChatClient.Core.UI.ViewModels
 			};
 	
 
-			v.Add(k.MessageSend, new Dictionary<string, object>() { { "message", cm}, { "roomName", _roomName} });
+			v.Add(k.MessageSend, cm);
             //await _chatServices.Send(new ChatMessage { Name = _chatMessage.Name, Message = lMessage }, _roomName);
             IsBusy = false;
         }
