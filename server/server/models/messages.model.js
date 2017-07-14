@@ -84,7 +84,7 @@ MessagesSchema.statics = {
 		 	if(doc == null) // not found, probably new message didn't saved yet on server
 		 		return
 
-		 	if(params.read != undefined && doc.satatus < 3 /* not deleted */)
+		 	if(params.read != undefined && doc.status < 3 /* not deleted */)
 		 		doc.status = 2
 		 	else if(params.deleted != undefined) {
 		 		doc.status = 3
