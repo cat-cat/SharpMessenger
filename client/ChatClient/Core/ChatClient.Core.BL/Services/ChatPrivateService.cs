@@ -163,10 +163,20 @@ namespace ChatClient.iOS.Services
 			{
 				Debug.WriteLine("messageDeleted: " + data);
 
-				var definition = new { guid = ""};
+				var definition = new { guid = "" };
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 
 				v.Add(k.OnMessageSendProgress, new Dictionary<string, object>() { {"guid", o.guid }, {"status", ChatMessage.Status.Deleted } });
+			});
+
+			socket.On("messageEdited", (data) =>
+			{
+				Debug.WriteLine("messageEdited: " + data);
+
+				var definition = new { guid = "", message = "" };
+				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
+
+				v.Add(k.OnMessageEdit, new Dictionary<string, object>() { {"guid", o.guid }, {"message", o.message } });
 			});
 
 			socket.On("unauthorized", (msg) =>

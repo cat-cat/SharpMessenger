@@ -7,6 +7,7 @@ using System.Text;
 using ChatClient.Core.Common.Helpers;
 using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
+using ChatClient.Core.BL.Session;
 using CoreGraphics;
 using Xamarin.Forms;
 using Foundation;
@@ -46,29 +47,32 @@ namespace ChatClient.iOS.Renderers
 			///	Avatar = Avatar.StretchableImage(11, 11);
         }
 
+		async void ActionSheet_Clicked(object a, UIButtonEventArgs b)
+		{
+			User lUser = await Authorization.GetUser();
+
+			if (b.ButtonIndex == 0 && lUser.Id == _chatMessage.Author.Id) // delete only messages of the current user 
+			{
+				_chatMessage.status = ChatMessage.Status.PendingDelete;
+				v.Add(k.MessageSendProgress, _chatMessage);
+			}
+			else if (b.ButtonIndex == 1) // reply
+			{
+				v.Add(k.MessageReply, _chatMessage);
+			}
+			else if (b.ButtonIndex == 2 && lUser.Id == _chatMessage.Author.Id) // edit only messages of the current user
+			{
+				v.Add(k.MessageEdit, _chatMessage);
+			}
+		}
+
 		void LongPressMethod(UILongPressGestureRecognizer gestureRecognizer)
 		{
 			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
 			{
 				var actionSheet = new UIActionSheet("ActionSheet", null, "Cancel", "Delete", new string[2] {"Reply", "Edit"});
-			    actionSheet.Clicked += delegate(object a, UIButtonEventArgs b)
-				{
-					if (b.ButtonIndex == 0) // delete
-					{
-						_chatMessage.status = ChatMessage.Status.PendingDelete;
-						v.Add(k.MessageSendProgress, _chatMessage);
-					}
-					else if (b.ButtonIndex == 1) // reply
-					{
-						v.Add(k.MessageReply, _chatMessage);
-					}
-					else if (b.ButtonIndex == 2) // edit 
-					{
-						v.Add(k.MessageEdit, _chatMessage);
-					}
-			    };
+				actionSheet.Clicked += ActionSheet_Clicked;
 				actionSheet.ShowInView(this);
-
 			}
 		}
 
@@ -86,6 +90,18 @@ namespace ChatClient.iOS.Renderers
 						Device.BeginInvokeOnMainThread (() => {
 							lblMessage.Text = _chatMessage.Message;
 						});
+					}
+				}
+				else if (newItem.Key == k.OnMessageEdit)
+				{
+					var d = (Dictionary<string, object>)newItem.Value;
+					if ((string)d["guid"] == _chatMessage.guid)
+					{
+						Device.BeginInvokeOnMainThread(() =>
+						{
+							lblMessage.Text = (string)d["message"];
+						});
+						_chatMessage.Message = (string)d["message"];
 					}
 				}
 			}

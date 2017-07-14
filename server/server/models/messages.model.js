@@ -92,9 +92,10 @@ MessagesSchema.statics = {
 		 	}
 
 			// not exclusive condition in relation to status	
-		 	if(params.edited != undefined) {
+		 	if(params.edited != undefined && doc.status < 3 /* not deleted */) {
 		 		doc.messageEdited = true
 		 		doc.Message = params.message
+		 		Socket.broadcastEditMessage(req.user._id, params.client, params.room, params.guids, params.message)
 		 	}
 
 		 	doc.save()

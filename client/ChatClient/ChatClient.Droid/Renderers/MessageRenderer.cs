@@ -41,10 +41,23 @@ namespace ChatClient.Droid.Renderers
 					var d = (Dictionary<string, object>)newItem.Value;
 					if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
 					{
-						Device.BeginInvokeOnMainThread (() => {
+						Device.BeginInvokeOnMainThread(() =>
+						{
 							FindViewById<TextView>(Resource.Id.message).Text = "<deleted>";
 						});
 						_chatMessage.Message = "<deleted>";
+					}
+				}
+				else if (newItem.Key == k.OnMessageEdit)
+				{
+					var d = (Dictionary<string, object>)newItem.Value;
+					if ((string)d["guid"] == _chatMessage.guid)
+					{
+						Device.BeginInvokeOnMainThread(() =>
+						{
+							FindViewById<TextView>(Resource.Id.message).Text = (string)d["message"];
+						});
+						_chatMessage.Message = (string)d["message"];
 					}
 				}
 			}
@@ -63,9 +76,10 @@ namespace ChatClient.Droid.Renderers
 		async void EventHandler<TEventArgs>(Object sender, TEventArgs e) 
 		{
 			string action = await App.Current.MainPage.DisplayActionSheet("Actions", "Cancel", "Delete", new string[2] {"Reply", "Edit"});
+			User lUser = await Core.BL.Session.Authorization.GetUser();
 
 			var nv = sender as NotifyView;
-			if (action == "Delete") // delete
+			if (action == "Delete" && lUser.Id == nv._chatMessage.Author.Id) // delete only message of the current user
 			{
 				nv._chatMessage.status = ChatMessage.Status.PendingDelete;
 				v.Add(k.MessageSendProgress, nv._chatMessage);
@@ -74,7 +88,7 @@ namespace ChatClient.Droid.Renderers
 			{
 				v.Add(k.MessageReply, nv._chatMessage);
 			}
-			else if (action == "Edit") // edit
+			else if (action == "Edit" && lUser.Id == nv._chatMessage.Author.Id) // edit only message of the current user
 			{
 				v.Add(k.MessageEdit, nv._chatMessage);
 			}

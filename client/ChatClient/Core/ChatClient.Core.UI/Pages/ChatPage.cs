@@ -138,13 +138,7 @@ namespace ChatClient.Core.UI.Pages
 				else if (newItem.Key == k.MessageEdit)
 				{
 					var m = (ChatMessage)newItem.Value;
-					User lUser = await BL.Session.Authorization.GetUser();
-
-					// edit only messages of the current user 
-					if (lUser.Id == m.Author.Id)
-					{
-						ViewModel.StartEditMessage(m);
-					}
+					ViewModel.StartEditMessage(m);
 				}
 			}		
 		}     
