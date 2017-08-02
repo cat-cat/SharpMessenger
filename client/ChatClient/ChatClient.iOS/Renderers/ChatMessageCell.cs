@@ -78,38 +78,35 @@ namespace ChatClient.iOS.Renderers
 
 		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			if (newItem.Key == k.OnMessageSendProgress)
 			{
-				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-				if (newItem.Key == k.OnMessageSendProgress)
+				var d = (Dictionary<string, object>)newItem.Value;
+				if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
 				{
-					var d = (Dictionary<string, object>)newItem.Value;
-					if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
-					{
-						_chatMessage.Message = "<deleted>";
-						Device.BeginInvokeOnMainThread (() => {
-							lblMessage.Text = _chatMessage.Message;
-						});
-					}
+					_chatMessage.Message = "<deleted>";
+					Device.BeginInvokeOnMainThread (() => {
+						lblMessage.Text = _chatMessage.Message;
+					});
 				}
-				else if (newItem.Key == k.OnMessageEdit)
+			}
+			else if (newItem.Key == k.OnMessageEdit)
+			{
+				var d = (Dictionary<string, object>)newItem.Value;
+				if ((string)d["guid"] == _chatMessage.guid)
 				{
-					var d = (Dictionary<string, object>)newItem.Value;
-					if ((string)d["guid"] == _chatMessage.guid)
+					Device.BeginInvokeOnMainThread(() =>
 					{
-						Device.BeginInvokeOnMainThread(() =>
-						{
-							lblMessage.Text = (string)d["message"];
-						});
-						_chatMessage.Message = (string)d["message"];
-					}
+						lblMessage.Text = (string)d["message"];
+					});
+					_chatMessage.Message = (string)d["message"];
 				}
 			}
 		}
 
 		public void OnAppear()
 		{
-			v.h(OnEvent);
+			v.h(new k[]{k.OnMessageEdit, k.OnMessageSendProgress}, OnEvent);
 			v.Add(k.MessageSendProgress, _chatMessage);
 
 			longPressGesture = new UILongPressGestureRecognizer(LongPressMethod);

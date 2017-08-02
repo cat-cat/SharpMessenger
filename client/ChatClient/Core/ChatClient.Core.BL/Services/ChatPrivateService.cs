@@ -31,40 +31,36 @@ namespace ChatClient.iOS.Services
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			if (newItem.Key == k.JoinRoom)
 			{
-				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-				if (newItem.Key == k.JoinRoom)
-				{
-					// v.Consume(newItem.Key);
-					JoinRoom((string)newItem.Value);
-				}
-				else if (newItem.Key == k.MessageSend)
-				{
-					// v.Consume(k.MessageSend);
-					var m = (ChatMessage)newItem.Value;
-					Send(m);
-				}
-				else if (newItem.Key == k.OnlineStatus)
-				{
-					// v.Consume(k.OnlineStatus);
-					new OnlineStatusGet(_user.Token, (string)newItem.Value, _user.Id).Object();
-				}
-				else if (newItem.Key == k.IsTyping)
-				{
-					// v.Consume(k.IsTyping);
-					var data = (Dictionary<string, object>)newItem.Value;
-					var room = data.ContainsKey("room") ? (string)data["room"] : null;
-					var participant = data.ContainsKey("participant") ? (string)data["participant"] : null;
-					new TypingSetRequest(_user.Token, participant, room, (string)data["isTypingTimeStamp"]).Object();
-				}
-				else if (newItem.Key == k.MessageSendProgress)
-				{
-					var m = (ChatMessage)newItem.Value;
-					new MessageStatusGet(_user.Token, (ChatMessage)newItem.Value).Object();
-				}
+				// v.Consume(newItem.Key);
+				JoinRoom((string)newItem.Value);
 			}
-
+			else if (newItem.Key == k.MessageSend)
+			{
+				// v.Consume(k.MessageSend);
+				var m = (ChatMessage)newItem.Value;
+				Send(m);
+			}
+			else if (newItem.Key == k.OnlineStatus)
+			{
+				// v.Consume(k.OnlineStatus);
+				new OnlineStatusGet(_user.Token, (string)newItem.Value, _user.Id).Object();
+			}
+			else if (newItem.Key == k.IsTyping)
+			{
+				// v.Consume(k.IsTyping);
+				var data = (Dictionary<string, object>)newItem.Value;
+				var room = data.ContainsKey("room") ? (string)data["room"] : null;
+				var participant = data.ContainsKey("participant") ? (string)data["participant"] : null;
+				new TypingSetRequest(_user.Token, participant, room, (string)data["isTypingTimeStamp"]).Object();
+			}
+			else if (newItem.Key == k.MessageSendProgress)
+			{
+				var m = (ChatMessage)newItem.Value;
+				new MessageStatusGet(_user.Token, (ChatMessage)newItem.Value).Object();
+			}
 		}
 
 		public ChatPrivateService()
@@ -82,7 +78,7 @@ namespace ChatClient.iOS.Services
 			//{
 			//	Debug.WriteLine("Disconnected");
 			//});
-			v.h(OnCollectionChanged);
+			v.h(new k[] { k.JoinRoom, k.MessageSend, k.OnlineStatus, k.IsTyping, k.MessageSendProgress }, OnCollectionChanged);
 		}
 
 		~ChatPrivateService()

@@ -50,7 +50,7 @@ namespace ChatClient.Core.UI.ViewModels
 		public GroupChatViewModel(string roomName)
 		{
 			// subscribe for events
-			v.h(OnCollectionChanged);
+			v.h(new k[] { k.OnUpdateUserOnlineStatus, k.OnMessageReceived, k.OnIsTyping }, OnCollectionChanged);
 
 			_roomName = roomName;
 			ExecuteJoinRoomCommand();
@@ -74,33 +74,30 @@ namespace ChatClient.Core.UI.ViewModels
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			if (newItem.Key == k.OnUpdateUserOnlineStatus)
 			{
-				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-				if (newItem.Key == k.OnUpdateUserOnlineStatus)
+				var data = (Dictionary<string, bool>)newItem.Value;
+				// v.Consume(k.OnUpdateUserOnlineStatus);
+				// TODO: display status
+			}
+			else if (newItem.Key == k.OnMessageReceived)
+			{
+				// v.Consume(k.OnMessageReceived);
+				ChatMessage message = (ChatMessage)newItem.Value;
+				if (message.JustSent)
 				{
-					var data = (Dictionary<string, bool>)newItem.Value;
-					// v.Consume(k.OnUpdateUserOnlineStatus);
-					// TODO: display status
+					_cacheMessage.guid = message.guid;
+					_cacheMessage.status = message.status;
+					PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
 				}
-				else if (newItem.Key == k.OnMessageReceived)
-				{
-					// v.Consume(k.OnMessageReceived);
-					ChatMessage message = (ChatMessage)newItem.Value;
-					if (message.JustSent)
-					{
-						_cacheMessage.guid = message.guid;
-						_cacheMessage.status = message.status;
-						PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
-					}
 
-					_chatServices_OnMessageReceived(sender, message);
-				}
-				else if (newItem.Key == k.OnIsTyping)
-				{
-					// v.Consume(k.OnIsTyping);
-					// show newItem.Value isTyping...
-				}
+				_chatServices_OnMessageReceived(sender, message);
+			}
+			else if (newItem.Key == k.OnIsTyping)
+			{
+				// v.Consume(k.OnIsTyping);
+				// show newItem.Value isTyping...
 			}
 		}
 

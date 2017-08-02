@@ -112,7 +112,7 @@ namespace ChatClient.Core.UI.Pages
 		{
 			base.OnAppearing();
 
-			v.h(OnEvent);
+			v.h(new k[] {k.MessageEdit, k.MessageReply}, OnEvent);
 		}
 
 		protected override void OnDisappearing()
@@ -124,23 +124,20 @@ namespace ChatClient.Core.UI.Pages
 
 		async void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			if (newItem.Key == k.MessageReply)
 			{
-				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-				if (newItem.Key == k.MessageReply)
-				{
-					_messageReplyTo = (ChatMessage)newItem.Value;
-					messageEntry.Text = "rep: ";
-					ViewModel.ChatMessage.ReplyQuote = _messageReplyTo.Message;
-					ViewModel.ChatMessage.ReplyGuid = _messageReplyTo.guid;
-					ViewModel.ChatMessage.ReplyId = _messageReplyTo.Id;
-				}
-				else if (newItem.Key == k.MessageEdit)
-				{
-					var m = (ChatMessage)newItem.Value;
-					ViewModel.StartEditMessage(m);
-				}
-			}		
+				_messageReplyTo = (ChatMessage)newItem.Value;
+				messageEntry.Text = "rep: ";
+				ViewModel.ChatMessage.ReplyQuote = _messageReplyTo.Message;
+				ViewModel.ChatMessage.ReplyGuid = _messageReplyTo.guid;
+				ViewModel.ChatMessage.ReplyId = _messageReplyTo.Id;
+			}
+			else if (newItem.Key == k.MessageEdit)
+			{
+				var m = (ChatMessage)newItem.Value;
+				ViewModel.StartEditMessage(m);
+			}
 		}     
 
         private void MessageEntry_TextChanged(object sender, TextChangedEventArgs e) {

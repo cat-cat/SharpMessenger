@@ -1,52 +1,57 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace ChatClient.Core.Common
 {
-public enum k {OnMessageEdit, MessageEdit, MessageReply, Unused, MessageSendProgress, OnMessageSendProgress, OnIsTyping, IsTyping, MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
+	public enum k {OnMessageEdit, MessageEdit, MessageReply, Unused, MessageSendProgress, OnMessageSendProgress, OnIsTyping, IsTyping, MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
 
-	public class v : ObservableCollection<KeyValuePair<k, object> >
+	public class v
 	{
-		static v i;
+		static Dictionary<k, HashSet<NotifyCollectionChangedEventHandler>> handlersMap = new Dictionary<k, HashSet<NotifyCollectionChangedEventHandler>>();
 
-
-		static v sharedInstance()
+		public static void h(k[] keys, NotifyCollectionChangedEventHandler handler)
 		{
-			if (i == null)
-				i = new v();
-
-			return i;
+			foreach (var key in keys)
+				lock(handlersMap[key])
+					handlersMap[key].Add(handler);
 		}
 
-		public static void h(System.Collections.Specialized.NotifyCollectionChangedEventHandler handler)
+		public static void m(NotifyCollectionChangedEventHandler handler)
 		{
-            sharedInstance().CollectionChanged += handler;
-		}
-
-		public static void m(System.Collections.Specialized.NotifyCollectionChangedEventHandler handler)
-		{
-            sharedInstance().CollectionChanged -= handler;
+			foreach (k key in Enum.GetValues(typeof(k)))
+				lock(handlersMap[key])
+					handlersMap[key].Remove(handler);
 		}
 
 		public static void Add(k key, object o)
 		{
-			//while (keysToRemove.Count > 0)
-			//	Remove(keysToRemove.Pop());
+			foreach (var handlr in new List<NotifyCollectionChangedEventHandler>(handlersMap[key]))
+				lock(handlr)
+					try
+					{
+						handlr.Invoke(key, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add,
+												new List<KeyValuePair<k, object>>(new KeyValuePair<k, object>[] { new KeyValuePair<k, object>(key, o) })));
 
-			//var loc = new KeyValuePair<k, object>(key, o);
-			//s.Add(loc);
-
-			sharedInstance().OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Add,
-			                                                                                             new List<KeyValuePair<k, object>>(new KeyValuePair<k, object>[] { new KeyValuePair<k, object>(key, o) })));
+#if __tests__
+						/* check modification of global collection of handlers for a key while iteration through its copy */
+						handlersMap[key].Add((object sender, NotifyCollectionChangedEventArgs e) => { });
+#endif
+					}
+					catch(Exception e)
+					{
+						if(e is NullReferenceException)
+							// handler invalid, remove it
+							m(handlr);
+					}
 		}
 
-		protected v()
+		static v()
 		{
-		}
-	}
+			foreach (k e in Enum.GetValues(typeof(k)))
+				handlersMap[e] = new HashSet<NotifyCollectionChangedEventHandler>();
 
-	public class MessageReply : v
-	{
+			new Tests().run();
+		}
 	}
 }

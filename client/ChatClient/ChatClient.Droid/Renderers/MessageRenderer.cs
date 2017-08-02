@@ -33,32 +33,29 @@ namespace ChatClient.Droid.Renderers
 
 		void OnEvent(object sener, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			if (newItem.Key == k.OnMessageSendProgress)
 			{
-				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-				if (newItem.Key == k.OnMessageSendProgress)
+				var d = (Dictionary<string, object>)newItem.Value;
+				if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
 				{
-					var d = (Dictionary<string, object>)newItem.Value;
-					if ((string)d["guid"] == _chatMessage.guid && (ChatMessage.Status)d["status"] == ChatMessage.Status.Deleted)
+					Device.BeginInvokeOnMainThread(() =>
 					{
-						Device.BeginInvokeOnMainThread(() =>
-						{
-							FindViewById<TextView>(Resource.Id.message).Text = "<deleted>";
-						});
-						_chatMessage.Message = "<deleted>";
-					}
+						FindViewById<TextView>(Resource.Id.message).Text = "<deleted>";
+					});
+					_chatMessage.Message = "<deleted>";
 				}
-				else if (newItem.Key == k.OnMessageEdit)
+			}
+			else if (newItem.Key == k.OnMessageEdit)
+			{
+				var d = (Dictionary<string, object>)newItem.Value;
+				if ((string)d["guid"] == _chatMessage.guid)
 				{
-					var d = (Dictionary<string, object>)newItem.Value;
-					if ((string)d["guid"] == _chatMessage.guid)
+					Device.BeginInvokeOnMainThread(() =>
 					{
-						Device.BeginInvokeOnMainThread(() =>
-						{
-							FindViewById<TextView>(Resource.Id.message).Text = (string)d["message"];
-						});
-						_chatMessage.Message = (string)d["message"];
-					}
+						FindViewById<TextView>(Resource.Id.message).Text = (string)d["message"];
+					});
+					_chatMessage.Message = (string)d["message"];
 				}
 			}
 		}
@@ -67,7 +64,7 @@ namespace ChatClient.Droid.Renderers
 		{
 			Id = 2525;
 
-			v.h(OnEvent);
+			v.h(new k[]{k.OnMessageEdit, k.OnMessageSendProgress}, OnEvent);
 		}
 	}
 

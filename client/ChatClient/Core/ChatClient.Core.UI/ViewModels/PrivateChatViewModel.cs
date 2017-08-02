@@ -64,37 +64,34 @@ namespace ChatClient.Core.UI.ViewModels
 
 	void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			if (newItem.Key == k.OnUpdateUserOnlineStatus)
 			{
-				var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-				if (newItem.Key == k.OnUpdateUserOnlineStatus)
+				var data = (Dictionary<string, bool>)newItem.Value;
+				if (data.ContainsKey(_receiver.Id))
 				{
-					var data = (Dictionary<string, bool>)newItem.Value;
-					if (data.ContainsKey(_receiver.Id))
-					{
-						// only consume data for this _receiver
-						// v.Consume(k.OnUpdateUserOnlineStatus);
-						bool status = data[_receiver.Id];
-						// TODO: display status
-					}
+					// only consume data for this _receiver
+					// v.Consume(k.OnUpdateUserOnlineStatus);
+					bool status = data[_receiver.Id];
+					// TODO: display status
 				}
-				else if (newItem.Key == k.OnMessageReceived)
+			}
+			else if (newItem.Key == k.OnMessageReceived)
+			{
+				// v.Consume(k.OnMessageReceived);
+				ChatMessage message = (ChatMessage)newItem.Value;
+				if (message.JustSent)
 				{
-					// v.Consume(k.OnMessageReceived);
-					ChatMessage message = (ChatMessage)newItem.Value;
-					if (message.JustSent)
-					{
-						_cacheMessage.guid = message.guid;
-						_cacheMessage.status = message.status;
-						PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
-					}
-					_chatServices_OnMessageReceived(sender, message);
+					_cacheMessage.guid = message.guid;
+					_cacheMessage.status = message.status;
+					PersisataceService.GetCacheMessagePersistance().SaveItemAsync(_cacheMessage);
 				}
-				else if (newItem.Key == k.OnIsTyping)
-				{
-						// v.Consume(k.OnIsTyping);
-						// show newItem.Value isTyping...
-				}
+				_chatServices_OnMessageReceived(sender, message);
+			}
+			else if (newItem.Key == k.OnIsTyping)
+			{
+					// v.Consume(k.OnIsTyping);
+					// show newItem.Value isTyping...
 			}
 		}
 
@@ -105,7 +102,7 @@ namespace ChatClient.Core.UI.ViewModels
 			_receiver = user;
 
 			// subscribe for events
-			v.h(OnCollectionChanged);
+			v.h(new k[] { k.OnUpdateUserOnlineStatus, k.OnMessageReceived, k.OnIsTyping }, OnCollectionChanged);
 
 			// request from server online status for interlocutor
 			v.Add(k.OnlineStatus, _receiver.Id);
