@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using ChatClient.Core.Common.Helpers;
+using System.Diagnostics;
 
 namespace ChatClient.Core.Common
 {
@@ -11,7 +11,7 @@ namespace ChatClient.Core.Common
 		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			LogHelper.WriteLog("~ OnEvent() of dead object: key {0} value {1}", newItem.Key.ToString(), newItem.Value);
+			Debug.WriteLine(String.Format("~ OnEvent() of dead object: key {0} value {1}", newItem.Key.ToString(), newItem.Value));
 		}
 
 		public DeadObject()
@@ -31,7 +31,7 @@ namespace ChatClient.Core.Common
 		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			LogHelper.WriteLog("~ OnEvent(): key {0} value {1}", newItem.Key.ToString(), newItem.Value);
+			Debug.WriteLine(String.Format("~ OnEvent(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
 
 			if (newItem.Key == k.Unused)
 			{
@@ -43,15 +43,28 @@ namespace ChatClient.Core.Common
 		void OnEvent2(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			LogHelper.WriteLog("~ OnEvent2(): key {0} value {1}", newItem.Key.ToString(), newItem.Value);
+			Debug.WriteLine(String.Format("~ OnEvent2(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
 		}
 
 		void foreachTest(string[] s)
 		{
 			foreach (string i in s)
 			{
-				LogHelper.WriteLog("~ : {0}", i);
+				Debug.WriteLine(String.Format("~ : {0}", i));
 			}
+		}
+
+		async void HandlersLockTester1(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			Debug.WriteLine(String.Format("~ HandlersLockTester1(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
+			await Task.Delay(300);
+		}
+
+		async void HandlersLockTester2(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			Debug.WriteLine(String.Format("~ HandlersLockTester2(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
 		}
 
 		public async void run()
@@ -80,18 +93,33 @@ namespace ChatClient.Core.Common
 
 
 			/* testing foreach loop entering multiple threads */
-			string[] s = new string[1000];
-			string[] n = new string[1000];
+			var s = new string[200];
+			var n = new string[200];
 			int i = 0;
-			while (i < 1000) {
+			while (i < 200)
+			{
 				s[i] = "string" + i++;
 			}
 			i = 0;
-			while (i < 1000) {
+			while (i < 200)
+			{
 				n[i] = "astring" + i++;
 			}
 			Task.Run(() => { foreachTest(s); });
 			Task.Run(() => { foreachTest(n); });
+
+
+			/* testing lock(handlr) in Add() method of class v */
+			v.h(new k[] { k.IsTyping }, HandlersLockTester1);
+			v.h(new k[] { k.JoinRoom }, HandlersLockTester2);
+
+			// line 1
+			Task.Run(() => { v.Add(k.IsTyping, "first thread for the same handler"); });
+			// line 2
+			Task.Run(() => { v.Add(k.IsTyping, "second thread for the same handler"); });
+			// line below will always complete executing before the line 2 above, because line 2 will wait completion of line 1
+			// as both previous lines 1 and 2 are calling the same handler, access to which is synchronized by lock(handlr) in Add() method of class v
+			Task.Run(() => { v.Add(k.JoinRoom, "third thread for other handler"); });
 		}
 
 

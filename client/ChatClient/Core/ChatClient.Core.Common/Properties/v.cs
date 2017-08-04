@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace ChatClient.Core.Common
 {
@@ -26,24 +27,39 @@ namespace ChatClient.Core.Common
 
 		public static void Add(k key, object o)
 		{
+			Monitor.Enter(handlersMap[key]);
 			foreach (var handlr in new List<NotifyCollectionChangedEventHandler>(handlersMap[key]))
-				lock(handlr)
+			{
+				if (Monitor.IsEntered(handlersMap[key]))
+				{
+					Monitor.PulseAll(handlersMap[key]);
+					Monitor.Exit(handlersMap[key]);
+				}
+
+				lock (handlr)
 					try
 					{
-						handlr.Invoke(key, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add,
-												new List<KeyValuePair<k, object>>(new KeyValuePair<k, object>[] { new KeyValuePair<k, object>(key, o) })));
+						handlr.Invoke(key, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<KeyValuePair<k, object>>(){ new KeyValuePair<k, object>(key, o) }));
 
 #if __tests__
 						/* check modification of global collection of handlers for a key while iteration through its copy */
 						handlersMap[key].Add((object sender, NotifyCollectionChangedEventArgs e) => { });
 #endif
 					}
-					catch(Exception e)
+					catch (Exception e)
 					{
-						if(e is NullReferenceException)
+						if (e is NullReferenceException)
 							// handler invalid, remove it
 							m(handlr);
 					}
+			}
+
+			if (Monitor.IsEntered(handlersMap[key]))
+			{
+				Monitor.PulseAll(handlersMap[key]);
+				Monitor.Exit(handlersMap[key]);
+			}
+
 		}
 
 		static v()
