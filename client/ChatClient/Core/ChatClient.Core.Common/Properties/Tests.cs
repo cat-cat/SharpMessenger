@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ChatClient.Core.Common
 {
@@ -11,7 +12,7 @@ namespace ChatClient.Core.Common
 		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ OnEvent() of dead object: key {0} value {1}", newItem.Key.ToString(), newItem.Value));
+			Debug.WriteLine(String.Format("~ OnEvent() of dead object: key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
 		}
 
 		public DeadObject()
@@ -31,7 +32,7 @@ namespace ChatClient.Core.Common
 		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ OnEvent(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
+			Debug.WriteLine(String.Format("~ OnEvent(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
 
 			if (newItem.Key == k.Unused)
 			{
@@ -43,28 +44,28 @@ namespace ChatClient.Core.Common
 		void OnEvent2(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ OnEvent2(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
+			Debug.WriteLine(String.Format("~ OnEvent2(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
 		}
 
-		void foreachTest(string[] s)
+		void foreachTest(string[] a)
 		{
-			foreach (string i in s)
+			for (int i = 0; i < a.Length; i++)
 			{
-				Debug.WriteLine(String.Format("~ : {0}", i));
+				Debug.WriteLine(String.Format("~ : {0}{1}", a[i], i));
 			}
 		}
 
 		async void HandlersLockTester1(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ HandlersLockTester1(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
+			Debug.WriteLine(String.Format("~ HandlersLockTester1(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
 			await Task.Delay(300);
 		}
 
 		async void HandlersLockTester2(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ HandlersLockTester2(): key {0} value {1}", newItem.Key.ToString(), newItem.Value));
+			Debug.WriteLine(String.Format("~ HandlersLockTester2(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
 		}
 
 		public async void run()
@@ -79,12 +80,12 @@ namespace ChatClient.Core.Common
 			Task t1 = Task.Run(() => { v.Add(k.OnMessageReceived, "this key"); });
 			Task t2 = Task.Run(() => { v.Add(k.MessageEdit, "that key"); });
 
-			/* wait for both threads to complete before executing next test */
+			// wait for both threads to complete before executing next test
 			await Task.WhenAll(new Task[] { t1, t2 });
 
 
 
-			// For now DeadObject may be already destroyed, so we may get into catch block in v class
+			/* For now DeadObject may be already destroyed, so we may test catch block in v class */
 			v.Add(k.OnlineStatus, "for dead object");
 
 
@@ -93,20 +94,13 @@ namespace ChatClient.Core.Common
 
 
 			/* testing foreach loop entering multiple threads */
-			var s = new string[200];
-			var n = new string[200];
-			int i = 0;
-			while (i < 200)
-			{
-				s[i] = "string" + i++;
-			}
-			i = 0;
-			while (i < 200)
-			{
-				n[i] = "astring" + i++;
-			}
-			Task.Run(() => { foreachTest(s); });
-			Task.Run(() => { foreachTest(n); });
+			var s = Enumerable.Repeat("string", 200).ToArray();
+			var n = Enumerable.Repeat("astring", 200).ToArray();
+			t1 = Task.Run(() => { foreachTest(s); });
+			t2 = Task.Run(() => { foreachTest(n); });
+
+			// wait for both threads to complete before executing next test
+			await Task.WhenAll(new Task[] { t1, t2 });
 
 
 			/* testing lock(handlr) in Add() method of class v */
@@ -117,7 +111,7 @@ namespace ChatClient.Core.Common
 			Task.Run(() => { v.Add(k.IsTyping, "first thread for the same handler"); });
 			// line 2
 			Task.Run(() => { v.Add(k.IsTyping, "second thread for the same handler"); });
-			// line below will always complete executing before the line 2 above, because line 2 will wait completion of line 1
+			// line below will MOST OF TIMES complete executing before the line 2 above, because line 2 will wait completion of line 1
 			// as both previous lines 1 and 2 are calling the same handler, access to which is synchronized by lock(handlr) in Add() method of class v
 			Task.Run(() => { v.Add(k.JoinRoom, "third thread for other handler"); });
 		}
