@@ -14,32 +14,37 @@ namespace ChatClient.Core.DAL.Data
    public class UserPersistanse:DatabasePersistance<User> {
       
      
-        public override Task<List<User>> GetItemsAsync()
+        public override async Task<List<User>> GetItemsAsync()
         {
-            return database.Table<User>().ToListAsync();
+            var db = await database();
+            return await db.Table<User>().ToListAsync();
         }
 
-        public override Task<List<User>> GetItemsNotDoneAsync()
+        public override async Task<List<User>> GetItemsNotDoneAsync()
         {
-            return database.QueryAsync<User>("SELECT * FROM [User] WHERE [Done] = 0");
+            var db = await database();
+            return await db.QueryAsync<User>("SELECT * FROM [User] WHERE [Done] = 0");
         }
 
-       public override Task<User> GetItemAsync(object id) {
-            return database.Table<User>().Where(i => i.Id == (string)id).FirstOrDefaultAsync();
+       public override async Task<User> GetItemAsync(object id) {
+            var db = await database();
+            return await db.Table<User>().Where(i => i.Id == (string)id).FirstOrDefaultAsync();
         }
 
        
 
         public  override async Task<int> SaveItemAsync(User item) {
+            var db = await database();
             if (await GetItemAsync(item.Id) != null)
-                return await database.UpdateAsync(item);
+                return await db.UpdateAsync(item);
             else
-                return await database.InsertAsync(item);
+                return await db.InsertAsync(item);
         }
 
-        public override Task<int> DeleteItemAsync(User item)
+        public override async Task<int> DeleteItemAsync(User item)
         {
-            return database.DeleteAsync(item);
+            var db = await database();
+            return await db.DeleteAsync(item);
         }
 
 		public override Task<int> UpdateItemAsync(Dictionary<string, object> d)

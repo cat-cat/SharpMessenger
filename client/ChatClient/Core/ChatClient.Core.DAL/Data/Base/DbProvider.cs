@@ -17,16 +17,16 @@ namespace ChatClient.Core.DAL.Data.Base
     public static class DbProvider
     {
         static SQLiteAsyncConnection _database;
-        public static SQLiteAsyncConnection GetSqLiteAsyncConnection() {
+        public static async Task<SQLiteAsyncConnection> GetSqLiteAsyncConnection() {
             if (_database != null)
                 return _database;
-			string dbpath = DependencyService.Get<IFileHelper>().GetLocalFilePath("ChatClientSQLite.db3");
+			string dbpath = await DependencyService.Get<IFileHelper>().GetLocalFilePath("ChatClientSQLite.db3");
 			_database = new SQLiteAsyncConnection(dbpath);
-            _database.CreateTableAsync<GeoLocation>().Wait();
-            _database.CreateTableAsync<User>().Wait();
-            _database.CreateTableAsync<PushId>().Wait();
-            _database.CreateTableAsync<Parameters>().Wait();
-            _database.CreateTableAsync<CacheMessage>().Wait();
+           await _database.CreateTableAsync<GeoLocation>();
+            await _database.CreateTableAsync<User>();
+            await _database.CreateTableAsync<PushId>();
+            await _database.CreateTableAsync<Parameters>();
+            await _database.CreateTableAsync<CacheMessage>();
             return _database;
         }
     }

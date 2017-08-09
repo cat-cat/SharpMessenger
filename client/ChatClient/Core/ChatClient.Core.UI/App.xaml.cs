@@ -46,8 +46,8 @@ namespace ChatClient.Core.UI
         public App()
         {
             InitializeComponent();
-      //      ViewModel = new InAppViewModel();
-        //    ViewModel.RestoreState(Current.Properties);
+            //      ViewModel = new InAppViewModel();
+            //    ViewModel.RestoreState(Current.Properties);
             MainPage = new RootPage();
             Navigation = MainPage.Navigation;
             UpdatePushIds();

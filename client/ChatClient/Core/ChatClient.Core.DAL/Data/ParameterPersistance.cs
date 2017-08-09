@@ -11,28 +11,31 @@ namespace ChatClient.Core.DAL.Data
 {
   public  class ParameterPersistance:DatabasePersistance<Parameters> {
 		public async override Task<List<Parameters>> GetItemsAsync() {
-			return await database.Table<Parameters>().ToListAsync();
+            var db = await database();
+            return await db.Table<Parameters>().ToListAsync();
         }
 
 		public async override Task<List<Parameters>> GetItemsNotDoneAsync() {
-			return await database.QueryAsync<Parameters>("SELECT * FROM [Parameters] WHERE [Done] = 0");
+            var db = await database();
+            return await db.QueryAsync<Parameters>("SELECT * FROM [Parameters] WHERE [Done] = 0");
         }
 
 		public async  override Task<Parameters> GetItemAsync(object id) {
-           // int lId = Convert.ToInt32(id);
-			return await database.Table<Parameters>().Where(i => i.Id == (int)id).FirstOrDefaultAsync();
+            // int lId = Convert.ToInt32(id);
+            var db = await database();
+            return await db.Table<Parameters>().Where(i => i.Id == (int)id).FirstOrDefaultAsync();
 
         }
 
         public async override Task<int> SaveItemAsync(Parameters item) {
+            var db = await database();
             if (await GetItemAsync(item.Id) != null)
             {
-                return await database.UpdateAsync(item);
-
+                return await db.UpdateAsync(item);
             }
             else
             {
-                return await database.InsertAsync(item);
+                return await db.InsertAsync(item);
             }
         }
 

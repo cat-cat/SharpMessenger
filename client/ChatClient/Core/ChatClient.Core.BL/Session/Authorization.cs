@@ -72,7 +72,8 @@ namespace ChatClient.Core.BL.Session {
                 await Task.Delay(300);
             if (!IsBusy) {
                 IsBusy = true;
-                List<User> lUsers = await PersisataceService.GetUserPersistanse().GetItemsAsync();
+                var up = PersisataceService.GetUserPersistanse();
+                List<User> lUsers = await up.GetItemsAsync();
                 if (lUsers.Count == 0)
                     _user = await CreateNewUser();
                 else {

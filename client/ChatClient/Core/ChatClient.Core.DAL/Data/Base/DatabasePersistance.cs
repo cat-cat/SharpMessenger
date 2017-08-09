@@ -10,11 +10,9 @@ using SQLite;
 
 namespace ChatClient.Core.DAL.Data.Base {
     public abstract class DatabasePersistance<TTYPE> {
-        public SQLiteAsyncConnection database
+        public async Task<SQLiteAsyncConnection> database()
         {
-            get {
-                return DbProvider.GetSqLiteAsyncConnection();
-            }
+           return await DbProvider.GetSqLiteAsyncConnection();
         }
 
         public abstract Task<List<TTYPE>> GetItemsAsync();

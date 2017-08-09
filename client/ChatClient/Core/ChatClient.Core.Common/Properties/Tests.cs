@@ -26,57 +26,64 @@ namespace ChatClient.Core.Common
 		}
 	}
 
-	public class Tests
-	{
+    public class Tests
+    {
 
-		void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ OnEvent(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
+        void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+            Debug.WriteLine(String.Format("~ OnEvent(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
 
-			if (newItem.Key == k.Unused)
-			{
-				// v.Add(k.Unused, "stack overflow crash"); // reentrant call in current thread causes stack overflow crash. Deadlock doesn't happen, because lock mechanism allows reentrancy for a thread that already has a lock on a particular object
-				// Task.Run(() => v.Add(k.Unused, "deadlock")); // the same call in a separate thread don't overflow, but causes infinite recursive loop
-			}
-		}
+            if (newItem.Key == k.Unused)
+            {
+                // v.Add(k.Unused, "stack overflow crash"); // reentrant call in current thread causes stack overflow crash. Deadlock doesn't happen, because lock mechanism allows reentrancy for a thread that already has a lock on a particular object
+                // Task.Run(() => v.Add(k.Unused, "deadlock")); // the same call in a separate thread don't overflow, but causes infinite recursive loop
+            }
+        }
 
-		void OnEvent2(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ OnEvent2(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
-		}
+        void OnEvent2(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+            Debug.WriteLine(String.Format("~ OnEvent2(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
+        }
 
-		void foreachTest(string[] a)
-		{
-			for (int i = 0; i < a.Length; i++)
-			{
-				Debug.WriteLine(String.Format("~ : {0}{1}", a[i], i));
-			}
-		}
+        void foreachTest(string[] a)
+        {
+            for (int i = 0; i < a.Length; i++)
+            {
+                Debug.WriteLine(String.Format("~ : {0}{1}", a[i], i));
+            }
+        }
 
-		async void HandlersLockTester1(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ HandlersLockTester1(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
-			await Task.Delay(300);
-		}
+        async void HandlersLockTester1(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+            Debug.WriteLine(String.Format("~ HandlersLockTester1(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
+            await Task.Delay(300);
+        }
 
-		async void HandlersLockTester2(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-			Debug.WriteLine(String.Format("~ HandlersLockTester2(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
-		}
+        async void HandlersLockTester2(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+            Debug.WriteLine(String.Format("~ HandlersLockTester2(): key: {0} value: {1}", newItem.Key.ToString(), newItem.Value));
+        }
+
+        async Task<bool> rb()
+        {
+            await Task.Delay(10);
+            return true;
+        }
 
 		public async void run()
 		{
 			// Direct call for garbage collector - should be called for testing purposes only, not recommended for a business logic of an application
 			GC.Collect();
 
-			/*
+            /*
 			 * == test v.Add()::foreach (var handlr in new List<NotifyCollectionChangedEventHandler>(handlersMap[key]))
 			 * for two threads entering the foreach loop at the same time and iterating handlers only of its key
 			 */
+            var tbres = await rb();
 			Task t1 = Task.Run(() => { v.Add(k.OnMessageReceived, "this key"); });
 			Task t2 = Task.Run(() => { v.Add(k.MessageEdit, "that key"); });
 

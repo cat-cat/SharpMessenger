@@ -11,38 +11,42 @@ namespace ChatClient.Core.DAL.Data
 {
    public class CacheMessagePersistance:DatabasePersistance<CacheMessage>
     {
-        public override Task<List<CacheMessage>> GetItemsAsync() {
-            return database.Table<CacheMessage>().ToListAsync();
+        public override async Task<List<CacheMessage>> GetItemsAsync() {
+            var db = await database();
+            return await db.Table<CacheMessage>().ToListAsync();
         }
 
-        public override Task<List<CacheMessage>> GetItemsNotDoneAsync() {
-            return database.QueryAsync<CacheMessage>("SELECT * FROM [CacheMessages] WHERE [Done] = 0");
+        public override async Task<List<CacheMessage>> GetItemsNotDoneAsync() {
+            var db = await database();
+            return await db.QueryAsync<CacheMessage>("SELECT * FROM [CacheMessages] WHERE [Done] = 0");
         }
 
-        public override Task<CacheMessage> GetItemAsync(object id) {
-			return database.Table<CacheMessage>().Where(i => i.guid == (string)id).FirstOrDefaultAsync();
+        public override async Task<CacheMessage> GetItemAsync(object id) {
+            var db = await database();
+            return await db.Table<CacheMessage>().Where(i => i.guid == (string)id).FirstOrDefaultAsync();
         }
 
         public override async Task<int> SaveItemAsync(CacheMessage item)
         {
+            var db = await database();
             if (await GetItemAsync(item.Id) != null)
             {
-                return await database.UpdateAsync(item);
+                return await db.UpdateAsync(item);
             }
             else
             {
-                return await database.InsertAsync(item);
+                return await db.InsertAsync(item);
             }
         }
-		public override Task<int> UpdateItemAsync(Dictionary<string, object> d)
+		public override async Task<int> UpdateItemAsync(Dictionary<string, object> d)
 		{
 			var m = new CacheMessage()
 			{
 				guid = (string)d["guid"],
 				status = (ChatMessage.Status) d["status"]
 			};
-
-			return database.UpdateAsync(m);
+            var db = await database();
+            return await db.UpdateAsync(m);
 		}
 		public override Task<int> DeleteItemAsync(CacheMessage item)
 		{

@@ -67,7 +67,7 @@ namespace ChatClient.Core.Common
 			foreach (k e in Enum.GetValues(typeof(k)))
 				handlersMap[e] = new HashSet<NotifyCollectionChangedEventHandler>();
 
-			new Tests().run();
+			//new Tests().run();
 		}
 	}
 }
