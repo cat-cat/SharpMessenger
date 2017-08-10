@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ChatClient.Core.Common.Helpers;
-using ChatClient.Core.Common.Interfaces;
+using ChatClient.Core.Common;
 using ChatClient.Core.SAL.Adapters;
 
 using Xamarin.Forms;
@@ -82,7 +82,7 @@ namespace ChatClient.Core.SAL.Methods
                 if (Response.Error)
                 {
                     if (Response.ShowMessage)
-                        DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                        v.Add(k.OnExceptionMessage, Response.ErrorMessage);
                     else
                     {
 #if DEBUG
@@ -98,7 +98,7 @@ namespace ChatClient.Core.SAL.Methods
             catch (Exception lException)
             {
                 LogHelper.WriteLog(lException.Message, "RequestError", "UserUpdate");
-                DependencyService.Get<IExceptionHandler>().ShowMessage(lException.Message);
+                v.Add(k.OnExceptionMessage, lException.Message);
             }
             Dispose();
             return result;

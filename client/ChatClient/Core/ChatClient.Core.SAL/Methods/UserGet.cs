@@ -87,18 +87,18 @@ namespace ChatClient.Core.SAL.Methods
                   if (Response.ErrorCode == "0x00001")
                       throw new Unauthorized();
                   if (Response.ShowMessage)
-                      DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                      v.Add(k.OnExceptionMessage, Response.ErrorMessage);
                   else {
 #if DEBUG
                       LogHelper.WriteLog(Response.ErrorMessage, "RequestError", "Authorization");
-                      DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                      v.Add(k.OnExceptionMessage, Response.ErrorMessage);
 #endif
                   }
                   Dispose();
                   return null;
               }
               if (Response.ShowMessage)
-                  DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                  v.Add(k.OnExceptionMessage, Response.ErrorMessage);
               lUser = JsonConvert.DeserializeObject<User>(Response.ResponseObject["user"].ToString());
               if (lUser.Photo != "profile_avatar.png")
                   lUser.Photo = await
@@ -110,7 +110,7 @@ namespace ChatClient.Core.SAL.Methods
             catch (Exception lException) {
 #if DEBUG
                 LogHelper.WriteLog(lException.Message, "RequestError", "UserGet");
-                DependencyService.Get<IExceptionHandler>().ShowMessage(lException.Message);
+                v.Add(k.OnExceptionMessage, lException.Message);
 #endif
             }
             Dispose();

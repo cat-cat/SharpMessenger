@@ -22,9 +22,9 @@ namespace ChatClient.Droid
 
     public class FileHelper : IFileHelper
     {
-        public string GetLocalFilePath(string filename)
-        {
-			string path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+		public async Task<string> GetLocalFilePath(string filename)
+		{
+			string path = await Task.Run(() => { return Environment.GetFolderPath(Environment.SpecialFolder.Personal); });
             return Path.Combine(path, filename);
         }
 

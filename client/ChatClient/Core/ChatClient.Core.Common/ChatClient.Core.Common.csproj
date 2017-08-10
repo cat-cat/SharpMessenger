@@ -41,7 +41,6 @@
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\MyConverter.cs" />
     <Compile Include="Helpers\ObjectHelper.cs" />
-    <Compile Include="Interfaces\IExceptionHandler.cs" />
     <Compile Include="Interfaces\IFileHelper.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />

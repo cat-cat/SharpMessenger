@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace ChatClient.Core.Common
 {
-	public enum k {OnMessageEdit, MessageEdit, MessageReply, Unused, MessageSendProgress, OnMessageSendProgress, OnIsTyping, IsTyping, MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
+	public enum k { ConfirmGroupRemoval, OnConfirmGroupRemoval, OnExceptionMessage, OnMessageEdit, MessageEdit, MessageReply, Unused, MessageSendProgress, OnMessageSendProgress, OnIsTyping, IsTyping, MessageSend, JoinRoom, OnMessageReceived, OnlineStatus, OnUpdateUserOnlineStatus }
 
 	public class v
 	{

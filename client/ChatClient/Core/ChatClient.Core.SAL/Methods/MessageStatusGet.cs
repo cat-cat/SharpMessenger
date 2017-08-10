@@ -108,12 +108,12 @@ namespace ChatClient.Core.SAL.Methods
 				if (Response.Error)
 				{
 					if (Response.ShowMessage)
-						DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+						v.Add(k.OnExceptionMessage, Response.ErrorMessage);
 					else
 					{
 #if DEBUG
 						LogHelper.WriteLog(Response.ErrorMessage, "RequestError", "Authorization");
-						DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+						v.Add(k.OnExceptionMessage, Response.ErrorMessage);
 #endif
 					}
 					success = false;
@@ -142,7 +142,7 @@ namespace ChatClient.Core.SAL.Methods
 			{
 #if DEBUG
 				LogHelper.WriteLog(lException.Message, "RequestError", "MessageStatusGet");
-				DependencyService.Get<IExceptionHandler>().ShowMessage(lException.Message);
+				v.Add(k.OnExceptionMessage, lException.Message);
 #endif
 			}
 			Dispose();

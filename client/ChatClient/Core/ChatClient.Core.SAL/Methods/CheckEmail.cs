@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ChatClient.Core.Common.Helpers;
-using ChatClient.Core.Common.Interfaces;
+using ChatClient.Core.Common;
 using ChatClient.Core.Common.Models;
 using ChatClient.Core.SAL.Adapters;
 
@@ -68,7 +68,7 @@ namespace ChatClient.Core.SAL.Methods
             if (Response.Error)
             {
                 if (Response.ShowMessage)
-                    DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                    v.Add(k.OnExceptionMessage, Response.ErrorMessage);
                 else
                 {
 #if DEBUG
@@ -83,7 +83,7 @@ namespace ChatClient.Core.SAL.Methods
                     if (ObjectHelper.IsPropertyExist(Response.ResponseObject, "user"))
                         lUser = JsonConvert.DeserializeObject<User>(Response.ResponseObject["user"].ToString());
                 } else {
-                    DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ResponseObject["error"].ToString());
+                    v.Add(k.OnExceptionMessage, Response.ResponseObject["error"].ToString());
                 }
                
             }
@@ -92,7 +92,7 @@ namespace ChatClient.Core.SAL.Methods
             {
 #if DEBUG
                 LogHelper.WriteLog(lException.Message, "RequestError", "GroupCreate");
-                DependencyService.Get<IExceptionHandler>().ShowMessage(lException.Message);
+                v.Add(k.OnExceptionMessage, lException.Message);
 #endif
             }
             Dispose();

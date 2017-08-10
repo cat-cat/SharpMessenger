@@ -25,6 +25,7 @@ namespace ChatClient.Core.UI
 
 		//  public static InAppViewModel ViewModel;
 		IChatServices _chatServices;
+		UIMessages _uiMessages;
 
         public async static void SetPage(Page page) {
             var a = await App.Current.MainPage.DisplayAlert(
@@ -51,6 +52,7 @@ namespace ChatClient.Core.UI
             MainPage = new RootPage();
             Navigation = MainPage.Navigation;
             UpdatePushIds();
+			_uiMessages = new UIMessages();
 
 			//System.Diagnostics.Debug.WriteLine("====== resource debug info =========");
 			//var assembly = typeof(App).GetTypeInfo().Assembly;

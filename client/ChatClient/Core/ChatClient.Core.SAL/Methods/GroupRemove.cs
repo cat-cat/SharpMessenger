@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ChatClient.Core.Common.Helpers;
-using ChatClient.Core.Common.Interfaces;
+using ChatClient.Core.Common;
 using ChatClient.Core.SAL.Adapters;
 
 using Xamarin.Forms;
@@ -90,7 +90,7 @@ namespace ChatClient.Core.SAL.Methods
                 if (Response.Error)
                 {
                     if (Response.ShowMessage)
-                        DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                        v.Add(k.OnExceptionMessage, Response.ErrorMessage);
                     else
                     {
 #if DEBUG
@@ -103,22 +103,17 @@ namespace ChatClient.Core.SAL.Methods
                 string lresp = Response.ResponseObject["success"].ToString();
                 response = Convert.ToBoolean(lresp);
                 if (response) {
-                    DependencyService.Get<IExceptionHandler>().ShowMessage("Group removed");
+                    v.Add(k.OnExceptionMessage, "Group removed");
                 }
                 else {
                     if (Response.ResponseObject["message"].ToString() == "group is ending") {
-                        DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ResponseObject["message"].ToString());
+                        v.Add(k.OnExceptionMessage, Response.ResponseObject["message"].ToString());
                     }
                     else if (Response.ResponseObject["message"].ToString() == "remove this group?" && !_urlParameters.ContainsKey("delete")) {
-                        if (await DependencyService.Get<IExceptionHandler>().YesNoQuestion(Response.ResponseObject["message"].ToString()))
-                        {
-                            _urlParameters.Add("delete", 1);
-                            return await Object();
-                        }
-                        else response = true; ;
+						v.Add(k.ConfirmGroupRemoval, new Dictionary<string, string>() { { "message", Response.ResponseObject["message"].ToString() }, {"groupid", _urlParameters["id"].ToString() } });
                     }
                     else if(Response.ResponseObject["message"].ToString() == "bets available")
-                        DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ResponseObject["message"].ToString());
+                        v.Add(k.OnExceptionMessage, Response.ResponseObject["message"].ToString());
                 }
                
             }
@@ -126,17 +121,34 @@ namespace ChatClient.Core.SAL.Methods
             {
 #if DEBUG
                 LogHelper.WriteLog(lException.Message, "RequestError", "GroupCreate");
-                DependencyService.Get<IExceptionHandler>().ShowMessage(lException.Message);
+                v.Add(k.OnExceptionMessage, lException.Message);
 #endif
             }
             Dispose();
             return response;
         }
 
-        public GroupRemove(string token, string groupId)
+		static void OnEvent(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+			if (newItem.Key == k.OnConfirmGroupRemoval)
+			{
+				var d = (Dictionary<string, string>) newItem.Value;
+				new GroupRemove(d["token"], d["groupid"], true /* delete group */).Object();
+			}
+		}
+
+		public GroupRemove(string token, string groupId, bool delete = false)
         {
-            _headers.Add("Authorization", token);
+			_headers.Add("Authorization", token);
             _urlParameters.Add("id", groupId);
+			if (delete)
+				_urlParameters.Add("delete", true);
         }
+
+		static GroupRemove()
+		{
+			v.h(new k[] { k.OnConfirmGroupRemoval }, OnEvent);
+		}
     }
 }

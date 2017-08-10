@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using ChatClient.Core.Common.Resx;
 using ChatClient.Core.Common.Helpers;
-using ChatClient.Core.Common.Interfaces;
+using ChatClient.Core.Common;
 using ChatClient.Core.SAL.Adapters;
 
 using Xamarin.Forms;
@@ -80,7 +80,7 @@ namespace ChatClient.Core.SAL.Methods
             Response =await Execute();
             if (Response.Error) {
                 if(Response.ShowMessage)
-					DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+					v.Add(k.OnExceptionMessage, Response.ErrorMessage);
                 else {
 #if DEBUG
                     LogHelper.WriteLog(Response.ErrorMessage,"RequestError", "Authorization");
@@ -90,7 +90,7 @@ namespace ChatClient.Core.SAL.Methods
                 return null;
             }
             if(Response.ShowMessage)
-                DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                v.Add(k.OnExceptionMessage, Response.ErrorMessage);
             string lToken= Response.ResponseObject["token"].ToString();
             Dispose();
             return lToken;

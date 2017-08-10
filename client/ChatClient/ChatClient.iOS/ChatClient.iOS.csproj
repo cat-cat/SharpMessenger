@@ -96,7 +96,6 @@
 <RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
   <ItemGroup>
     <Compile Include="FileHelper.cs" />
-    <Compile Include="Interfaces\ExceptionHandler.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Renderers\ChatMessageCell.cs" />

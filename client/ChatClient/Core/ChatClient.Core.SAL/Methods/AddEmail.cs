@@ -5,9 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ChatClient.Core.Common.Helpers;
-using ChatClient.Core.Common.Interfaces;
-using ChatClient.Core.Common.Models;
-using ChatClient.Core.Common.Models.Base;
+using ChatClient.Core.Common;
 using ChatClient.Core.SAL.Adapters;
 
 using Newtonsoft.Json;
@@ -70,12 +68,12 @@ namespace ChatClient.Core.SAL.Methods
                 if (Response.Error)
                 {
                     if (Response.ShowMessage)
-                        DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+						v.Add(k.OnExceptionMessage, Response.ErrorMessage);
                     else
                     {
 #if DEBUG
                         LogHelper.WriteLog(Response.ErrorMessage, "RequestError", "Authorization");
-                        DependencyService.Get<IExceptionHandler>().ShowMessage(Response.ErrorMessage);
+                        v.Add(k.OnExceptionMessage, Response.ErrorMessage);
 #endif
                     }
                     Dispose();
@@ -90,7 +88,7 @@ namespace ChatClient.Core.SAL.Methods
             {
 #if DEBUG
                 LogHelper.WriteLog(lException.Message, "RequestError", "UserGet");
-                DependencyService.Get<IExceptionHandler>().ShowMessage(lException.Message);
+                v.Add(k.OnExceptionMessage, lException.Message);
 #endif
             }
             Dispose();

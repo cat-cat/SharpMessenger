@@ -28,7 +28,6 @@ namespace ChatClient.Droid
 		{
 			global::PCLCrypto.Resource.String.ApplicationName = global::ChatClient.Droid.Resource.String.ApplicationName;
 			global::PCLCrypto.Resource.String.Hello = global::ChatClient.Droid.Resource.String.Hello;
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::ChatClient.Droid.Resource.Attribute.actionBarSize;
 			global::Xamarin.InAppBilling.Resource.String.library_name = global::ChatClient.Droid.Resource.String.library_name;
 			global::HockeyApp.Resource.Color.hockeyapp_background_header = global::ChatClient.Droid.Resource.Color.hockeyapp_background_header;
 			global::HockeyApp.Resource.Color.hockeyapp_background_light = global::ChatClient.Droid.Resource.Color.hockeyapp_background_light;
@@ -150,6 +149,7 @@ namespace ChatClient.Droid
 			global::HockeyApp.Resource.Style.HockeyApp_ButtonStyle = global::ChatClient.Droid.Resource.Style.HockeyApp_ButtonStyle;
 			global::HockeyApp.Resource.Style.HockeyApp_EditTextStyle = global::ChatClient.Droid.Resource.Style.HockeyApp_EditTextStyle;
 			global::HockeyApp.Resource.Style.HockeyApp_SingleLineInputStyle = global::ChatClient.Droid.Resource.Style.HockeyApp_SingleLineInputStyle;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::ChatClient.Droid.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation

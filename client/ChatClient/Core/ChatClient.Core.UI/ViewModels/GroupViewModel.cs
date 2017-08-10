@@ -233,18 +233,15 @@ namespace ChatClient.Core.UI.ViewModels
         }
         public async Task<bool> RemoveGroup()
         {
-            User lUser = await BL.Session.Authorization.GetUser();
+			User lUser = await BL.Session.Authorization.GetUser();
             if (lUser == null)
             {
                 return false;
             }
 
-            if (
-                await
-                    DependencyService.Get<IExceptionHandler>()
-				.YesNoQuestion(AppResources.RemoveWarning)) {
-                if (await new GroupRemove(lUser.Token, _group.Id).Object()) {
-                    UpdateViewModel(lUser);
+			if (await App.Current.MainPage.DisplayAlert(AppResources.Notification, AppResources.RemoveWarning, AppResources.Yes, AppResources.No)) {
+				if (await new GroupRemove(lUser.Token, _group.Id).Object()) {
+					UpdateViewModel(lUser);
                     return true;
                 } else {
                     return false;

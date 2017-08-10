@@ -92,6 +92,7 @@ namespace ChatClient.Core.BL.Session {
                 }
                 IsBusy = false;
             }
+
             return _user;
         }
 
@@ -101,7 +102,7 @@ namespace ChatClient.Core.BL.Session {
 
         private static async Task<User> UpdateFromServer(string token) {
           //  Response lResponse;
-            User lUser= await new UserGet(token).Object(); ;
+            User lUser= await new UserGet(token).Object();
            // UserGet lUserGet = new UserGet(token);
          //   lResponse = await lUserGet.Execute();
           //  if (lResponse.Error) {
