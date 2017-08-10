@@ -27,15 +27,12 @@ namespace ChatClient.Core.Common
 
 		public static void Add(k key, object o)
 		{
-			Monitor.Enter(handlersMap[key]);
-			foreach (var handlr in new List<NotifyCollectionChangedEventHandler>(handlersMap[key]))
+			List<NotifyCollectionChangedEventHandler> copy;
+			lock(handlersMap[key]) 
+				copy = new List<NotifyCollectionChangedEventHandler>(handlersMap[key]);
+			
+			foreach (var handlr in copy)
 			{
-				if (Monitor.IsEntered(handlersMap[key]))
-				{
-					Monitor.PulseAll(handlersMap[key]);
-					Monitor.Exit(handlersMap[key]);
-				}
-
 				lock (handlr)
 					try
 					{
@@ -53,13 +50,6 @@ namespace ChatClient.Core.Common
 							m(handlr);
 					}
 			}
-
-			if (Monitor.IsEntered(handlersMap[key]))
-			{
-				Monitor.PulseAll(handlersMap[key]);
-				Monitor.Exit(handlersMap[key]);
-			}
-
 		}
 
 		static v()

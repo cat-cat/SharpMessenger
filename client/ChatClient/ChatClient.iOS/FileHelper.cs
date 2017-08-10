@@ -29,14 +29,14 @@ namespace ChatClient.iOS
 
     public class FileHelper : IFileHelper
     {
-        public string GetLocalFilePath(string filename)
+		public async Task<string> GetLocalFilePath(string filename)
         {
             string docFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string libFolder = Path.Combine(docFolder, "..", "Library", "Databases");
 
             if (!Directory.Exists(libFolder))
             {
-                Directory.CreateDirectory(libFolder);
+				await Task.Run(() => { return Directory.CreateDirectory(libFolder); });
             }
 
             return Path.Combine(libFolder, filename);

@@ -112,7 +112,7 @@
   <ItemGroup>
     <EmbeddedResource Include="App.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Pages\pgFinishedGroup.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
