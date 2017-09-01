@@ -99,6 +99,7 @@ namespace ChatClient.UWP
             return fileName;
         }
 
+        //TODO:
         private void SaveImage(string path, string url)
         {
             //        WebClient lWebClient = new WebClient();

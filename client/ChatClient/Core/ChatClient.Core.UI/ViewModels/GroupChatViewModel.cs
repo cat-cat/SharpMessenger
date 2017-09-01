@@ -176,7 +176,8 @@ namespace ChatClient.Core.UI.ViewModels
 			{
 				if (e.IsMine && e.Message == _cacheMessage.Message)
 					_cacheMessage.IsSended = true;
-				_messages.Add(e);
+
+                Device.BeginInvokeOnMainThread(() => { _messages.Add(e); });
 			}
 			catch (Exception error)
 			{

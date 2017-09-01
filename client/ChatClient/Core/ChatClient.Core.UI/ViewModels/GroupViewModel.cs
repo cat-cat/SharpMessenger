@@ -306,7 +306,9 @@ namespace ChatClient.Core.UI.ViewModels
 
         private async Task StartChat()
         {
-            await App.Navigation.PushAsync(new ChatPage { BindingContext = new GroupChatViewModel(_group.Id) });
+            //await App.Navigation.PushAsync(new ChatPage { BindingContext = new GroupChatViewModel(_group.Id) });
+            await App.Navigation.PushAsync(new pgChat());
+            //await App.Navigation.PushAsync(new ListPage1());
         }
 
         private async Task StartPrivatChat(User user) {
