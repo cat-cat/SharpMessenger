@@ -29,9 +29,9 @@ namespace ChatClient.Core.UI.ViewModels
 {
 	public class GroupChatViewModel : BaseViewModel
 	{
-		#region Fields
+        #region Fields
 
-		private ObservableCollection<ChatMessage> _messages = new ObservableCollection<ChatMessage>();
+        private ObservableCollection<ChatMessage> _messages = new ObservableCollection<ChatMessage>();
 		private string _roomName;
 
 		private CacheMessage _cacheMessage;
@@ -54,12 +54,11 @@ namespace ChatClient.Core.UI.ViewModels
 
 			_roomName = roomName;
 			ExecuteJoinRoomCommand();
-			GetMessages();
-			_messages = new ObservableCollection<ChatMessage>();
+            GetMessages();
+            //_messages = new ObservableCollection<ChatMessage>();
+        }
 
-		}
-
-		public override void TypingBroadcast(DateTime d)
+        public override void TypingBroadcast(DateTime d)
 		{
 
 			v.Add(k.IsTyping, new Dictionary<string, object>() { { "isTypingTimeStamp", d.ToString() }, { "participant", null }, { "room", string.IsNullOrEmpty(_roomName) ? null : _roomName } });
@@ -162,8 +161,8 @@ namespace ChatClient.Core.UI.ViewModels
 				lMessage.IsMine = lMessage.Author.Id == lUser.Id;
 				_messages.Add(lMessage);
 			}
-			if (_messages.Count > 0)
-				ChatPage.messageList.ScrollTo(_messages[_messages.Count - 1], ScrollToPosition.End, true);
+			//if (_messages.Count > 0)
+			//	ChatPage.messageList.ScrollTo(_messages[_messages.Count - 1], ScrollToPosition.End, true);
 
 			IsBusy = false;
 		}

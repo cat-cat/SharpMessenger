@@ -43,10 +43,17 @@
     <Compile Include="Controls\FilterButton.cs" />
     <Compile Include="Controls\MessageViewCell.cs" />
     <Compile Include="Controls\UserAvatar.cs" />
+    <Compile Include="CustomCells\IncomingViewCell.xaml.cs" >
+		<DependentUpon> IncomingViewCell.xaml</DependentUpon>
+	</Compile>
+    <Compile Include="CustomCells\OutgoingViewCell.xaml.cs" >
+		<DependentUpon> OutgoingViewCell.xaml </DependentUpon>
+	</Compile>
     <Compile Include="Menus\MenuListData.cs" />
     <Compile Include="Menus\MenuListItem.cs" />
     <Compile Include="Pages\BasePage.cs" />
     <Compile Include="Pages\ChatPage.cs" />
+    <Compile Include="Pages\GroupMessageDataTemplateSelector.cs" />
     <Compile Include="Pages\pgChat.xaml.cs">
       <DependentUpon>pgChat.xaml</DependentUpon>
     </Compile>
@@ -297,6 +304,17 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pages\pgChat.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="CustomCells\IncomingViewCell.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomCells\OutgoingViewCell.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>

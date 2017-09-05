@@ -1,24 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ChatClient.Core.UI.Pages.pgChat">
+             x:Class="ChatClient.Core.UI.Pages.pgChat"
+            xmlns:local="clr-namespace:ChatClient.Core.UI;assembly=ChatClient.Core.UI">
     
     <ContentPage.Padding>
         <OnPlatform x:TypeArguments="Thickness" iOS="10, 20, 10, 0" Android="10, 0" WinPhone="10, 0" />
     </ContentPage.Padding>
     
-    <ListView ItemsSource="{Binding Items}"
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:GroupMessageDataTemplateSelector x:Key="GroupMessageTemplateSelector"></local:GroupMessageDataTemplateSelector>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <ListView  x:Name="GroupMessagesList"
+               ItemsSource="{Binding Messages}"
+               ItemTemplate="{StaticResource GroupMessageTemplateSelector}"
+               HasUnevenRows="True"
             ItemTapped="Handle_ItemTapped"
             CachingStrategy="RecycleElement"
               HorizontalOptions="FillAndExpand"
               VerticalOptions="FillAndExpand">
             
     <!--Built in Cells-->
-    <ListView.ItemTemplate>
+    <!--<ListView.ItemTemplate>
       <DataTemplate>
                 <TextCell Text="{Binding FullName}"/>
       </DataTemplate>
-    </ListView.ItemTemplate>
+    </ListView.ItemTemplate>-->
     
     <!--Custom View Cells-->
     <!--

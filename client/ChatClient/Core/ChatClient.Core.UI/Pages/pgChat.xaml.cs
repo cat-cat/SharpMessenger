@@ -6,9 +6,24 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using ChatClient.Core.Common.Models;
+using ChatClient.Core.UI.ViewModels;
 
 namespace ChatClient.Core.UI.Pages
 {
+    public class bc
+    {
+        public ObservableCollection<ChatMessage> Messages { get; set; }
+        public bc()
+        {
+            Messages = new ObservableCollection<ChatMessage>
+            {
+                new ChatMessage { Name = "James Smith", Message = "404 Nowhere Street" },
+                new ChatMessage { Name = "John Doe", Message = "404 Nowhere Ave" }
+            };
+        }
+    }
+
     public class Person
     {
         public string FullName
@@ -27,19 +42,12 @@ namespace ChatClient.Core.UI.Pages
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class pgChat : ContentPage
     {
-        public ObservableCollection<Person> Items { get; set; }
-
-        public pgChat()
+        BaseViewModel ctx;
+        public pgChat(string group_id)
         {
+            BindingContext = new GroupChatViewModel(group_id);
+
             InitializeComponent();
-
-            Items = new ObservableCollection<Person>
-            {
-                new Person { FullName = "James Smith", Address = "404 Nowhere Street" },
-                new Person { FullName = "John Doe", Address = "404 Nowhere Ave" }
-            };
-
-            BindingContext = this;
         }
 
         async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
@@ -47,7 +55,7 @@ namespace ChatClient.Core.UI.Pages
             if (e.Item == null)
                 return;
 
-            await DisplayAlert("Item Tapped", ((Person)e.Item).FullName, "OK");
+            //await DisplayAlert("Item Tapped", ((Person)e.Item).FullName, "OK");
 
             //Deselect Item
             ((ListView)sender).SelectedItem = null;

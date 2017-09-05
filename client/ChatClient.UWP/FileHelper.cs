@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using ChatClient.Core.Common.Interfaces;
@@ -12,14 +12,16 @@ using ChatClient.Core.DAL.Data.Base;
 using ChatClient.UWP;
 
 [assembly: Dependency(typeof(FileHelper))]
-[assembly: Dependency (typeof (BaseUrl_UWP))]
+[assembly: Dependency(typeof(BaseUrl_UWP))]
 namespace ChatClient.UWP
 {
-	public class BaseUrl_UWP : IBaseUrl {
-		public string Get() {
-		  return ApplicationData.Current.LocalFolder.Path;
-		}
-	}
+    public class BaseUrl_UWP : IBaseUrl
+    {
+        public string Get()
+        {
+            return ApplicationData.Current.LocalFolder.Path;
+        }
+    }
 
 
     public class FileHelper : IFileHelper
@@ -31,14 +33,14 @@ namespace ChatClient.UWP
 
             if (!Directory.Exists(libFolder))
             {
-                await Task.Run(() => { Directory.CreateDirectory(libFolder); } );
+                await Task.Run(() => { Directory.CreateDirectory(libFolder); });
             }
 
             return Path.Combine(libFolder, filename);
         }
         public byte[] ReadAllBytes(string path)
         {
-			return File.ReadAllBytes(path);
+            return File.ReadAllBytes(path);
         }
         public string FileName(string path)
         {
@@ -65,21 +67,20 @@ namespace ChatClient.UWP
         {
             try
             {
-                if (fileName == "winning_sum.png") {
+                if (fileName == "winning_sum.png")
+                {
                     return "winning_sum.png";
                 }
-                string lBaseFolder = ApplicationData.Current.LocalFolder.Path;
-                string lImageFolder = Path.Combine(lBaseFolder, "..", "Library", imageType.ToString());
+                string lImageFolder = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Library", imageType.ToString());
                 if (!Directory.Exists(lImageFolder))
                 {
                     Directory.CreateDirectory(lImageFolder);
                 }
                 string lFilePath = Path.Combine(lImageFolder, fileName);
-                if (File.Exists(lFilePath) )
+                if (File.Exists(lFilePath))
                     return lFilePath;
                 SaveImage(lFilePath, url + fileName);
                 return lFilePath;
-              
             }
             catch
             {
@@ -95,41 +96,30 @@ namespace ChatClient.UWP
             return "";
         }
 
-        public string GetImageSrc(string fileName) {
+        public string GetImageSrc(string fileName)
+        {
             return fileName;
         }
 
         //TODO:
-        private void SaveImage(string path, string url)
+        private async void SaveImage(string path, string url)
         {
-            //        WebClient lWebClient = new WebClient();
-            //        Uri lUri = new Uri(url);
+            HttpClient httpClient = new HttpClient();
+            Uri lUri = new Uri(url);
 
-            //        lWebClient.DownloadDataCompleted += (s, e) =>
-            //        {
-            //            try
-            //            {
-            //                byte[] lResponseBytes = e.Result; 
-            //                if (lResponseBytes.Length > 0)
-            //                {
-            //                    File.WriteAllBytes(path, lResponseBytes);
-            //                }
-            //            }
-            //            catch (Exception lException)
-            //            {
-            //            }
-            //        };
-            //        try {
-            //            lWebClient.DownloadDataAsync(lUri);
-
-            //        }
-            //        catch (Exception lException) {
-
-            //        }
-
-
-
+            try
+            {
+                //Send the GET request
+                HttpResponseMessage httpResponse = await httpClient.GetAsync(lUri);
+                httpResponse.EnsureSuccessStatusCode();
+                byte[] lResponseBytes = await httpResponse.Content.ReadAsByteArrayAsync();
+                File.WriteAllBytes(path, lResponseBytes);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("StackTrace:{0}\n Error:{1}", ex.StackTrace, ex.Message));
+            }
 
         }
     }
-   }
+}
