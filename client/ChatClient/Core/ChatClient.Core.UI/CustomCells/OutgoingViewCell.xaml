@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:plugin="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin.Abstractions"
              xmlns:dataTemplateSelector="clr-namespace:ChatClient.Core.UI;assembly=ChatClient.Core.UI"
-             x:Class="ChatClient.Core.UI.OutgoingViewCell">
+             x:Class="ChatClient.Core.UI.OutgoingViewCell"
+          Appearing="ViewCell_Appearing"
+          Disappearing="ViewCell_Disappearing">
   <Grid ColumnSpacing="2" Padding="5">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="40"></ColumnDefinition>
@@ -26,7 +28,7 @@
                       HorizontalOptions="Center"
                       VerticalOptions="Center" Source="{Binding Photo}"></plugin:CircleImage>
     <Frame Grid.Row="0" OutlineColor="Transparent" HasShadow="False" Grid.Column="1" BackgroundColor="#F5F5F5">
-      <Label TextColor="Black" HorizontalTextAlignment="End" Text="{Binding Message}" />
+      <Label x:Name="Message_Label" BackgroundColor="Aqua" TextColor="Black" HorizontalTextAlignment="End" HorizontalOptions="FillAndExpand" Text="{Binding Message}" />
     </Frame>
         <Label Grid.Row="1" FontSize="Micro" Grid.Column="1" HorizontalTextAlignment="End"  Text="{Binding Timestamp, StringFormat='{0:MM/dd/yyyy hh:mm tt}'}" TextColor="Gray"></Label>
     

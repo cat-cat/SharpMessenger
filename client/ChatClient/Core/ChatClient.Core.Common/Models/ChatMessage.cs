@@ -5,31 +5,34 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace ChatClient.Core.Common.Models
 {
-    public class ChatMessage {
-		public enum Status { Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read, Deleted, PendingDelete }
-		string _conversationId;
-		string _room;
-		bool _messageEdited;
-		string _replyId;
-		Status _status;
-		bool _justSent;
-		string _guid;
-		string _replyGuid;
+    public class ChatMessage : INotifyPropertyChanged
+    {
+        public enum Status { Pending /* no info whether message saved on server or not */, Delivered /* message saved on server */, Read, Deleted, PendingDelete }
+        string _conversationId;
+        string _room;
+        bool _messageEdited;
+        string _replyId;
+        Status _status;
+        bool _justSent;
+        string _guid;
+        string _replyGuid;
         string _id;
         string _name;
         string _message;
-		string _replyQuote;
+        string _replyQuote;
         string _photo;
         User _author;
         bool _isMine;
         DateTime _timestamp;
         User _opponent;
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
-		public Status status
+        public Status status
 		{
 			get
 			{
@@ -151,6 +154,8 @@ namespace ChatClient.Core.Common.Models
 			set
 			{
 				_message = value;
+                if(PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("Message"));
 			}
 		}
 
@@ -229,5 +234,6 @@ namespace ChatClient.Core.Common.Models
                 _id = value;
             }
         }
+
     }
 }

@@ -8,41 +8,18 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ChatClient.Core.Common.Models;
 using ChatClient.Core.UI.ViewModels;
+using ChatClient.Core.Common;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace ChatClient.Core.UI.Pages
 {
-    public class bc
-    {
-        public ObservableCollection<ChatMessage> Messages { get; set; }
-        public bc()
-        {
-            Messages = new ObservableCollection<ChatMessage>
-            {
-                new ChatMessage { Name = "James Smith", Message = "404 Nowhere Street" },
-                new ChatMessage { Name = "John Doe", Message = "404 Nowhere Ave" }
-            };
-        }
-    }
-
-    public class Person
-    {
-        public string FullName
-        {
-            get;
-            set;
-        }
-
-        public string Address
-        {
-            get;
-            set;
-        }
-    }
-
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class pgChat : ContentPage
     {
-        BaseViewModel ctx;
+        DateTime isTypingDateTime = DateTimeOffset.UtcNow.DateTime - new TimeSpan(0, 0, 6);
+        ChatMessage _messageReplyTo;
+
         public pgChat(string group_id)
         {
             BindingContext = new GroupChatViewModel(group_id);
@@ -55,10 +32,81 @@ namespace ChatClient.Core.UI.Pages
             if (e.Item == null)
                 return;
 
-            //await DisplayAlert("Item Tapped", ((Person)e.Item).FullName, "OK");
+            string action = await App.Current.MainPage.DisplayActionSheet("Actions", "Cancel", "Delete", new string[2] { "Reply", "Edit" });
+            User lUser = await Core.BL.Session.Authorization.GetUser();
 
-            //Deselect Item
+            var selectedChatMessage = (ChatMessage)e.Item;
+            if (action == "Delete" && lUser.Id == selectedChatMessage.Author.Id) // delete only message of the current user
+            {
+                selectedChatMessage.status = ChatMessage.Status.PendingDelete;
+                v.Add(k.MessageSendProgress, selectedChatMessage);
+            }
+            else if (action == "Reply") // reply
+            {
+                v.Add(k.MessageReply, selectedChatMessage);
+            }
+            else if (action == "Edit" && lUser.Id == selectedChatMessage.Author.Id) // edit only message of the current user
+            {
+                v.Add(k.MessageEdit, selectedChatMessage);
+            }
+
             ((ListView)sender).SelectedItem = null;
+        }
+
+        async void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var newItem = (KeyValuePair<k, object>)e.NewItems[0];
+            var bc = (GroupChatViewModel)BindingContext;
+
+            if (newItem.Key == k.MessageReply)
+            {
+                _messageReplyTo = (ChatMessage)newItem.Value;
+                Message_Entry.Text = "rep: ";
+
+                bc.ChatMessage.ReplyQuote = _messageReplyTo.Message;
+                bc.ChatMessage.ReplyGuid = _messageReplyTo.guid;
+                bc.ChatMessage.ReplyId = _messageReplyTo.Id;
+            }
+            else if (newItem.Key == k.MessageEdit)
+            {
+                var m = (ChatMessage)newItem.Value;
+                bc.StartEditMessage(m);
+            }
+        }
+
+        private void Entry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var bc = (GroupChatViewModel)BindingContext;
+
+            if (e.NewTextValue.Length > 0)
+                sendMessageButton.Image = "send_message_normal.png";
+            else
+            {
+                sendMessageButton.Image = "send_message_inactive.png";
+
+                // reset replyTo message if wipe all the text in message entry
+                _messageReplyTo = null;
+                bc.ChatMessage.ReplyQuote = null;
+                bc.ChatMessage.ReplyGuid = null;
+                bc.ChatMessage.ReplyId = null;
+            }
+
+            // handle Typing... logic
+            if ((DateTimeOffset.UtcNow.DateTime - isTypingDateTime) > new TimeSpan(0, 0, 5))
+            {
+                isTypingDateTime = DateTimeOffset.UtcNow.DateTime;
+                bc.TypingBroadcast(isTypingDateTime);
+            }
+        }
+
+        private void ContentPage_Appearing(object sender, EventArgs e)
+        {
+            v.h(new k[] { k.MessageEdit, k.MessageReply }, OnEvent);
+        }
+
+        private void ContentPage_Disappearing(object sender, EventArgs e)
+        {
+            v.m(OnEvent);
         }
     }
 }

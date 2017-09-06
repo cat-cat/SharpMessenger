@@ -68,7 +68,6 @@ namespace ChatClient.Core.UI.ViewModels {
 		{
 			EditMessage = m;
 			var em = new pgEditMessage(this);
-			// will not show popup
 			Device.BeginInvokeOnMainThread (() => {
 				App.Navigation.PushPopupAsync(em);
 			});

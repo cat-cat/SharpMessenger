@@ -1,5 +1,7 @@
 ﻿using ImageCircle.Forms.Plugin.UWP;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -37,6 +39,13 @@ namespace ChatClient.UWP
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+
+            var assemblies = new List<Assembly>
+            {
+               typeof(Core.UI.MainPage).GetTypeInfo().Assembly
+            };
+
+            Xamarin.Forms.Forms.Init(e, Rg.Plugins.Popup.Windows.Popup.GetExtraAssemblies(assemblies));
 
             Frame rootFrame = Window.Current.Content as Frame;
 

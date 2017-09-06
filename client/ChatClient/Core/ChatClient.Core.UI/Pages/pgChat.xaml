@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ChatClient.Core.UI.Pages.pgChat"
-            xmlns:local="clr-namespace:ChatClient.Core.UI;assembly=ChatClient.Core.UI">
+            xmlns:local="clr-namespace:ChatClient.Core.UI;assembly=ChatClient.Core.UI"
+             Appearing="ContentPage_Appearing"
+             Disappearing="ContentPage_Disappearing">
     
     <ContentPage.Padding>
         <OnPlatform x:TypeArguments="Thickness" iOS="10, 20, 10, 0" Android="10, 0" WinPhone="10, 0" />
@@ -13,37 +15,31 @@
             <local:GroupMessageDataTemplateSelector x:Key="GroupMessageTemplateSelector"></local:GroupMessageDataTemplateSelector>
         </ResourceDictionary>
     </ContentPage.Resources>
-    
-    <ListView  x:Name="GroupMessagesList"
+    <RelativeLayout>
+        <ListView  x:Name="GroupMessagesList"
                ItemsSource="{Binding Messages}"
                ItemTemplate="{StaticResource GroupMessageTemplateSelector}"
                HasUnevenRows="True"
             ItemTapped="Handle_ItemTapped"
+                    
             CachingStrategy="RecycleElement"
               HorizontalOptions="FillAndExpand"
-              VerticalOptions="FillAndExpand">
-            
-    <!--Built in Cells-->
-    <!--<ListView.ItemTemplate>
-      <DataTemplate>
-                <TextCell Text="{Binding FullName}"/>
-      </DataTemplate>
-    </ListView.ItemTemplate>-->
-    
-    <!--Custom View Cells-->
-    <!--
-    <ListView.ItemTemplate>
-      <DataTemplate>
-        <ViewCell>
-          <StackLayout>
-            <Label Text="{Binding Text}" 
-                   Style="{DynamicResource ListItemTextStyle}" />
-            <Label Text="{Binding Detail}" 
-                   Style="{DynamicResource ListItemDetailTextStyle}"/>
-          </StackLayout>
-        </ViewCell>
-      </DataTemplate>
-    </ListView.ItemTemplate>
-    -->
-  </ListView>
+              VerticalOptions="FillAndExpand"
+              RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}">
+        </ListView>
+        <Grid x:Name="MessageControls" RowSpacing="1" ColumnSpacing="2" Padding="5"
+          BackgroundColor="#EFEFF4"
+          VerticalOptions="FillAndExpand"
+          HorizontalOptions="FillAndExpand"
+          RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView, ElementName=GroupMessagesList, Property=Height,Factor=.91,Constant=0}"
+          RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+          RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToView, ElementName=GroupMessagesList, Property=Height,Factor=.09,Constant=0}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Entry x:Name="Message_Entry" Grid.Column="0" HeightRequest="25" Placeholder="Message" Text="{Binding ChatMessage.Message}" TextChanged="Entry_TextChanged"></Entry>
+            <Button x:Name="sendMessageButton" Grid.Column="1" Text="Send" Command="{Binding SendMessageCommand}"></Button>
+        </Grid>
+    </RelativeLayout>
 </ContentPage>
