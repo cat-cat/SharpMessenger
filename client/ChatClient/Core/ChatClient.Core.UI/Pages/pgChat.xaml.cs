@@ -20,10 +20,8 @@ namespace ChatClient.Core.UI.Pages
         DateTime isTypingDateTime = DateTimeOffset.UtcNow.DateTime - new TimeSpan(0, 0, 6);
         ChatMessage _messageReplyTo;
 
-        public pgChat(string group_id)
+        public pgChat()
         {
-            BindingContext = new GroupChatViewModel(group_id);
-
             InitializeComponent();
         }
 
@@ -56,7 +54,7 @@ namespace ChatClient.Core.UI.Pages
         async void OnEvent(object sender, NotifyCollectionChangedEventArgs e)
         {
             var newItem = (KeyValuePair<k, object>)e.NewItems[0];
-            var bc = (GroupChatViewModel)BindingContext;
+			var bc = (BaseViewModel)BindingContext;
 
             if (newItem.Key == k.MessageReply)
             {
@@ -76,7 +74,7 @@ namespace ChatClient.Core.UI.Pages
 
         private void Entry_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var bc = (GroupChatViewModel)BindingContext;
+			var bc = (BaseViewModel)BindingContext;
 
             if (e.NewTextValue.Length > 0)
                 sendMessageButton.Image = "send_message_normal.png";

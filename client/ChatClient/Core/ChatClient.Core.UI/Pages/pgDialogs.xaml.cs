@@ -27,7 +27,7 @@ namespace ChatClient.Core.UI.Pages
             {
                Conversation item = args.Item as Conversation;
                 if (item == null) return;
-				await Navigation.PushAsync(new ChatPage() {BindingContext = new PrivateChatViewModel(item.Message.Opponent.Id!=Authorization.GetUser().Result.Id?item.Message.Opponent:item.Message.Author)});
+				await Navigation.PushAsync(new pgChat() {BindingContext = new PrivateChatViewModel(item.Message.Opponent.Id!=Authorization.GetUser().Result.Id?item.Message.Opponent:item.Message.Author)});
                 lstDialogs.SelectedItem = null;
             };
         }

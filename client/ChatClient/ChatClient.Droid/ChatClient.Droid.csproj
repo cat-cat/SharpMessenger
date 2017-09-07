@@ -326,7 +326,6 @@
     <Compile Include="MainApplication.cs" />
     <Compile Include="MyFirebaseIIDService.cs" />
     <Compile Include="Renderers\FilterButtonRenderer.cs" />
-    <Compile Include="Renderers\MessageRenderer.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interfaces\Localize.cs" />

@@ -176,8 +176,8 @@ namespace ChatClient.Core.UI.ViewModels
 				lMessage.IsMine = lMessage.Author.Id == lUser.Id;
 				_messages.Add(lMessage);
 			}
-			if (_messages.Count > 0)
-				ChatPage.messageList.ScrollTo(_messages[_messages.Count - 1], ScrollToPosition.End, true);
+			//if (_messages.Count > 0)
+			//	ChatPage.messageList.ScrollTo(_messages[_messages.Count - 1], ScrollToPosition.End, true);
 
 			IsBusy = false;
 		}

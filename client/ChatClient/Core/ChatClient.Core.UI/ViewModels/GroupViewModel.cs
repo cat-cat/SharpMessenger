@@ -306,15 +306,13 @@ namespace ChatClient.Core.UI.ViewModels
 
         private async Task StartChat()
         {
-            //await App.Navigation.PushAsync(new ChatPage { BindingContext = new GroupChatViewModel(_group.Id) });
-            await App.Navigation.PushAsync(new pgChat(_group.Id));
-            //await App.Navigation.PushAsync(new ListPage1());
+            await App.Navigation.PushAsync(new pgChat { BindingContext = new GroupChatViewModel(_group.Id) });
         }
 
         private async Task StartPrivatChat(User user) {
             User lUser = BL.Session.Authorization.GetUser().Result;
             if (user !=null && user.Id!=lUser.Id)
-				await App.Navigation.PushAsync(new ChatPage { BindingContext = new PrivateChatViewModel(user) });
+				await App.Navigation.PushAsync(new pgChat { BindingContext = new PrivateChatViewModel(user) });
         }
         private async void ShowMembers()
         {
