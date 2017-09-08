@@ -50,7 +50,7 @@ namespace ChatClient.Core.UI.ViewModels
 		public GroupChatViewModel(string roomName)
 		{
 			// subscribe for events
-			v.h(new k[] { k.OnUpdateUserOnlineStatus, k.OnMessageReceived, k.OnIsTyping }, OnCollectionChanged);
+			v.h(new k[] { k.OnUpdateUserOnlineStatus, k.OnMessageReceived }, OnCollectionChanged);
 
 			_roomName = roomName;
 			ExecuteJoinRoomCommand();
@@ -92,11 +92,6 @@ namespace ChatClient.Core.UI.ViewModels
 				}
 
 				_chatServices_OnMessageReceived(sender, message);
-			}
-			else if (newItem.Key == k.OnIsTyping)
-			{
-				// v.Consume(k.OnIsTyping);
-				// show newItem.Value isTyping...
 			}
 		}
 

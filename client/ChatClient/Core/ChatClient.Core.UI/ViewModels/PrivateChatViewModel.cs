@@ -88,11 +88,6 @@ namespace ChatClient.Core.UI.ViewModels
 				}
 				_chatServices_OnMessageReceived(sender, message);
 			}
-			else if (newItem.Key == k.OnIsTyping)
-			{
-					// v.Consume(k.OnIsTyping);
-					// show newItem.Value isTyping...
-			}
 		}
 
 		public PrivateChatViewModel(User user)
@@ -102,7 +97,7 @@ namespace ChatClient.Core.UI.ViewModels
 			_receiver = user;
 
 			// subscribe for events
-			v.h(new k[] { k.OnUpdateUserOnlineStatus, k.OnMessageReceived, k.OnIsTyping }, OnCollectionChanged);
+			v.h(new k[] { k.OnUpdateUserOnlineStatus, k.OnMessageReceived }, OnCollectionChanged);
 
 			// request from server online status for interlocutor
 			v.Add(k.OnlineStatus, _receiver.Id);

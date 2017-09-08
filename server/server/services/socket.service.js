@@ -437,12 +437,12 @@ function setIsTyping(user, client, room, timestamp){
 	for(var key in people) {
 		try {
 		      if (room.length > 0 && user == people[key].id) {
-			      	io.sockets.connected[key].broadcast.to(room).emit("isTyping", {person: user})
+			      	io.sockets.connected[key].broadcast.to(room).emit("isTyping", {person: people[key].name})
 			      	break
 		      }
 		      else if(client.length > 0 && client == people[key].id) // private chat
 		      {
-					io.sockets.connected[key].emit("isTyping", {person: user});
+					io.sockets.connected[key].emit("isTyping", {person: people[key].name});
 					break
 		      }
 	      } catch (err) {

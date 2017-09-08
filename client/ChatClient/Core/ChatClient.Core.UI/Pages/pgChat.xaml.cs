@@ -70,6 +70,10 @@ namespace ChatClient.Core.UI.Pages
                 var m = (ChatMessage)newItem.Value;
                 bc.StartEditMessage(m);
             }
+			else if (newItem.Key == k.OnIsTyping)
+			{
+				Device.BeginInvokeOnMainThread(() => { Title = newItem.Value + " is typing..."; });
+			}
         }
 
         private void Entry_TextChanged(object sender, TextChangedEventArgs e)
@@ -99,7 +103,7 @@ namespace ChatClient.Core.UI.Pages
 
         private void ContentPage_Appearing(object sender, EventArgs e)
         {
-            v.h(new k[] { k.MessageEdit, k.MessageReply }, OnEvent);
+			v.h(new k[] { k.MessageEdit, k.MessageReply, k.OnIsTyping }, OnEvent);
         }
 
         private void ContentPage_Disappearing(object sender, EventArgs e)
