@@ -55,9 +55,9 @@ namespace ChatClient.Core.UI
             var bc = (ChatMessage)BindingContext;
             v.Add(k.MessageSendProgress, bc);
 
-            if (bc.ReplyGuid != null)
-                // TODO: make this good
-                bc.Message = "REPLIED: " + bc.Message + " TO: " + bc.ReplyQuote;
+			if (bc.ReplyGuid != null)
+				// TODO: make this good
+				bc.Message = "REPLIED: " + bc.Message + " TO: " + bc.ReplyQuote;
         }
 
         private void ViewCell_Disappearing(object sender, EventArgs e)

@@ -41,7 +41,6 @@
     </Compile>
     <Compile Include="Controls\ChatListView.cs" />
     <Compile Include="Controls\FilterButton.cs" />
-    <Compile Include="Controls\MessageViewCell.cs" />
     <Compile Include="Controls\UserAvatar.cs" />
     <Compile Include="CustomCells\IncomingViewCell.xaml.cs">
 		<DependentUpon> IncomingViewCell.xaml</DependentUpon>

@@ -24,7 +24,7 @@ namespace ChatClient.Core.UI.Pages
         {
             InitializeComponent();
         }
-
+						
         async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             if (e.Item == null)
@@ -73,6 +73,18 @@ namespace ChatClient.Core.UI.Pages
 			else if (newItem.Key == k.OnIsTyping)
 			{
 				Device.BeginInvokeOnMainThread(() => { Title = newItem.Value + " is typing..."; });
+
+				Device.StartTimer(TimeSpan.FromSeconds(5), () => {
+					try // this page can already be destroyied for the time this handler being called
+					{
+						Device.BeginInvokeOnMainThread(() => { Title = ""; });
+					}
+					catch
+					{
+					}
+
+					return false;
+				});
 			}
         }
 

@@ -165,7 +165,7 @@ namespace ChatClient.Core.SAL.Methods
 			{
 				_urlParameters.Add("deleted", 1);
 			}
-			else if (m.Id != m.Author.Id)
+			else if (!m.IsMine)
 				_urlParameters.Add("read", 1);
 
 			if (m.messageEdited)
