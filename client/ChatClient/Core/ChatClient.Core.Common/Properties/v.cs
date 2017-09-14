@@ -45,9 +45,13 @@ namespace ChatClient.Core.Common
 					}
 					catch (Exception e)
 					{
-						if (e is NullReferenceException)
+						// TODO: this is not reliable, because exception can be thrown inside handlr.Invoke(), but before handler was destroyied. This way this logic will hide bug in handlers implementation
+						if (ReferenceEquals(null,handlr) && e is NullReferenceException)
 							// handler invalid, remove it
 							m(handlr);
+						else
+							// exception in handler's body
+							throw e;
 					}
 			}
 		}

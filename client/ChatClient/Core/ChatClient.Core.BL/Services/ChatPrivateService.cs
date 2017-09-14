@@ -175,6 +175,16 @@ namespace ChatClient.iOS.Services
 				v.Add(k.OnMessageEdit, new Dictionary<string, object>() { {"guid", o.guid }, {"message", o.message } });
 			});
 
+			socket.On("messageRead", (data) =>
+			{
+				//Debug.WriteLine("messageRead: " + data);
+
+				var definition = new { guid = "", message = "" };
+				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
+
+				v.Add(k.OnMessageSendProgress, new Dictionary<string, object>() { { "guid", o.guid }, {"status", ChatMessage.Status.Read } });
+			});
+
 			socket.On("unauthorized", (msg) =>
 			{
 				//     Debug.WriteLine("unauthorized: " + msg);
@@ -237,7 +247,7 @@ namespace ChatClient.iOS.Services
 				Debug.WriteLine("on.chat: " + data);
 
 				// http://stackoverflow.com/questions/12674076/how-can-i-use-complex-property-names-in-anonymous-type
-				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "", guid = ""};
+				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "", inroom = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "", guid = ""};
 
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 				ChatMessage cm = new ChatMessage();
@@ -247,6 +257,7 @@ namespace ChatClient.iOS.Services
 				cm.ReplyQuote = o.replyQuote;
 				cm.Message = o.msg;
 				cm.Name = o.socketID.name;
+				cm.Room = o.socketID.inroom;
 				cm.Author = new User() { Id = o.socketID.id }; ;
 				cm.IsMine = _user.Id == o.socketID.id;
 				if (!string.IsNullOrEmpty(o.userImage) && o.userImage != "false")
@@ -289,7 +300,7 @@ namespace ChatClient.iOS.Services
 				Debug.WriteLine("on.whisper: " + data);
 
 				// http://stackoverflow.com/questions/12674076/how-can-i-use-complex-property-names-in-anonymous-type
-				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "" }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "", guid = ""};
+				var definition = new { userAvatarPrefix = "", socketID = new { id = "", name = "", participants = new string[99] }, msTime = "", msg = "", userImage = "", replyQuote = "", replyId = "", replyGuid = "", guid = ""};
 
 				var o = JsonConvert.DeserializeAnonymousType(data.ToString(), definition);
 				ChatMessage cm = new ChatMessage();
@@ -299,7 +310,8 @@ namespace ChatClient.iOS.Services
 				cm.ReplyQuote = o.replyQuote;
 				cm.Message = o.msg;
 				cm.Name = o.socketID.name;
-				cm.Author = new User() { Id = o.socketID.id }; ;
+				cm.Author = new User() { Id = o.socketID.id };
+				cm.Opponent = new User() { Id = o.socketID.participants[0] };
 				cm.IsMine = _user.Id == o.socketID.id;
 				if (!string.IsNullOrEmpty(o.userImage) && o.userImage != "false")
 					cm.Photo = await

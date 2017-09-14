@@ -493,7 +493,29 @@ function broadcastEditMessage(user, client, room, messageGuid, message) {
 	}
 }
 
+function broadcastReadMessage(user, client, room, messageGuid, message) {
+	try {
+		if (room != undefined) {
+		  	io.sockets.in(room).emit("messageRead", {guid: messageGuid, message: message})
+		} 
+		else 
+		{
+			// TODO: move searching in people to redis
+			for(var key in people) {
+			      if(client.length > 0 && (client == people[key].id || user == people[key].id)) // private chat
+			      {
+					io.sockets.connected[key].emit("messageRead", {guid: messageGuid, message: message});
+			      }
+			};
+		}
+	} 
+	catch (err) {
+		console.log(err)
+	}
+}
+
 export default {
+	broadcastReadMessage,
 	broadcastEditMessage,
 	broadcastDeleteMessage,
 	setIsTyping,

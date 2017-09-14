@@ -21,7 +21,6 @@
                ItemTemplate="{StaticResource GroupMessageTemplateSelector}"
                HasUnevenRows="True"
             ItemTapped="Handle_ItemTapped"
-                    
             CachingStrategy="RecycleElement"
               HorizontalOptions="FillAndExpand"
               VerticalOptions="FillAndExpand"

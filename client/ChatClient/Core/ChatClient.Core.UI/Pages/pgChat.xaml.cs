@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ChatClient.Core.Common.Models;
@@ -25,7 +25,7 @@ namespace ChatClient.Core.UI.Pages
             InitializeComponent();
         }
 						
-        async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
+		async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             if (e.Item == null)
                 return;
