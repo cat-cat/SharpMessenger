@@ -19,16 +19,17 @@ namespace ChatClient.iOS.Renderers
 
 
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.Image> e)
         {
             base.OnElementChanged(e);
 
             if (e.OldElement == null)
             {
+				// btn.SetBackgroundImage(UIImage.FromFile("create_group_button_normal.png"), UIControlState.Normal);
                 img = (UIImageView)Control;
-                // btn.SetBackgroundImage(UIImage.FromFile("create_group_button_normal.png"), UIControlState.Normal);
             }
         }
+
         //private void NewElementOnSizeChanged(object sender, EventArgs eventArgs)
         //{
         //    var blurredImage = sender as GroupListImage;

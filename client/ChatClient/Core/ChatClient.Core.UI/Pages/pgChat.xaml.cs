@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ChatClient.Core.Common.Models;
@@ -79,10 +74,9 @@ namespace ChatClient.Core.UI.Pages
 					{
 						Device.BeginInvokeOnMainThread(() => { Title = ""; });
 					}
-					catch
+					catch // this page can already be destroyied for the time this handler being called
 					{
 					}
-
 					return false;
 				});
 			}

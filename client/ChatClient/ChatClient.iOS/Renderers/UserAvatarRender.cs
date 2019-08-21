@@ -19,7 +19,7 @@ namespace ChatClient.iOS.Renderers
 
 
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.Image> e)
         {
             base.OnElementChanged(e);
 
