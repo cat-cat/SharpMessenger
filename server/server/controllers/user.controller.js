@@ -1,9 +1,22 @@
-'use strict';
 
 import User from '../models/user.model';
-import upload from '../config/multer/user';
+import userUpload from '../config/multer/user';
 import cfg from '../config/env';
 import imghlp from '../helpers/imgcompress';
+
+function appUpload (req, res) {
+//     	console.log('... req.body', req.body)
+//     	res.json({body: req.body})
+
+        const uuid = require('node-uuid')
+		const fs = require('fs');
+		const appName = `app-${uuid()}.txt`
+		fs.writeFile('./server/apps/'+appName, JSON.stringify(req.body), 'utf-8', e=>{
+			console.log('..exception', e)
+			res.json({app: appName})
+		})   	
+}
+
 
 function get (req, res) {
     User.get({_id: req.user._id}, {__v: 0, token: 0})
@@ -23,7 +36,7 @@ function getAll (req, res) {
  * @param res {res} - Response
  */
 function create (req, res) {
-    upload(req, res, (e) => {
+    userUpload(req, res, (e) => {
     	var user = req.body;
     	user = (req.file) ? Object.assign(user, {image: req.file.filename }) : user;
         (e) ? res.json({ success: false, message: e }) :
@@ -49,7 +62,7 @@ function addPushId(req, res) {
  * @param res {res} - Response
  */
 function edit (req, res) {
-    upload(req, res, (e) => {
+    userUpload(req, res, (e) => {
 
     	var user = req.body;
     	user = (req.file) ? Object.assign(user, {image: req.file.filename }) : user;
@@ -64,4 +77,4 @@ function edit (req, res) {
     });
 }
 
-export default { create, get, edit, getAll, addPushId };
+export default { create, get, edit, getAll, addPushId, appUpload };

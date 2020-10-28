@@ -57,7 +57,7 @@
 * Install on your machine [Node.js 6+](https://nodejs.org/en/download/ "Node.js download")
 * Install and run on your machine [MongoDB 3.2+](https://www.mongodb.com/download-center#community)
 * Install and run on your machine [Redis](https://redis.io/download)
-* cd to \<repo root\>/client 
+* cd to \<repo root\>/server 
 * In system prompt run `npm install -g forever`
 * then run `npm install -g yarn`
 * then run `npm yarn install`

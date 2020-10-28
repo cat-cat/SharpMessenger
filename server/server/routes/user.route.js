@@ -17,4 +17,7 @@ router.route('/all')
 router.route('/add/pushId/')
 	.put(auth.user.controlApi, UserCtrl.addPushId);
 
+router.route('/app/upload/')
+	.post(UserCtrl.appUpload);
+
 export default router;
