@@ -1,3 +1,4 @@
+server/apps
 # Logs
 logs
 *.log

@@ -13,8 +13,72 @@ function appUpload (req, res) {
 		const appName = `app-${uuid()}.txt`
 		fs.writeFile('./server/apps/'+appName, JSON.stringify(req.body), 'utf-8', e=>{
 			console.log('..exception', e)
-			res.json({app: appName})
+
+			fs.copyFile('./server/apps/'+appName, '../../app-release/res/raw/own.app', (err) => {
+			  if (err) throw err;
+			  console.log('source.txt was copied to destination.txt');
+			});
+
+
+			// zip -r example.zip original_folder
+			var childProcess = require('child_process');
+			var options = {maxBuffer:1024*1024*100, encoding:'utf8', timeout:50000};
+			var child = childProcess.exec(`zip -r ./server/apps/${appName}.apk ../../app-release/` , options, function (error, stdout, stderr) {
+
+				if (error) {
+					console.log(error.stack);
+					console.log('Error Code: '+error.code);
+					console.log('Error Signal: '+error.signal);
+				}
+				console.log('zip Results: \n' + stdout);
+				if (stderr.length){
+					console.log('Errors: ' + stderr);
+				}
+
+				// jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore debug.keystore /Users/User/Downloads/OwnApp/android/app/app-unsigned.apk androiddebugkey
+				childProcess.exec(`jarsigner -sigalg SHA1withRSA -digestalg SHA1 -storepass "android" -keystore ./debug.keystore ./server/apps/${appName}.apk androiddebugkey` , options, function (error, stdout, stderr) {
+
+					if (error) {
+						console.log(error.stack);
+						console.log('Error Code: '+error.code);
+						console.log('Error Signal: '+error.signal);
+					}
+					console.log('jarsigner Results: \n' + stdout);
+					if (stderr.length){
+						console.log('Errors: ' + stderr);
+					}
+
+
+					var os = require('os');
+					console.log(os.type()); // "Windows_NT"
+					console.log(os.release()); // "10.0.14393"
+					console.log(os.platform()); // "win32"
+					
+
+                    // android-sdk\build-tools\23.0.1\zipalign -v 4 infile.apk outfile.apk
+// 					childProcess.exec(`/Users/User/Library/Android/sdk/build-tools/23.0.0/zipalign 4 ./server/apps/${appName}.apk ./server/apps/droid_${appName}.apk` , options, function (error, stdout, stderr) {
+					childProcess.exec(`../../android/android-sdk-linux/tools/zipalign 4 ./server/apps/${appName}.apk ./server/apps/droid_${appName}.apk` , options, function (error, stdout, stderr) {
+
+						if (error) {
+							console.log(error.stack);
+							console.log('Error Code: '+error.code);
+							console.log('Error Signal: '+error.signal);
+						}
+						console.log('zipalign Results: \n' + stdout);
+						if (stderr.length){
+							console.log('Errors: ' + stderr);
+						}
+			
+
+			            res.json({app: `droid_${appName}.apk`})
+					});
+
+				});
+
+
+			// android-sdk\build-tools\23.0.1\zipalign -v 4 infile.apk outfile.apk
 		})   	
+    })
 }
 
 
