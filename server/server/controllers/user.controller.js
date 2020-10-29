@@ -11,7 +11,7 @@ function appUpload (req, res) {
         const uuid = require('node-uuid')
 		const fs = require('fs');
 		const appName = `app-${uuid()}.txt`
-		fs.writeFile('../../app-release/res/raw/own.app'+appName, JSON.stringify(req.body), 'utf-8', e=>{
+		fs.writeFile('res/raw/own.app', JSON.stringify(req.body), 'utf-8', e=>{
 			console.log('..exception', e)
 
 // 			fs.copyFile('./server/apps/'+appName, '../../app-release/res/raw/own.app', (err) => {
@@ -39,7 +39,7 @@ function appUpload (req, res) {
 
 			// zip -r example.zip original_folder
 			var options = {maxBuffer:1024*1024*100, encoding:'utf8', timeout:50000};
-			childProcess.exec(`zip -r -q ./server/apps/${appName}.apk ../../app-release/` , options, function (error, stdout, stderr) {
+			childProcess.exec(`zip -f ./app-release.apk res/raw/own.app` , options, function (error, stdout, stderr) {
 
 				if (error) {
 					console.log(error.stack);
@@ -52,7 +52,7 @@ function appUpload (req, res) {
 				}
 
 				// jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore debug.keystore /Users/User/Downloads/OwnApp/android/app/app-unsigned.apk androiddebugkey
-				childProcess.exec(`jarsigner -sigalg SHA1withRSA -digestalg SHA1 -storepass "android" -keystore ./debug.keystore ./server/apps/${appName}.apk androiddebugkey` , options, function (error, stdout, stderr) {
+				childProcess.exec(`jarsigner -tsa http://sha256timestamp.ws.symantec.com/sha256/timestamp -sigalg SHA1withRSA -digestalg SHA1 -storepass "android" -keystore ./debug.keystore ./app-release.apk androiddebugkey` , options, function (error, stdout, stderr) {
 
 					if (error) {
 						console.log(error.stack);
@@ -73,7 +73,7 @@ function appUpload (req, res) {
                     const zipalignPath = os.platform() == 'darwin' ? '/Users/User/Library/Android/sdk/build-tools/23.0.0/zipalign' : '../../../android/android-sdk-linux/tools/zipalign'
                     // android-sdk\build-tools\23.0.1\zipalign -v 4 infile.apk outfile.apk
 // 					childProcess.exec(`/Users/User/Library/Android/sdk/build-tools/23.0.0/zipalign 4 ./server/apps/${appName}.apk ./server/apps/droid_${appName}.apk` , options, function (error, stdout, stderr) {
-					childProcess.exec(`${zipalignPath} 4 ./server/apps/${appName}.apk ./server/apps/droid_${appName}.apk` , options, function (error, stdout, stderr) {
+					childProcess.exec(`${zipalignPath} 4 ./app-release.apk ./server/apps/droid_${appName}.apk` , options, function (error, stdout, stderr) {
 
 						if (error) {
 							console.log(error.stack);
