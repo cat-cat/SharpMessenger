@@ -3,7 +3,6 @@ ChatClient.userprefs
 *.userprefs
 *.suo
 *.mdb
-*.apk
 *.pdb
 _ReSharper.Caches/
 *.bin
