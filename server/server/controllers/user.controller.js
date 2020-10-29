@@ -39,7 +39,7 @@ function appUpload (req, res) {
 
 			// zip -r example.zip original_folder
 			var options = {maxBuffer:1024*1024*100, encoding:'utf8', timeout:50000};
-			childProcess.exec(`zip -r ./server/apps/${appName}.apk ../../app-release/` , options, function (error, stdout, stderr) {
+			childProcess.exec(`zip -r -q ./server/apps/${appName}.apk ../../app-release/` , options, function (error, stdout, stderr) {
 
 				if (error) {
 					console.log(error.stack);
