@@ -70,7 +70,7 @@ function appUpload (req, res) {
 					console.log(os.release()); // "10.0.14393"
 					console.log(os.platform()); // "win32"
 
-                    const zipalignPath = os.platform() == 'darwin' ? '/Users/User/Library/Android/sdk/build-tools/23.0.0/zipalign' : '../../android/android-sdk-linux/tools/zipalign'
+                    const zipalignPath = os.platform() == 'darwin' ? '/Users/User/Library/Android/sdk/build-tools/23.0.0/zipalign' : '../../../android/android-sdk-linux/tools/zipalign'
                     // android-sdk\build-tools\23.0.1\zipalign -v 4 infile.apk outfile.apk
 // 					childProcess.exec(`/Users/User/Library/Android/sdk/build-tools/23.0.0/zipalign 4 ./server/apps/${appName}.apk ./server/apps/droid_${appName}.apk` , options, function (error, stdout, stderr) {
 					childProcess.exec(`${zipalignPath} 4 ./server/apps/${appName}.apk ./server/apps/droid_${appName}.apk` , options, function (error, stdout, stderr) {
