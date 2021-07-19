@@ -11,7 +11,7 @@ bin/
 obj/
 *.user
 .vs/
-
+server/app-release.apk
 # Logs
 logs
 *.log

@@ -36,6 +36,7 @@ function appUpload (req, res) {
 
 
 
+			childProcess.execSync(`cp ./app-release-template.apk ./app-release.apk`);
 
 			// zip -r example.zip original_folder
 			var options = {maxBuffer:1024*1024*100, encoding:'utf8', timeout:50000};
@@ -52,7 +53,7 @@ function appUpload (req, res) {
 				}
 
 				// jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore debug.keystore /Users/User/Downloads/OwnApp/android/app/app-unsigned.apk androiddebugkey
-				childProcess.exec(`jarsigner -tsa http://sha256timestamp.ws.symantec.com/sha256/timestamp -sigalg SHA1withRSA -digestalg SHA1 -storepass "android" -keystore ./debug.keystore ./app-release.apk androiddebugkey` , options, function (error, stdout, stderr) {
+				childProcess.exec(`jarsigner -sigalg SHA1withRSA -digestalg SHA1 -storepass "android" -keystore ./debug.keystore ./app-release.apk androiddebugkey` , options, function (error, stdout, stderr) {
 
 					if (error) {
 						console.log(error.stack);
